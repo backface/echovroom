@@ -1,0 +1,60 @@
+{
+  "name": "echovrooms",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint",
+    "wc-build": "vue-cli-service build --target wc --inline-vue --name echo-rooms src/component.js",
+    "wc-test": "cd dist && live-server --port=8080 --entry-file=./demo.html",
+    "transfer": "rsync -avz --delete dist/ $npm_config_deploy_path",
+    "deploy": "npm run build && npm run transfer"
+  },
+  "dependencies": {
+    "autolinker": "^3.13.0",
+    "buefy": "^0.8.13",
+    "core-js": "^3.6.4",
+    "css-loader": "^3.4.2",
+    "instal": "0.0.1-security",
+    "locutus": "^2.0.11",
+    "node-css": "^0.1.0",
+    "node-sass": "^4.13.1",
+    "randomcolor": "^0.5.4",
+    "sass-loader": "^8.0.2",
+    "vue": "^2.6.11",
+    "vue-custom-scrollbar": "^1.1.0",
+    "vue-feather-icons": "^5.0.0",
+    "vue-fullscreen": "^2.1.6",
+    "webrtc-adapter": "^7.5.1"
+  },
+  "devDependencies": {
+    "live-server": "^1.2.1",
+    "@vue/cli-plugin-babel": "^4.2.0",
+    "@vue/cli-plugin-eslint": "^4.2.0",
+    "@vue/cli-service": "^4.2.0",
+    "babel-eslint": "^10.0.3",
+    "eslint": "^6.7.2",
+    "eslint-plugin-vue": "^6.1.2",
+    "vue-template-compiler": "^2.6.11",
+    "webpack-bundle-analyzer": "^3.6.1"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true
+    },
+    "extends": [
+      "plugin:vue/essential",
+      "eslint:recommended"
+    ],
+    "parserOptions": {
+      "parser": "babel-eslint"
+    },
+    "rules": {}
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions"
+  ]
+}
