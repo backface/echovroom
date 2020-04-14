@@ -1,6 +1,6 @@
 <template>
   <div class="stage">
-    <img :src="`${publicPath}/img/testbild.jpg`">
+    <img src="../assets/testbild.jpg">
   </div>
 </template>
 
@@ -13,7 +13,7 @@ export default {
 
   data() {
     return {
-      publicPath: process.env.BASE_URL
+      publicPath: process.env.publicPath
     }
   },
 

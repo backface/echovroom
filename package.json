@@ -1,6 +1,11 @@
 {
   "name": "echovrooms",
   "version": "0.1.0",
+  "author": {
+    "name": "Michael Aschauer",
+    "email": "m@ash.to",
+    "url": "https://m.ash.to"
+  },  
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
