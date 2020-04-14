@@ -6,5 +6,6 @@
   "iceServers": [
     {"urls": "stun:stun.l.google.com:19302"},
     {"urls": "turn:88.198.175.99:3478", "username": "turn", "credential": "hinterseer"}
-  ]
+  ],
+  "room": 777
 }

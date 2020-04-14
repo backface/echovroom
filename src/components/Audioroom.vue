@@ -6,7 +6,7 @@
         <mic-off-icon size="1x" class="icons linked" v-if="muted" @click="muteMe(false)"></mic-off-icon>
         <mic-icon size="1x" class="icons linked" v-if="!muted" @click="muteMe(true)"></mic-icon>
         {{ room_info.description }} ({{ count + (webRTCUp ? 1 : 0) }})
-        <loader-icon size="1x" class="icons" v-if="has_stream"></loader-icon>
+        <loader-icon size="1x" class="icons loading" v-if="has_stream"></loader-icon>
       </div>
       <div class="column  has-text-right">
         <minus-icon size="1x" class="icons linked" v-if="webRTCUp" @click="leaveRoom()"></minus-icon>
@@ -21,7 +21,7 @@
           <span v-for="(user, index) in participants" :key="index" class="participant" :class="{ talking: user.talking }">
             {{ user.display }}
             <mic-off-icon size="1x" class="icons" v-if="user.muted === true"></mic-off-icon>
-            <loader-icon size="1x" class="icons" v-if="user.setup != true"></loader-icon>
+            <loader-icon size="1x" class="icons loading" v-if="user.setup != true"></loader-icon>
           </span>
 
       </div>

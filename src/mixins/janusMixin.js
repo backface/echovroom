@@ -7,10 +7,6 @@ export const janusMixin = {
         type: String,
         default: ""
     },
-    room: {
-      type: Number,
-      default: 1234
-    },
     myJanus: {
       type: Object,
       default: null
@@ -18,6 +14,10 @@ export const janusMixin = {
     is_muted: {
       type: String,
       default: "false"
+    },
+    myRoom: {
+      type: Number,
+      default: 0
     }
   },
 
@@ -33,7 +33,13 @@ export const janusMixin = {
       room_info: {},
       count: 0,
       participants: {},
+      room: 0,
     }
+  },
+
+  mounted() {
+    if (this.myRoom > 0)
+      this.room = this.myRoom
   },
 
   methods: {
@@ -44,7 +50,8 @@ export const janusMixin = {
         .then(json => {
           console.log("load config", json);
           this.server = json.server;
-          this.iceServers = json.iceServers
+          this.iceServers = json.iceServers;
+          this.room = json.room;
           this.initJanus()
       })
     },
@@ -84,7 +91,6 @@ export const janusMixin = {
 
     askForUsername(exists=false, container=null) {
       let self =this;
-      console.log(exists);
       //if(/[^a-zA-Z0-9]/.test(username)) {
       self.$buefy.dialog.prompt({
           container: container,

@@ -136,7 +136,6 @@ export default {
 
   mounted () {
     console.log(this.$options._componentTag + " mounted");
-
     this.show_chat = this.is_open;
     this.loadingComponent = this.$buefy.loading.open({
         container: this.$el,
@@ -145,15 +144,12 @@ export default {
     if (this.myJanus == null) {
       this.loadConfig()
     } else {
-      console.log(this.myJanus);
       this.janus = this.myJanus
       this.attachPlugin()
     }
   },
 
   updated () {
-
-    //
   },
 
   destroyed () {
@@ -319,7 +315,7 @@ export default {
       self.transactions[transaction] = function(response) {
         if(response["textroom"] === "error") {
           if(response["error_code"] === 417) {
-            console.log( self.myroom + "does not exist." );
+            console.log( self.room + "does not exist." );
           } else {
             console.log(response["error"]);
           }
@@ -360,7 +356,7 @@ export default {
       self.transactions[transaction] = function(response) {
         if(response["textroom"] === "error") {
           if(response["error_code"] === 417) {
-            console.log(self.myroom + " does not exist");
+            console.log(self.room + " does not exist");
           } else {
             console.log(response["error"]);
           }

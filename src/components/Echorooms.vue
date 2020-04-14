@@ -2,7 +2,7 @@
   <div class="echorooms">
 
     <Videoroom
-      :room="777"
+      :myRoom="room"
       v-if="nick"
       :nick="nick"
       is_muted="true"
@@ -11,7 +11,7 @@
 
     <Audioroom
       v-if="nick"
-      :room="777"
+      :myRoom="room"
       :nick="nick"
       :myJanus="janus"
     />
@@ -30,11 +30,13 @@
     </div>
 
     <Textroom
-      :room="777"
+      v-if="janusReady"
+      :myRoom="room"
       @participantNumberChanged="foyer_count = $event"
       @hasNick="nick = $event;"
       @hasRoomInfo="foye_info = $event"
       @hasJanus="janus = $event"
+      :myJanus="janus"
       :header="false"
       v-show="chat_open"
     />
@@ -47,6 +49,7 @@
 import Vue from 'vue';
 import Buefy from 'buefy';
 import 'buefy/dist/buefy.css';
+import { janusMixin } from "@/mixins/janusMixin";
 import Textroom from './Textroom.vue'
 import Audioroom from './Audioroom.vue'
 import Videoroom from './Videoroom.vue'
@@ -57,26 +60,32 @@ Vue.use(Buefy);
 export default {
   name: 'Echorooms',
 
+  mixins: [janusMixin],
+
   components: {
     Textroom, Audioroom, Videoroom,
     MessageSquareIcon,  MinusIcon, PlusIcon
   },
 
-  props: {
-    username: String
+  props: {},
+
+  mounted() {
+    this.loadConfig()
   },
 
   data() {
     return {
       foyer_count: 0,
       chat_open: false,
-      nick: 0,
-      janus: null,
+      janusReady: false,
     }
   },
 
   methods: {
-    
+    attachPlugin() {
+      console.log("janus is ready");
+      this.janusReady = true
+    }
   }
 
 }
@@ -135,5 +144,14 @@ a { text-decoration: underline; color:black}
 }
 .icons { vertical-align: middle; margin:0px 3px}
 .linked { cursor:pointer}
+.loading {
+-webkit-animation:spin 4s linear infinite;
+    -moz-animation:spin 4s linear infinite;
+    animation:spin 4s linear infinite;
+}
+@-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }
+@-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
+@keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
+
 
 </style>

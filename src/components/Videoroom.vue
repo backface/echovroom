@@ -11,7 +11,7 @@
       </div>
       <div class="column has-text-right">
         <minus-icon size="1x" class="icons linked" v-if="webRTCUp && is_open" @click="leaveRoom()"></minus-icon>
-        <loader-icon size="1x" class="icons" v-if="!webRTCUp && is_open"></loader-icon>
+        <loader-icon size="1x" class="icons loading" v-if="!webRTCUp && is_open"></loader-icon>
         <plus-icon size="1x" class="icons linked" v-if="!is_open" @click="login()"></plus-icon>
       </div>
     </div>
@@ -58,7 +58,7 @@
               </div>
 
               <div class="overlay meta">
-                <loader-icon size="1x" class="icons centered" v-if="feed.loading == true"></loader-icon>
+                <loader-icon size="1x" class="icons loading centered" v-if="feed.loading == true"></loader-icon>
                 <span class="bitrate">
                   {{ feed.bitrate }}
                 </span>
