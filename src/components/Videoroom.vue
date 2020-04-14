@@ -76,6 +76,7 @@
 
 <script>
 import Vue from 'vue';
+import { janusMixin } from "@/mixins/janusMixin";
 import fullscreen from 'vue-fullscreen'
 import { Dialog, Loading } from 'buefy'
 import Janus from '../janus'
@@ -91,6 +92,8 @@ Vue.use(fullscreen)
 
 export default {
   name: 'Videoroom',
+
+  mixins: [janusMixin],
 
   components: {
     MicIcon, MicOffIcon, LoaderIcon,
@@ -116,11 +119,6 @@ export default {
 
   data() {
     return {
-      //server: "https://janus.conf.meetecho.com/janus",
-      //ws_server: 'wss://janus.conf.meetecho.com',
-      server: window.location.protocol === 'https:' ? "https://janus.modular-t.org:8089/janus" : "http://janus.modular-t.org:8088/janus",
-      ws_server: 'wss://janus.modular-t.org:8989',
-      janus: null,
       webRTCUp: null,
       pluginHandle: null,
       pluginName: "videoroom",
@@ -155,12 +153,9 @@ export default {
 
   mounted () {
     console.log(this.$options._componentTag + " mounted");
-    //this.loadingComponent = this.$buefy.loading.open({
-    //    container: this.$refs.screen,
-    //})
     this.muted = this.is_muted === "true"
     if (this.janus == null) {
-      this.initJanus()
+      this.loadConfig()
     } else {
       this.AttachPlugin()
     }
@@ -173,12 +168,10 @@ export default {
   methods: {
 
     toggle () {
-      //this.$fullscreen.toggle(this.$refs['fullscreen'], {
-      //  wrap: false,
-      //})
       this.$refs['fullscreen'].toggle() // recommended
-      // this.fullscreen = !this.fullscreen // deprecated
+
     },
+
     fullscreenChange (fullscreen) {
       this.fullscreen = fullscreen
     },
@@ -220,35 +213,6 @@ export default {
       }
       if (i >= 100) console.log("could not find a spot");
       return newPos
-    },
-
-    initJanus () {
-      let servers = [this.ws_server, this.server,]
-      console.log(this.opaqueId, 'calling Janus init')
-      Janus.init({
-        debug: 'all',
-        callback: () => {
-          this.janus = new Janus(
-            {
-              server: servers,
-              iceServers: [
-                {urls: "stun:stun.l.google.com:19302"},
-                {urls: "turn:88.198.175.99:3478", username: "turn", credential: "hinterseer"},
-              ],
-              success: () => {
-                console.log(this.opaqueId, "janus initialized");
-                this.$emit("hasJanus",this.janus);
-                this.attachPlugin()
-              },
-              error: (cause) => {
-                console.log(cause)
-              },
-              destroyed: () => {
-                console.log(this.opaqueId, 'janus init destroyed')
-              }
-            })
-        }
-      })
     },
 
     attachPlugin() {

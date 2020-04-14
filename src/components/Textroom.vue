@@ -34,7 +34,7 @@
         </div>
       </vue-custom-scrollbar>
 
-      <vue-custom-scrollbar class="chat" ref="chat">
+      <vue-custom-scrollbar class="chat" id="chatbar" ref="chat">
         <div class="has-text-left" id="chat">
 
           <div class="item ">
@@ -82,6 +82,7 @@
 
 <script>
 import Vue from 'vue';
+import { janusMixin } from "@/mixins/janusMixin";
 import { Dialog, Loading } from 'buefy'
 import Janus from '../janus'
 import randomColor from 'randomcolor'
@@ -97,6 +98,8 @@ Vue.use(Loading)
 
 export default {
   name: 'Textroom',
+
+  mixins: [janusMixin],
 
   components: {
     vueCustomScrollbar,
@@ -124,14 +127,6 @@ export default {
 
   data() {
     return {
-      //server: 'https://janus.conf.meetecho.com/janus',
-      //server: 'http://janus.modular-t.org:8088/janus',
-      //server: "https://janus.conf.meetecho.com/janus",
-      server: window.location.protocol === 'https:' ? "https://janus.modular-t.org:8089/janus" : "http://janus.modular-t.org:8088/janus",
-    //  ws_server: '',
-      ws_server: 'wss://janus.modular-t.org:8989',
-      //ws_server: 'wss://janus.conf.meetecho.com',
-      janus: null,
       textroom: null,
       opaqueId: this.$options._componentTag  + Janus.randomString(12),
       transactions: {},
@@ -155,17 +150,15 @@ export default {
   },
 
   mounted () {
+    let self = this;
     console.log(this.$options._componentTag + " mounted");
-    fetch(this.server + '/info').then(function (response) {
-        console.log(response)
-    })
+
     this.show_chat = this.is_open;
-    //this.width = this.$el.clientWidth;
-    //this.height = this.$el.clientHeight;
     this.loadingComponent = this.$buefy.loading.open({
         container: this.$el,
     })
-    this.initJanus()
+
+    self.loadConfig()
   },
 
   updated () {
@@ -178,44 +171,6 @@ export default {
   },
 
   methods: {
-
-    test() {
-      console.log(this.$refs);
-      this.$refs.chat.scrollTop = this.$refs.chat.scrollHeight
-    },
-
-    initJanus () {
-      this.loading = true
-      //let servers = [this.ws_server, this.server,]
-      let servers = [this.ws_server, this.server,]
-
-      console.log('calling Janus init')
-
-      Janus.init({
-        debug: 'all',
-        callback: () => {
-          this.janus = new Janus(
-            {
-              server: servers,
-              iceServers: [
-                {urls: "stun:stun.l.google.com:19302"},
-                {urls: "turn:88.198.175.99:3478", username: "turn", credential: "hinterseer"},
-              ],
-              success: () => {
-                console.log("janus initialized");
-
-                this.attachPlugin()
-              },
-              error: (cause) => {
-                console.log(cause)
-              },
-              destroyed: () => {
-                console.log('janus init destroyed')
-              }
-            })
-        }
-      })
-    },
 
     attachPlugin() {
       let self = this;
@@ -311,7 +266,8 @@ export default {
                 date: dateString,
               })
               window.setTimeout( function() {
-                self.$refs.chat.scrollTop = self.$refs.chat.scrollHeight;
+                //self.$refs.chat.scrollTop = self.$refs.chat.scrollHeight;
+                document.getElementById("chatbar").scrollTop = document.getElementById("chatbar").scrollHeight;
               }, 200);
             }
 

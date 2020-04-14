@@ -32,12 +32,11 @@
 
 <script>
 import Vue from 'vue';
-
+import { janusMixin } from "@/mixins/janusMixin";
 import { Dialog, Loading } from 'buefy'
 import Janus from '../janus'
 import { MicIcon, MicOffIcon } from 'vue-feather-icons'
 import { LoaderIcon, MinusIcon, PlusIcon } from 'vue-feather-icons'
-
 import vueCustomScrollbar from 'vue-custom-scrollbar'
 
 Vue.use(Dialog)
@@ -45,6 +44,8 @@ Vue.use(Loading)
 
 export default {
   name: 'Audioroom',
+
+  mixins: [janusMixin],
 
   components: {
     vueCustomScrollbar,
@@ -73,9 +74,6 @@ export default {
 
   data() {
     return {
-      server: window.location.protocol === 'https:' ? "https://janus.modular-t.org:8089/janus" : "http://janus.modular-t.org:8088/janus",
-      ws_server: 'wss://janus.modular-t.org:8989',
-      janus: null,
       webRTCUp: null,
       pluginHandle: null,
       pluginName: "audiobridge",
@@ -104,13 +102,15 @@ export default {
     this.loadingComponent = this.$buefy.loading.open({
         container: this.$refs.participants,
     })
+
     this.muted = this.is_muted === "true"
-    console.log(this.janus);
+
     if (this.janus == null) {
-      this.initJanus()
+      this.loadConfig()
     } else {
       this.AttachPlugin()
     }
+
   },
 
   destroyed () {
@@ -118,35 +118,6 @@ export default {
   },
 
   methods: {
-
-    initJanus () {
-      let servers = [this.ws_server, this.server,]
-      console.log(this.opaqueId, 'calling Janus init')
-      Janus.init({
-        debug: 'all',
-        callback: () => {
-          this.janus = new Janus(
-            {
-              server: servers,
-              iceServers: [
-                {urls: "stun:stun.l.google.com:19302"},
-                {urls: "turn:88.198.175.99:3478", username: "turn", credential: "hinterseer"},
-              ],
-              success: () => {
-                console.log(this.opaqueId, "janus initialized");
-                this.$emit("hasJanus",this.janus);
-                this.attachPlugin()
-              },
-              error: (cause) => {
-                console.log(cause)
-              },
-              destroyed: () => {
-                console.log(this.opaqueId, 'janus init destroyed')
-              }
-            })
-        }
-      })
-    },
 
     attachPlugin() {
       let self = this;
