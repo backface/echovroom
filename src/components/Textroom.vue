@@ -107,14 +107,6 @@ export default {
   },
 
   props: {
-    nick:  {
-        type: String,
-        default: ""
-    },
-    room: {
-      type: Number,
-      default: 1234
-    },
     header: {
       type: Boolean,
       default: true
@@ -129,13 +121,6 @@ export default {
     return {
       textroom: null,
       opaqueId: this.$options._componentTag  + Janus.randomString(12),
-      transactions: {},
-      username: null,
-      display: null,
-      rooms: [],
-      room_info: {},
-      count: 0,
-      participants: {},
       log: ["starting up"],
       messages: [],
       users: [],
@@ -150,7 +135,6 @@ export default {
   },
 
   mounted () {
-    let self = this;
     console.log(this.$options._componentTag + " mounted");
 
     this.show_chat = this.is_open;
@@ -158,7 +142,13 @@ export default {
         container: this.$el,
     })
 
-    self.loadConfig()
+    if (this.myJanus == null) {
+      this.loadConfig()
+    } else {
+      console.log(this.myJanus);
+      this.janus = this.myJanus
+      this.attachPlugin()
+    }
   },
 
   updated () {
@@ -382,9 +372,9 @@ export default {
         self.loadingComponent.close()
 
         if (!self.nick) {
-          self.askForUsername();
+          self.askForUsername(false,".textroom");
         } else if (self.initial_participants.find(d => d.display == self.nick)) {
-          self.askForUsername(true);
+          self.askForUsername(true,".textroom");
         } else {
           self.display = self.nick
           self.registerUser()
@@ -421,30 +411,6 @@ export default {
           console.log(reason);
         }
       });
-    },
-
-    askForUsername(exists=false) {
-      let self =this;
-      console.log(exists);
-      self.$buefy.dialog.prompt({
-          container: ".textroom",
-          message: (exists) ? "User exists. Choose another one" : "What's your name?",
-          canCancel: false,
-          inputAttrs: {
-              placeholder: 'e.g. Peter Pan',
-              minlength: 2
-          },
-          trapFocus: true,
-          onConfirm: function(nick) {
-            self.display = nick;
-            if (self.initial_participants.find(d => d.display == nick)) {
-              self.loadingComponent.close()
-              self.askForUsername(true);
-            } else {
-              self.registerUser()
-            }
-          }
-      })
     },
 
     sendWhisper(username) {
@@ -515,11 +481,6 @@ export default {
 
     addUserToList(username, display) {
       let self = this;
-      //self.participants[username] = {
-      //  username: username,
-      //  display: display,
-      //  color: randomColor({luminosity: 'dark',hue: 'blue'})
-      //}
       let newuser = {
         username: username,
         display: display,
@@ -533,7 +494,7 @@ export default {
         })
       self.count = Object.keys(self.participants).length
       self.$emit('participantNumberChanged', self.count)
-      //self.$forceUpdate();
+
     },
 
     removeUserFromList(username) {

@@ -54,22 +54,7 @@ export default {
   },
 
   props: {
-    nick:  {
-        type: String,
-        default: ""
-    },
-    room: {
-      type: Number,
-      default: 1234
-    },
-    myJanus: {
-      type: Object,
-      default: null
-    },
-    is_muted: {
-      type: String,
-      default: "false"
-    }
+
   },
 
   data() {
@@ -78,13 +63,6 @@ export default {
       pluginHandle: null,
       pluginName: "audiobridge",
       opaqueId: this.$options._componentTag  + "-" + Janus.randomString(12),
-      transactions: {},
-      username: null,
-      display: null,
-      rooms: [],
-      room_info: '',
-      count: 0,
-      participants: {},
       is_open: false,
       initial_participants: [],
       has_stream: false,
@@ -105,10 +83,12 @@ export default {
 
     this.muted = this.is_muted === "true"
 
-    if (this.janus == null) {
+    if (this.myJanus == null) {
       this.loadConfig()
     } else {
-      this.AttachPlugin()
+      console.log(this.myJanus);
+      this.janus = this.myJanus
+      this.attachPlugin()
     }
 
   },
@@ -382,31 +362,6 @@ export default {
           console.log(reason);
         }
       });
-    },
-
-    askForUsername(exists=false) {
-      let self =this;
-      console.log(exists);
-      //if(/[^a-zA-Z0-9]/.test(username)) {
-      self.$buefy.dialog.prompt({
-          //container: self.$refs.audioroom,
-          message: (exists) ? "User exists. Choose another one" : "What's your name?",
-          canCancel: false,
-          inputAttrs: {
-              placeholder: 'e.g. Peter Pan',
-              minlength: 2
-          },
-          trapFocus: true,
-          onConfirm: function(nick) {
-            self.display = nick;
-            if (self.initial_participants.find(d => d.display == nick)) {
-              self.loadingComponent.close()
-              self.askForUsername(true);
-            } else {
-              self.registerUser()
-            }
-          }
-      })
     },
   }
 }

@@ -6,12 +6,14 @@
       v-if="nick"
       :nick="nick"
       is_muted="true"
+      :myJanus="janus"
     />
 
     <Audioroom
       v-if="nick"
       :room="777"
       :nick="nick"
+      :myJanus="janus"
     />
 
     <div class="columns  is-mobile headers is-gapless">
@@ -32,7 +34,7 @@
       @participantNumberChanged="foyer_count = $event"
       @hasNick="nick = $event;"
       @hasRoomInfo="foye_info = $event"
-      @hasJanus="janus = $event;"
+      @hasJanus="janus = $event"
       :header="false"
       v-show="chat_open"
     />
@@ -74,7 +76,7 @@ export default {
   },
 
   methods: {
-
+    
   }
 
 }
