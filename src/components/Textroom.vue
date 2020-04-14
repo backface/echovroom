@@ -322,8 +322,7 @@ export default {
           } else if(what === "leave") {
 
             self.$buefy.toast.open({
-              position: 'is-bottom',
-              message: self.participants[username].display + " left " + self.room
+               message: self.participants[username].display + " left " + self.room_info.description
             })
             self.removeUserFromList(username);
 
@@ -333,8 +332,7 @@ export default {
               this.$buefy.dialog.alert('You got kicked out!' + self.room);
             } else {
               self.$buefy.toast.open({
-                position: 'is-bottom',
-                message: self.participants[username].display + " got kicked out from " + self.room
+                message: self.participants[username].display + " got kicked out from " + self.room_info.description
               })
             }
             self.removeUserFromList(username);
@@ -575,7 +573,6 @@ export default {
 
       if (username != self.username)
         self.$buefy.toast.open({
-          position: 'is-bottom',
           message: self.participants[username].display + " joined " + self.room.description
         })
       self.count = Object.keys(self.participants).length
