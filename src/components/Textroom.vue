@@ -10,8 +10,8 @@
           <message-square-icon size="1x" class="icons"></message-square-icon> {{ room_info.description }} ({{ count }})
         </div>
         <div class="column  has-text-right">
-          <minus-icon size="1x" class="icons" v-if="show_chat" @click="show_chat=false"></minus-icon>
-          <plus-icon size="1x" class="icons" v-if="!show_chat" @click="show_chat=true"></plus-icon>
+          <minus-icon size="1x" class="icons linked" v-if="show_chat" @click="show_chat=false"></minus-icon>
+          <plus-icon size="1x" class="icons linked" v-if="!show_chat" @click="show_chat=true"></plus-icon>
         </div>
       </div>
     </div>

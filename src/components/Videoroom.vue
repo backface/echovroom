@@ -6,21 +6,21 @@
         <video-off-icon size="1x" class="icons" v-if="video_off" @click="showMe(false)"></video-off-icon>
         <video-icon size="1x" class="icons" v-if="!video_off" @click="showMe(true)"></video-icon>
         VROOM {{ room_info.description }} ({{ count + (webRTCUp ? 1 : 0) }})
-        <mic-off-icon size="1x" class="icons" v-if="muted" @click="muteMe(false)"></mic-off-icon>
-        <mic-icon size="1x" class="icons" v-if="!muted" @click="muteMe(true)"></mic-icon>
+        <mic-off-icon size="1x" class="icons linked" v-if="muted" @click="muteMe(false)"></mic-off-icon>
+        <mic-icon size="1x" class="icons linked" v-if="!muted" @click="muteMe(true)"></mic-icon>
       </div>
       <div class="column has-text-right">
-        <minus-icon size="1x" class="icons" v-if="webRTCUp && is_open" @click="leaveRoom()"></minus-icon>
+        <minus-icon size="1x" class="icons linked" v-if="webRTCUp && is_open" @click="leaveRoom()"></minus-icon>
         <loader-icon size="1x" class="icons" v-if="!webRTCUp && is_open"></loader-icon>
-        <plus-icon size="1x" class="icons" v-if="!is_open" @click="login()"></plus-icon>
+        <plus-icon size="1x" class="icons linked" v-if="!is_open" @click="login()"></plus-icon>
       </div>
     </div>
 
     <fullscreen ref="fullscreen" :fullscreen.sync="fullscreen"
       @change="fullscreenChange"  background="white" v-if="is_open">
 
-      <maximize-2-icon size="1.5x" class="icons" @click="toggle" v-if="!fullscreen"></maximize-2-icon>
-      <minimize-2-icon size="1.5x" class="icons" @click="toggle" v-if="fullscreen"></minimize-2-icon>
+      <maximize-2-icon size="1.5x" class="icons linked" @click="toggle" v-if="!fullscreen"></maximize-2-icon>
+      <minimize-2-icon size="1.5x" class="icons linked" @click="toggle" v-if="fullscreen"></minimize-2-icon>
 
       <div class="screen has-text-center" ref="screen" >
 
@@ -37,8 +37,8 @@
             </div>
 
             <div class="overlay meta">
-              <mic-off-icon size="1x" class="icons" v-if="muted" @click="muteMe(false)"></mic-off-icon>
-              <mic-icon size="1x" class="icons" v-if="!muted" @click="muteMe(true)"></mic-icon>
+              <mic-off-icon size="1x" class="icons linked" v-if="muted" @click="muteMe(false)"></mic-off-icon>
+              <mic-icon size="1x" class="icons linked" v-if="!muted" @click="muteMe(true)"></mic-icon>
             </div>
           </div>
 

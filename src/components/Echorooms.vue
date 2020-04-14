@@ -22,8 +22,8 @@
         <message-square-icon size="1x" class="icons"></message-square-icon> Foyer ({{ foyer_count}})
       </div>
       <div class="column has-text-right">
-        <minus-icon size="1x" class="icons" v-if="chat_open" @click="chat_open=false"></minus-icon>
-        <plus-icon size="1x" class="icons" v-if="!chat_open" @click="chat_open=true"></plus-icon>
+        <minus-icon size="1x" class="icons linked" v-if="chat_open" @click="chat_open=false"></minus-icon>
+        <plus-icon size="1x" class="icons linked" v-if="!chat_open" @click="chat_open=true"></plus-icon>
       </div>
     </div>
 
@@ -132,5 +132,6 @@ a { text-decoration: underline; color:black}
   opacity: 0.8;
 }
 .icons { vertical-align: middle; margin:0px 3px}
+.linked { cursor:pointer}
 
 </style>

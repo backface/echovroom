@@ -3,14 +3,14 @@
 
     <div class="columns headers is-gapless">
       <div class="column has-text-left">
-        <mic-off-icon size="1x" class="icons" v-if="muted" @click="muteMe(false)"></mic-off-icon>
-        <mic-icon size="1x" class="icons" v-if="!muted" @click="muteMe(true)"></mic-icon>
+        <mic-off-icon size="1x" class="icons linked" v-if="muted" @click="muteMe(false)"></mic-off-icon>
+        <mic-icon size="1x" class="icons linked" v-if="!muted" @click="muteMe(true)"></mic-icon>
         {{ room_info.description }} ({{ count + (webRTCUp ? 1 : 0) }})
         <loader-icon size="1x" class="icons" v-if="has_stream"></loader-icon>
       </div>
       <div class="column  has-text-right">
-        <minus-icon size="1x" class="icons" v-if="webRTCUp" @click="leaveRoom()"></minus-icon>
-        <plus-icon size="1x" class="icons" v-if="!webRTCUp" @click="login()"></plus-icon>
+        <minus-icon size="1x" class="icons linked" v-if="webRTCUp" @click="leaveRoom()"></minus-icon>
+        <plus-icon size="1x" class="icons linked" v-if="!webRTCUp" @click="login()"></plus-icon>
       </div>
     </div>
 
