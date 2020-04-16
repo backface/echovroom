@@ -63,7 +63,6 @@ export default {
       pluginHandle: null,
       pluginName: "audiobridge",
       opaqueId: this.$options._componentTag  + "-" + Janus.randomString(12),
-      is_open: false,
       initial_participants: [],
       has_stream: false,
       is_streaming: false,

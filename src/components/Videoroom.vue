@@ -26,9 +26,12 @@
 
         <br />
 
-        <div class="tile is-ancestor">
+        <div class="tile is-ancestor me" >
           <div class="tile" v-show="is_streaming"
-              v-bind:style="{ position: 'fixed', top: my_pos.y + 'px', left: my_pos.x + 'px' }">
+            @mousedown="drag('start', my_pos, $event)"
+            @mousemove="drag('drag', my_pos, $event)"
+            @mouseup="drag('stop',my_pos, $event)"
+            :style="{ position: 'fixed', top: my_pos.y + 'px', left: my_pos.x + 'px' }">
 
             <video ref="videolocal" class="videolocal" id="videolocal" autoplay playsinline muted="muted"/>
 
@@ -43,7 +46,11 @@
           </div>
 
           <div v-for="feed in feeds" :key="feed.id" class="tile feed has-text-center"
-            v-bind:style="{ position: 'fixed', top: feed.y + 'px', left: feed.x + 'px' }">
+            v-bind:style="{ position: 'fixed', top: feed.y + 'px', left: feed.x + 'px' }"
+            @mousedown="drag('start', feed, $event)"
+            @mousemove="drag('drag', feed, $event)"
+            @mouseup="drag('stop',feed, $event)"
+          >
 
               <video
                 :id="'v'+feed.id" :ref="'feed-' + feed.id"
@@ -113,7 +120,6 @@ export default {
       pluginName: "videoroom",
       opaqueId: this.$options._componentTag  + "-" + Janus.randomString(12),
       intervals: {},
-      is_open: false,
       initial_participants: [],
       my_stream: null,
       is_streaming: false,
@@ -123,8 +129,9 @@ export default {
       bitrateTimer: null,
       doSimulcast: false,
       fullscreen: false,
-      tile_width: 320,
-      tile_height: 320,
+      tile_width: 256,
+      tile_height: 256,
+      dragging: null,
       my_pos: { x:0, y:0 },
     }
   },
@@ -152,6 +159,25 @@ export default {
 
     },
 
+    drag( cmd, who) {
+      if (cmd === "start")
+        this.dragging = {
+          who: who,
+          last_x: event.clientX,
+          last_y: event.clientY
+        }
+      else if (cmd === "stop")
+        this.dragging = null
+      else if (this.dragging != null) {
+        let diff_x = this.dragging.last_x - event.clientX
+        let diff_y = this.dragging.last_y - event.clientY
+        this.dragging.who.x -= diff_x;
+        this.dragging.who.y -= diff_y;
+        this.dragging.last_x = event.clientX
+        this.dragging.last_y = event.clientY
+      }
+    },
+
     fullscreenChange (fullscreen) {
       this.fullscreen = fullscreen
     },
@@ -168,10 +194,10 @@ export default {
       let self = this
       let overlapX = true, overlapY = true, i = 0
       let newPos = { x:0, y:0 }
-      let participants = self.participants
+      let positions = {}
 
       if (self.my_pos.x != 0 || self.my_pos.y != 0)
-        participants = Object.assign({}, participants,{ me: self.my_pos})
+        positions = Object.assign({}, self.feeds,{ me: self.my_pos})
 
       while (overlapX && overlapY && i < 100) {
         newPos = {
@@ -179,19 +205,22 @@ export default {
           y: overlapY ? Math.random() * (self.getWindowHeight () - self.tile_height) : newPos.y
         }
 
-        for (let p in participants) {
-          if ( newPos.x > p.x && newPos.x < p.x + 320)
-            overlapX = true
-          else
-            overlapX = false
-          if ( newPos.y > p.y && newPos.y < p.y + 320)
-            overlapX = true
-          else
-            overlapX = false
+        overlapX = false;
+        overlapY = false;
+
+        for (let p in positions) {
+          if ( newPos.x > p.x && newPos.x < p.x + this.tile_width) {
+            overlapX = true;
+            break;
+          }
+          if ( newPos.y > p.y && newPos.y < p.y + this.tile_width) {
+            overlapX = true;
+            break;
+          }
         }
         i += 1
       }
-      if (i >= 100) console.log("could not find a spot");
+      if (i >= 99) console.log("could not find a spot");
       return newPos
     },
 
@@ -760,7 +789,8 @@ export default {
 .videoroom .tile {
   width:256px;
   height:256px;
-    border-radius: 50%;
+  border-radius: 50%;
+  display:flex !important;
 }
 .videoroom .screen .is-ancestor { margin: 0 auto}
 .videoroom .overlay {
@@ -784,4 +814,11 @@ video {
   object-fit: cover;
   border-radius: 50%;
 }
+
+@media (max-width:461px) {
+  .videoroom .tile {
+    width:128px;
+    height:128px;
+}
+
 </style>

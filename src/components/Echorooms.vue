@@ -7,6 +7,7 @@
       :nick="nick"
       is_muted="true"
       :myJanus="janus"
+      open="true"
     />
 
     <Audioroom
@@ -38,6 +39,7 @@
       @hasJanus="janus = $event"
       :myJanus="janus"
       :header="false"
+      open="true"
       v-show="chat_open"
     />
 
@@ -76,7 +78,7 @@ export default {
   data() {
     return {
       foyer_count: 0,
-      chat_open: false,
+      chat_open: true,
       janusReady: false,
     }
   },

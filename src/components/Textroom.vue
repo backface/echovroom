@@ -10,13 +10,13 @@
           <message-square-icon size="1x" class="icons"></message-square-icon> {{ room_info.description }} ({{ count }})
         </div>
         <div class="column  has-text-right">
-          <minus-icon size="1x" class="icons linked" v-if="show_chat" @click="show_chat=false"></minus-icon>
-          <plus-icon size="1x" class="icons linked" v-if="!show_chat" @click="show_chat=true"></plus-icon>
+          <minus-icon size="1x" class="icons linked" v-if="is_open" @click="is_open=false"></minus-icon>
+          <plus-icon size="1x" class="icons linked" v-if="!is_open" @click="is_open=true"></plus-icon>
         </div>
       </div>
     </div>
 
-    <div class="chatroom" v-if="show_chat">
+    <div class="chatroom" v-if="is_open">
       <vue-custom-scrollbar class="participants">
         <div class="has-text-left" ref="chat">
 
@@ -63,7 +63,7 @@
 
 
 
-    <div class="talk" v-if="show_chat">
+    <div class="talk" v-if="is_open">
 
       <div class="columns">
         <div class="column is-one-quarter has-text-right me">
@@ -111,10 +111,6 @@ export default {
       type: Boolean,
       default: true
     },
-    is_open: {
-      type: Boolean,
-      default: true
-    },
   },
 
   data() {
@@ -125,7 +121,6 @@ export default {
       messages: [],
       users: [],
       msg: "",
-      show_chat: true,
       initial_participants: []
     }
   },
@@ -136,7 +131,6 @@ export default {
 
   mounted () {
     console.log(this.$options._componentTag + " mounted");
-    this.show_chat = this.is_open;
     this.loadingComponent = this.$buefy.loading.open({
         container: this.$el,
     })

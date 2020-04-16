@@ -15,6 +15,10 @@ export const janusMixin = {
       type: String,
       default: "false"
     },
+    open: {
+      type: String,
+      default: "false"
+    },
     myRoom: {
       type: Number,
       default: 0
@@ -34,12 +38,14 @@ export const janusMixin = {
       count: 0,
       participants: {},
       room: 0,
+      is_open: false
     }
   },
 
   mounted() {
     if (this.myRoom > 0)
       this.room = this.myRoom
+    this.is_open = this.open == "true"
   },
 
   methods: {
