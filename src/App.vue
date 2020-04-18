@@ -21,6 +21,12 @@
             </b-navbar-item>
           </router-link>
 
+          <router-link to="/demoroom" v-slot="{ href, route, isActive }">
+            <b-navbar-item :href="href"  :active="isActive">
+              {{ route.name }}
+            </b-navbar-item>
+          </router-link>
+
         </template>
 
     </b-navbar>
@@ -28,7 +34,7 @@
 
 
     <transition-page>
-      <router-view></router-view>
+      <router-view :key="$route.path"></router-view>
     </transition-page>
 
   </div>

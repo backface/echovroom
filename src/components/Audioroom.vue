@@ -1,8 +1,8 @@
 <template>
   <div ref="audioroom" class="audioroom" :class="{ isOn: webRTCUp }">
 
-    <div class="columns headers is-gapless">
-      <div class="column has-text-left">
+    <div class="columns  is-mobile headers is-gapless">
+      <div class="column has-text-left is-10">
         <mic-off-icon size="1x" class="icons linked" v-if="muted" @click="muteMe(false)"></mic-off-icon>
         <mic-icon size="1x" class="icons linked" v-if="!muted" @click="muteMe(true)"></mic-icon>
         Darkroom {{ room_info.description }} ({{ count + (webRTCUp ? 1 : 0) }})

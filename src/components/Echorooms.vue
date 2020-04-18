@@ -11,16 +11,13 @@
     />
 
     <Audioroom
-      v-if="nick"
+      v-if="nick && false"
       :roombyId="room"
       :nick="nick"
       :myJanus="janus"
     />
 
-    <div class="columns  is-mobile headers is-gapless">
-      <!--<div class="column is-1 has-text-left">
-        <menu-icon size="1x" class="icons"></menu-icon>
-      </div>-->
+    <div class="columns is-mobile headers is-gapless">
       <div class="column has-text-left">
         <message-square-icon size="1x" class="icons"></message-square-icon> Foyer ({{ foyer_count}})
       </div>
@@ -172,4 +169,11 @@ a { text-decoration: underline; color:black}
 .fade-leave-to {
   opacity: 0
 }
+
+@media (max-width:461px) {
+  .textroom {
+    max-height:180px;
+  }
+}
+
 </style>

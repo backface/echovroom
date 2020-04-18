@@ -5,7 +5,7 @@
         <Stage />
       </div>
     </div>
-    <Echorooms />
+    <Echorooms :roombyId="room" />
   </div>
 </template>
 
@@ -15,6 +15,13 @@ import Echorooms from '@/components/Echorooms.vue'
 
 export default {
   name: 'About',
+
+  props: {
+    room:  {
+      type: Number,
+      default: 777
+    },
+  },
 
   components: {
     Stage, Echorooms

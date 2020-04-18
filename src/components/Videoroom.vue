@@ -1,8 +1,8 @@
 <template>
 <div class="videoroom">
 
-    <div class="columns headers is-gapless">
-      <div class="column has-text-left">
+    <div class="columns is-mobile is-narrow headers is-gapless">
+      <div class="column has-text-left is-10">
         <video-off-icon size="1x" class="icons" v-if="video_off" @click="showMe(false)"></video-off-icon>
         <video-icon size="1x" class="icons" v-if="!video_off" @click="showMe(true)"></video-icon>
         VROOM {{ room_info.description }} ({{ count + (webRTCUp ? 1 : 0) }})

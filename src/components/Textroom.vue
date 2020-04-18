@@ -2,7 +2,7 @@
   <div ref="textroom" class="textroom">
 
     <div class="header">
-      <div class="columns  is-mobile headers is-gapless" v-if="header">
+      <div class="columns is-mobile headers is-gapless" v-if="header">
         <!--<div class="column is-1 has-text-left">
           <menu-icon size="1x" class="icons"></menu-icon>
         </div>-->
@@ -65,7 +65,7 @@
 
     <div class="talk" v-if="is_open">
 
-      <div class="columns">
+      <div class="columns is-mobile">
         <div class="column is-one-quarter has-text-right me">
           talk:
         </div>
@@ -126,7 +126,6 @@ export default {
       users: [],
       msg: "",
       initial_participants: [],
-
     }
   },
 

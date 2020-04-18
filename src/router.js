@@ -6,7 +6,6 @@ import About from './views/About.vue'
 import NotFound from './views/NotFound.vue'
 import Echoroom from './views/Echoroom.vue'
 
-
 Vue.use(Router)
 
 export default new Router({
@@ -25,7 +24,13 @@ export default new Router({
       path: '/echoraeume',
       name: 'echoraeume',
       component: Echoroom,
-      props:true,
+      props: { room: 777 }
+    },
+    {
+      path: '/demoroom',
+      name: 'demoroom',
+      component: Echoroom,
+      props: { room: 1234}
     },
     {
       path: '/:roombyName',
@@ -34,12 +39,6 @@ export default new Router({
       props:true,
       //meta: { transitionName: 'zoom' },
     },
-/*    {
-      path: '/gameview/:id',
-      name: 'gameview',
-      component: GameView,
-      props:true
-    },*/
     { path: '*', component: NotFound}
   ],
 })
