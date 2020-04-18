@@ -3,22 +3,23 @@
     <b-navbar>
         <template slot="brand">
             <b-navbar-item tag="router-link" :to="{ path: '/' }">
-              /
+              <arrow-up-left-icon size="1.5x" class="custom-class"></arrow-up-left-icon>
             </b-navbar-item>
         </template>
+
         <template slot="start">
-            <router-link to="/about" v-slot="{ href, route, isActive }">
-              <b-navbar-item :href="href"  :active="isActive">
-                About {{ route.query.user }}
-              </b-navbar-item>
-            </router-link>
-
-            <router-link to="/echoraeume" v-slot="{ href, route, isActive }">
-              <b-navbar-item :href="href"  :active="isActive">
-                {{ route.name }}
-              </b-navbar-item>
-            </router-link>
-
+        <!--
+          <router-link to="/about" v-slot="{ href, route, isActive }">
+            <b-navbar-item :href="href"  :active="isActive">
+              About {{ route.query.user }}
+            </b-navbar-item>
+          </router-link>
+        -->
+          <router-link to="/echoraeume" v-slot="{ href, route, isActive }">
+            <b-navbar-item :href="href"  :active="isActive">
+              {{ route.name }}
+            </b-navbar-item>
+          </router-link>
 
         </template>
 
@@ -35,12 +36,14 @@
 
 <script>
 import TransitionPage from './components/TransitionPage.vue';
+import { ArrowUpLeftIcon } from 'vue-feather-icons'
 
 export default {
   name: 'App',
 
   components: {
-    TransitionPage
+    TransitionPage,
+    ArrowUpLeftIcon
   },
 
   data() {

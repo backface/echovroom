@@ -111,6 +111,10 @@ export default {
       type: Boolean,
       default: true
     },
+    internal_dialogs: {
+      type: Boolean,
+      default: false
+    }
   },
 
   data() {
@@ -121,12 +125,18 @@ export default {
       messages: [],
       users: [],
       msg: "",
-      initial_participants: []
+      initial_participants: [],
+
     }
   },
 
   computed: {
 
+  },
+
+  created() {
+    if (this.internal_dialogs)
+      this.dialog_container = '.textroom'
   },
 
   mounted () {
@@ -198,7 +208,7 @@ export default {
         },
 
         ondataopen: function() {
-          Janus.log("The DataChannel is available!");          
+          Janus.log("The DataChannel is available!");
           self.initRoom()
         },
 

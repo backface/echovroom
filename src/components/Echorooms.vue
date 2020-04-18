@@ -41,6 +41,7 @@
       @hasJanus="janus = $event"
       :myJanus="janus"
       :header="false"
+      :internal_dialogs="true"
       open="true"
       v-show="chat_open"
     />
@@ -76,7 +77,6 @@ export default {
   mounted() {
     this.loadConfig()
     if (typeof this.$route.query.username !=  undefined) {
-      console.log( this.$route.query.username)
       this.login_name = this.$route.query.username;
     }
   },

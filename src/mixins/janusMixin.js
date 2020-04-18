@@ -46,7 +46,8 @@ export const janusMixin = {
       room: 0,
       room_name: "",
       is_open: false,
-      room_options: {}
+      room_options: {},
+      dialog_container: null
     }
   },
 
@@ -77,7 +78,6 @@ export const janusMixin = {
               this.room = json.room
             }
           }
-          console.log(this.room_name);
           this.initJanus()
       })
     },
@@ -118,7 +118,7 @@ export const janusMixin = {
       let self =this;
       //if(/[^a-zA-Z0-9]/.test(username)) {
       self.$buefy.dialog.prompt({
-          container: self.pluginName === 'textroom' ? '.textroom' : container,
+          container: self.dialog_container,
           message: (exists) ? "User exists. Choose another one" : "What's your name?",
           canCancel: false,
           inputAttrs: {
