@@ -1,26 +1,46 @@
 <template>
   <div id="app">
-    <div class="stage">
-      <div class='embed-container'>
-        <Stage />
-      </div>
-    </div>
+    <b-navbar>
+        <template slot="brand">
+            <b-navbar-item tag="router-link" :to="{ path: '/' }">
+              /
+            </b-navbar-item>
+        </template>
+        <template slot="start">
+            <router-link to="/about" v-slot="{ href, route, isActive }">
+              <b-navbar-item :href="href"  :active="isActive">
+                About {{ route.query.user }}
+              </b-navbar-item>
+            </router-link>
 
-    <Echorooms />
+            <router-link to="/echoraeume" v-slot="{ href, route, isActive }">
+              <b-navbar-item :href="href"  :active="isActive">
+                {{ route.name }}
+              </b-navbar-item>
+            </router-link>
+
+
+        </template>
+
+    </b-navbar>
+
+
+
+    <transition-page>
+      <router-view></router-view>
+    </transition-page>
 
   </div>
 </template>
 
 <script>
-import Stage from './components/Stage.vue'
-import Echorooms from './components/Echorooms.vue'
-//import log from 'assets/logo.png'
+import TransitionPage from './components/TransitionPage.vue';
 
 export default {
   name: 'App',
 
   components: {
-    Stage, Echorooms
+    TransitionPage
   },
 
   data() {
@@ -29,7 +49,7 @@ export default {
   },
 
   mounted () {
-    console.log('mounted')
+    console.log('App mounted')
   },
 
   destroyed () {
@@ -41,15 +61,19 @@ export default {
 }
 </script>
 
-<style>
+<style >
+
 #app {
-  font-family: Helvetica, Arial, sans-serif;
+  font-family: "Asap Condensed", Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
 }
+
+.navbar-menu .navbar-item { text-decoration: none; text-transform: uppercase}
+.navbar-menu .navbar-item.is-active { font-weight:bold; text-decoration: none}
+.navbar {}
 
 .embed-container { position: relative; padding:0; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%;}
 .embed-container iframe, .embed-container object, .embed-container embed, .embed-container div
@@ -57,4 +81,32 @@ export default {
 
 .stage { width: 640px; margin: 0 auto; max-width: 100%; }
 .echorooms { width: 640px; height:300px; margin: 20px auto;  max-width: 95%; }
+
+/* Enter and leave animations can use different */
+/* durations and timing functions.              */
+.slide-fade-enter-active {
+  transition: all 2.3s ease;
+}
+.slide-fade-leave-active {
+  transition: all .8s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+}
+.slide-fade-enter, .slide-fade-leave-to
+/* .slide-fade-leave-active below version 2.1.8 */ {
+  transform: translateX(10px);
+  opacity: 0;
+}
+
+
+.fade-enter-active,
+.fade-leave-active {
+  transition-duration: 0.3s;
+  transition-property: opacity;
+  transition-timing-function: ease;
+}
+
+.fade-enter, .fade-leave-to {
+  opacity: 0;
+}
+
+
 </style>

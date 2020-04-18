@@ -133,6 +133,10 @@ export default {
       tile_height: 256,
       dragging: null,
       my_pos: { x:0, y:0 },
+      room_options: {
+         audiolevel_event: true,
+         publishers: 100
+      }
     }
   },
 
@@ -237,10 +241,7 @@ export default {
         success: function(pluginHandle) {
           self.pluginHandle = pluginHandle;
           Janus.log(self.opaqueId, "Plugin attached! (" + self.pluginHandle.getPlugin() + ", id=" + self.pluginHandle.getId() + ")");
-          self.getRoomsInfo()
-          self.getParticipantList()
-          if (self.is_open)
-            self.login()
+          self.initRoom()
         },
 
         error: function(error) {
@@ -308,10 +309,6 @@ export default {
 							Janus.warn(self.opaqueId, "The room has been destroyed!");
 							self.$buefy.dialog.alert(self.opaqueId, "The room has been destroyed");
 
-            } else if(event === "left") {
-              self.participants = {}
-              self.webRTCUp = false;
-
 						} else if(event === "event") {
               // Any new feed to attach to?
 							if(msg["publishers"] !== undefined && msg["publishers"] !== null) {
@@ -335,22 +332,23 @@ export default {
                   //for (let f in self.feeds) {
                   //  f.detach()
                   //}
+                  for (let f in self.feeds) {
+                    f.detach()
+                  }
                   for (let i in self.intervals) {
                     clearInterval(i)
                   }
                   self.feeds = {}
+                  self.participants = {}
                   self.is_streaming = false;
-                  self.pluginHandle.hangup();
                   self.webRTCUp = false;
                   self.is_open = false;
-                  self.janus.destroy()
-                  self.initJanus()
+                  self.$forceUpdate()
                   return;
                 } else if(self.feeds) {
                   if(self.feeds[msg["leaving"]]) {
                     self.feeds[msg["leaving"]].detach();
                     delete self.feeds[msg["leaving"]]
-                    self.$forceUpdate();
                   }
                 }
                 delete self.participants[ msg['leaving'] ]
@@ -365,7 +363,6 @@ export default {
                   // That's us
                   self.$refs.videolocal.detach();
                   self.is_streaming = false;
-                  self.pluginHandle.hangup();
                   return;
                 }
                 else if(self.feeds) {
@@ -379,7 +376,8 @@ export default {
               } else if(msg["error"] !== undefined && msg["error"] !== null) {
                 if(msg["error_code"] === 426) {
                   // This is a "no such room" error: give a more meaningful description
-                  self.$buefy.dialog.alert(self.room + "does not exits");
+                  self.$buefy.dialog.alert(self.room + " does not exits");
+                  self.is_open = false;
                 } else {
                   self.$buefy.dialog.alert(msg["error"]);
                 }
@@ -656,110 +654,7 @@ export default {
       this.muted = this.pluginHandle.isAudioMuted();
     },
 
-    registerUser() {
-      let self = this;
-      console.log(self.opaqueId, "register user");
-      self.username = Janus.randomString(12);
-      var register = {
-        //id: Janus.randomString(12),
-        request: "join",
-        room: self.room,
-        ptype: "publisher",
-        display: self.display
-      };
-      console.log(self.display);
-      self.pluginHandle.send({"message": register});
-    },
 
-    leaveRoom() {
-      let self = this;
-      console.log(self.opaqueId, "leave room");
-      var transaction = Janus.randomString(12);
-      var message = {
-        "request": "leave",
-        transaction: transaction,
-        room: self.room,
-      };
-      self.pluginHandle.send({"message": message});
-    },
-
-    login() {
-      let self = this;
-      if (!self.is_open)
-        self.is_open = true;
-
-      console.log(self.opaqueId, "ask for participants");
-      var request = {
-        request: "listparticipants",
-        room: self.room,
-      };
-      self.pluginHandle.send({
-        "message": request,
-        success: function(response) {
-          console.log(response);
-          self.initial_participants = response.participants;
-          self.count = response.participants.length
-          self.$emit('participantNumberChanged', self.count)
-          //  self.loadingComponent.close()
-
-          if (!self.nick) {
-            self.askForUsername();
-          } else if (self.initial_participants.find(d => d.display == self.nick)) {
-            self.askForUsername(true);
-          } else {
-            self.display = self.nick
-            self.registerUser()
-          }
-        },
-        error: function(reason) {
-          console.log(reason);
-        }
-      });
-    },
-
-    getParticipantList() {
-      let self = this;
-      console.log(self.opaqueId, "ask for participants", self.room);
-      var request = {
-        request: "listparticipants",
-        room: self.room,
-      };
-      self.pluginHandle.send({
-        "message": request,
-        success: function(response) {
-          console.log(response);
-          self.initial_participants = response.participants;
-          self.count = self.initial_participants.length
-        },
-        error: function(reason) {
-          console.log(reason);
-        }
-      });
-    },
-
-    getRoomsInfo() {
-      let self = this;
-      console.log(self.opaqueId, "ask for rooms info", self.room );
-
-      var transaction = Janus.randomString(12);
-      var request = {
-        request:"list",
-        transaction: transaction,
-      };
-      self.pluginHandle.send({
-        "message": request,
-        success: function(response) {
-          console.log(self.opaqueId, response);
-          self.rooms = response.list;
-          self.room_name = response.list.find(d => d.room == self.room).description
-          self.room_info = response.list.find(d => d.room == self.room)
-          console.log(self.opaqueId, "room info for", self.room, self.room_info);
-        },
-        error: function(reason) {
-          console.log(reason);
-        }
-      });
-    },
   }
 }
 
@@ -819,6 +714,7 @@ video {
   .videoroom .tile {
     width:128px;
     height:128px;
+  }
 }
 
 </style>

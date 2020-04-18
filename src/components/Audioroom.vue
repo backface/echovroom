@@ -5,7 +5,7 @@
       <div class="column has-text-left">
         <mic-off-icon size="1x" class="icons linked" v-if="muted" @click="muteMe(false)"></mic-off-icon>
         <mic-icon size="1x" class="icons linked" v-if="!muted" @click="muteMe(true)"></mic-icon>
-        {{ room_info.description }} ({{ count + (webRTCUp ? 1 : 0) }})
+        Darkroom {{ room_info.description }} ({{ count + (webRTCUp ? 1 : 0) }})
         <loader-icon size="1x" class="icons loading" v-if="has_stream"></loader-icon>
       </div>
       <div class="column  has-text-right">
@@ -111,10 +111,7 @@ export default {
         success: function(pluginHandle) {
           self.pluginHandle = pluginHandle;
           Janus.log("Plugin attached! (" + self.pluginHandle.getPlugin() + ", id=" + self.pluginHandle.getId() + ")");
-          self.getRoomsInfo()
-          self.getParticipantList()
-          if (self.is_open)
-            self.login()
+          self.initRoom()
         },
 
         error: function(error) {
@@ -253,6 +250,7 @@ export default {
       this.pluginHandle.send({message: { "request": "configure", "muted": muted }});
     },
 
+/*
     registerUser() {
       console.log("register user");
       let self = this;
@@ -279,7 +277,9 @@ export default {
       };
       self.pluginHandle.send({"message": message});
     },
+*/
 
+/*
     login() {
       console.log("ask for participants");
       let self = this;
@@ -362,6 +362,8 @@ export default {
         }
       });
     },
+
+    */
   }
 }
 

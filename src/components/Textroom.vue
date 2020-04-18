@@ -115,7 +115,7 @@ export default {
 
   data() {
     return {
-      textroom: null,
+      pluginName: "textroom",
       opaqueId: this.$options._componentTag  + Janus.randomString(12),
       log: ["starting up"],
       messages: [],
@@ -160,11 +160,11 @@ export default {
         opaqueId: this.opaqueId,
 
         success: function(pluginHandle) {
-          self.textroom = pluginHandle;
-          Janus.log("Plugin attached! (" + self.textroom.getPlugin() + ", id=" + self.textroom.getId() + ")");
+          self.pluginHandle = pluginHandle;
+          Janus.log("Plugin attached! (" + self.pluginHandle.getPlugin() + ", id=" + self.pluginHandle.getId() + ")");
           var body = { "request": "setup" };
           console.log("Sending message (" + JSON.stringify(body) + ")");
-          self.textroom.send({"message": body});
+          self.pluginHandle.send({"message": body});
         },
 
         error: function(error) {
@@ -181,14 +181,14 @@ export default {
 
           if(jsep !== undefined && jsep !== null) {
             // Answer
-            self.textroom.createAnswer({
+            self.pluginHandle.createAnswer({
               jsep: jsep,
               media: { audio: false, video: false, data: true },	// We only use datachannels
               success: function(jsep) {
                 Janus.log("Got SDP!");
                 Janus.debug(jsep);
                 var body = { "request": "ack" };
-                self.textroom.send({"message": body, "jsep": jsep});
+                self.pluginHandle.send({"message": body, "jsep": jsep});
               },
               error: function(error) {
                 Janus.error("WebRTC error:", error);
@@ -198,9 +198,8 @@ export default {
         },
 
         ondataopen: function() {
-          Janus.log("The DataChannel is available!");
-          self.getParticipantList();
-          self.getRoomsInfo();
+          Janus.log("The DataChannel is available!");          
+          self.initRoom()
         },
 
         ondata: function(data) {
@@ -317,6 +316,7 @@ export default {
         }
         // We're in
         console.log("we are in");
+        self.loadingComponent.close()
         self.$emit('hasNick', self.display)
         if(response.participants && response.participants.length > 0) {
           response.participants.forEach( function(user) {
@@ -329,7 +329,7 @@ export default {
         }
 
       };
-      self.textroom.data({
+      self.pluginHandle.data({
         text: JSON.stringify(register),
         error: function(reason) {
           console.log(reason);
@@ -338,6 +338,7 @@ export default {
 
     },
 
+/*
     getParticipantList() {
       console.log("ask for participants");
       let self = this;
@@ -371,13 +372,14 @@ export default {
         }
       };
 
-      self.textroom.data({
+      self.pluginHandle.data({
         text: JSON.stringify(request),
         error: function(reason) {
           console.log(reason);
         }
       });
     },
+
 
     getRoomsInfo() {
       console.log("ask for rooms info");
@@ -395,14 +397,14 @@ export default {
         self.rooms = response.list;
         self.room_info = response.list.find(d => d.room == self.room)
       };
-      self.textroom.data({
+      self.pluginHandle.data({
         text: JSON.stringify(request),
         error: function(reason) {
           console.log(reason);
         }
       });
     },
-
+*/
     sendWhisper(username) {
       let self = this;
       var display = self.participants[username];
@@ -425,7 +427,7 @@ export default {
                 to: username,
                 text: result
               };
-              self.textroom.data({
+              self.pluginHandle.data({
                 text: JSON.stringify(message),
                 error: function(reason) { self.$buefy.dialog.alert(reason) },
                 success: function() {
@@ -462,7 +464,7 @@ export default {
       // just add an ack:false property to the message above, and server won't send
       // you a response (meaning you just have to hope it succeeded).
 
-      self.textroom.data({
+      self.pluginHandle.data({
         text: JSON.stringify(message),
         error: function(reason) { self.$buefy.dialog.alert(reason); },
         success: function() { e.target.innerText = "" }

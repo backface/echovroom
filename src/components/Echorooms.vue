@@ -2,17 +2,17 @@
   <div class="echorooms">
 
     <Videoroom
-      :myRoom="room"
+      :roombyId="room"
       v-if="nick"
       :nick="nick"
       is_muted="true"
       :myJanus="janus"
-      open="true"
+      open="false"
     />
 
     <Audioroom
       v-if="nick"
-      :myRoom="room"
+      :roombyId="room"
       :nick="nick"
       :myJanus="janus"
     />
@@ -30,9 +30,11 @@
       </div>
     </div>
 
+    <transition name="fade">
     <Textroom
       v-if="janusReady"
-      :myRoom="room"
+      :nick="login_name"
+      :roombyId="room"
       @participantNumberChanged="foyer_count = $event"
       @hasNick="nick = $event;"
       @hasRoomInfo="foye_info = $event"
@@ -42,7 +44,7 @@
       open="true"
       v-show="chat_open"
     />
-
+  </transition>
 
   </div>
 </template>
@@ -73,6 +75,10 @@ export default {
 
   mounted() {
     this.loadConfig()
+    if (typeof this.$route.query.username !=  undefined) {
+      console.log( this.$route.query.username)
+      this.login_name = this.$route.query.username;
+    }
   },
 
   data() {
@@ -80,6 +86,7 @@ export default {
       foyer_count: 0,
       chat_open: true,
       janusReady: false,
+      loing_name: null
     }
   },
 
@@ -129,11 +136,9 @@ $loading-background: rgba(200, 200, 200, 0.9);
 @import "~buefy/src/scss/buefy";
 
 .echorooms {
-    height:100%;
     position: relative;
     font-family: "Asap Condensed", Arial, Helvetica, sans-serif;
 }
-
 
 a { text-decoration: underline; color:black}
 .item .column { padding:0.1rem }
@@ -155,5 +160,16 @@ a { text-decoration: underline; color:black}
 @-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
 @keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
 
+.fade-enter {
+  opacity: 0
+}
 
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.5s ease-out;
+}
+
+.fade-leave-to {
+  opacity: 0
+}
 </style>

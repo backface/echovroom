@@ -5,7 +5,7 @@
     "name": "Michael Aschauer",
     "email": "m@ash.to",
     "url": "https://m.ash.to"
-  },  
+  },
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -31,6 +31,7 @@
     "vue-custom-scrollbar": "^1.1.0",
     "vue-feather-icons": "^5.0.0",
     "vue-fullscreen": "^2.1.6",
+    "vue-router": "^3.1.6",
     "webrtc-adapter": "^7.5.1"
   },
   "devDependencies": {

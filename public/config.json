@@ -1,7 +1,9 @@
 {
   "server": [
     "wss://janus.modular-t.org:8989",
-    "https://janus.modular-t.org:8089/janus"
+    "https://janus.modular-t.org:8089/janus",
+    "https://janus.conf.meetecho.com/janus",
+    "wss://janus.conf.meetecho.com/ws"
   ],
   "iceServers": [
     {"urls": "stun:stun.l.google.com:19302"},
