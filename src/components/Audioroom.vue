@@ -14,7 +14,7 @@
       </div>
     </div>
 
-    <vue-custom-scrollbar  v-show="webRTCUp">
+    <vue-custom-scrollbar v-show="webRTCUp">
       <div class="participants has-text-left" ref="participants" >
 
         <span v-if="!participants">(empty)</span>
@@ -27,20 +27,23 @@
       </div>
     </vue-custom-scrollbar>
     <audio ref="roomaudio" class="rounded centered" id="roomaudio" width="100%" height="100%" autoplay/>
+
+    <toast ref="toast"></toast>
+    <login-dialog ref="login"></login-dialog>
+    <alert-dialog ref="alert"></alert-dialog>
+
   </div>
 </template>
 
 <script>
-import Vue from 'vue';
 import { janusMixin } from "@/mixins/janusMixin";
-import { Dialog, Loading } from 'buefy'
 import Janus from '../janus'
 import { MicIcon, MicOffIcon } from 'vue-feather-icons'
 import { LoaderIcon, MinusIcon, PlusIcon } from 'vue-feather-icons'
 import vueCustomScrollbar from 'vue-custom-scrollbar'
-
-Vue.use(Dialog)
-Vue.use(Loading)
+import LoginDialog from '@/components/dialogs/LoginDialog'
+import AlertDialog from '@/components/dialogs/AlertDialog'
+import Toast from '@/components/dialogs/Toast'
 
 export default {
   name: 'Audioroom',
@@ -50,7 +53,8 @@ export default {
   components: {
     vueCustomScrollbar,
     MicIcon, MicOffIcon, LoaderIcon,
-    MinusIcon, PlusIcon
+    MinusIcon, PlusIcon,
+    LoginDialog, Toast, AlertDialog,
   },
 
   props: {
@@ -63,7 +67,6 @@ export default {
       pluginHandle: null,
       pluginName: "audiobridge",
       opaqueId: this.$options._componentTag  + "-" + Janus.randomString(12),
-      initial_participants: [],
       has_stream: false,
       is_streaming: false,
       muted: false
@@ -76,10 +79,6 @@ export default {
 
   mounted () {
     console.log(this.$options._componentTag + " mounted");
-    this.loadingComponent = this.$buefy.loading.open({
-        container: this.$refs.participants,
-    })
-
     this.muted = this.is_muted === "true"
 
     if (this.myJanus == null) {
@@ -155,11 +154,12 @@ export default {
                     error: function(error) {
                       Janus.error("WebRTC error:", error);
                       self.leaveRoom();
-                      self.$buefy.dialog.alert(JSON.stringify(error))
+                      self.alert.open(JSON.stringify(error))
                     }
                   });
                 }
               }
+
               // Any room participant?
               if(msg["participants"] !== undefined && msg["participants"] !== null) {
                 console.log(self.opaqueId, "Got a list of participants:", msg["participants"]);
@@ -187,7 +187,7 @@ export default {
 
 						} else if(event === "destroyed") {
 							Janus.warn(self.opaqueId, "The room has been destroyed!");
-							self.$buefy.dialog.alert(self.opaqueId, "The room has been destroyed");
+							self.alert.open(self.opaqueId, "The room has been destroyed");
 
             } else if(event === "left") {
               self.participants = {}
@@ -207,9 +207,9 @@ export default {
 								}
 							} else if(msg["error"] !== undefined && msg["error"] !== null) {
 								if(msg["error_code"] === 485) {
-									self.$buefy.dialog.alert(self.room + " does not exist");
+									self.alert.open.open(self.room + " does not exist");
 								} else {
-									self.$buefy.dialog.alert(msg["error"]);
+									self.alert.open(msg["error"]);
 								}
 								return;
 							}

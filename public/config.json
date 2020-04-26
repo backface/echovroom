@@ -1,5 +1,7 @@
 {
   "server": [
+    "wss://janus.fooviz.xyz:8989",
+    "https://janus.fooviz.xyz:8089/janus",
     "wss://janus.modular-t.org:8989",
     "https://janus.modular-t.org:8089/janus",
     "wss://janus.conf.meetecho.com/ws",

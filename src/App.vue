@@ -1,43 +1,37 @@
 <template>
-  <div id="app">
-    <b-navbar>
-        <template slot="brand">
-            <b-navbar-item tag="router-link" :to="{ path: '/' }">
+  <v-app id="app">
+    <nav class="navbar" role="navigation" aria-label="main navigation">
+      <div class="navbar-brand">
+        <router-link :to="{ path: '/' }" v-slot="{ href }">
+          <a class="navbar-item" :href="href">
               <arrow-up-left-icon size="1.5x" class="custom-class"></arrow-up-left-icon>
-            </b-navbar-item>
-        </template>
+          </a>
+        </router-link>
+      </div>
 
-        <template slot="start">
-        <!--
-          <router-link to="/about" v-slot="{ href, route, isActive }">
-            <b-navbar-item :href="href"  :active="isActive">
-              About {{ route.query.user }}
-            </b-navbar-item>
-          </router-link>
-        -->
-          <router-link to="/echoraeume" v-slot="{ href, route, isActive }">
-            <b-navbar-item :href="href"  :active="isActive">
-              {{ route.name }}
-            </b-navbar-item>
-          </router-link>
+      <div class="navbar-menu">
 
-          <router-link to="/demoroom" v-slot="{ href, route, isActive }">
-            <b-navbar-item :href="href"  :active="isActive">
-              {{ route.name }}
-            </b-navbar-item>
-          </router-link>
 
-        </template>
+        <router-link to="/echoraeume" v-slot="{ href, route, isActive }">
+          <div class="navbar-item" :active="isActive" :class="{'is-active':isActive}">
+            <a :href="href" >{{ route.name }}</a>
+          </div>
+        </router-link>
 
-    </b-navbar>
-
+        <router-link to="/demoroom" v-slot="{ href, route, isActive }">
+          <div class="navbar-item" :active="isActive"  :class="{'is-active':isActive}">
+            <a :href="href" >{{ route.name }}</a>
+          </div>
+        </router-link>
+      </div>
+    </nav>
 
 
     <transition-page>
       <router-view :key="$route.path"></router-view>
     </transition-page>
 
-  </div>
+  </v-app>
 </template>
 
 <script>
@@ -70,19 +64,30 @@ export default {
 }
 </script>
 
-<style >
+<style lang="scss">
 
 #app {
   font-family: "Asap Condensed", Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
+  color: #333;
 }
 
-.navbar-menu .navbar-item { text-decoration: none; text-transform: uppercase}
-.navbar-menu .navbar-item.is-active { font-weight:bold; text-decoration: none}
-.navbar {}
+*:focus {
+    outline: none;
+}
+
+.navbar .navbar-item a,
+.navbar .navbar-brand a {
+  color: #666; text-decoration: none; text-transform: uppercase
+}
+.navbar .navbar-item a:hover,
+.navbar .navbar-brand a:hover {
+  color: #000;
+}
+.navbar .navbar-item.is-active a { font-weight:bold; text-decoration: none; color:#333 }
+.navbar { margin-bottom:40px}
 
 .embed-container { position: relative; padding:0; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%;}
 .embed-container iframe, .embed-container object, .embed-container embed, .embed-container div
@@ -117,5 +122,6 @@ export default {
   opacity: 0;
 }
 
+.linked:hover { background: #eee; color: black}
 
 </style>

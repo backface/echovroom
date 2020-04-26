@@ -8,6 +8,12 @@
         VROOM {{ room_info.description }} ({{ count + (webRTCUp ? 1 : 0) }})
         <mic-off-icon size="1x" class="icons linked" v-if="muted" @click="muteMe(false)"></mic-off-icon>
         <mic-icon size="1x" class="icons linked" v-if="!muted" @click="muteMe(true)"></mic-icon>
+
+
+      </div>
+      <div class="column has-text-left">
+        <maximize-2-icon size="1x" class="icons linked" v-show="is_open" @click="toggleFullscreen" v-if="!fullscreen"></maximize-2-icon>
+        <minimize-2-icon size="1x" class="icons linked" v-show="is_open" @click="toggleFullscreen" v-if="fullscreen"></minimize-2-icon>
       </div>
       <div class="column has-text-right">
         <minus-icon size="1x" class="icons linked" v-if="webRTCUp && is_open" @click="leaveRoom()"></minus-icon>
@@ -19,12 +25,7 @@
     <fullscreen ref="fullscreen" :fullscreen.sync="fullscreen"
       @change="fullscreenChange"  background="white" v-if="is_open">
 
-      <maximize-2-icon size="1.5x" class="icons linked" @click="toggle" v-if="!fullscreen"></maximize-2-icon>
-      <minimize-2-icon size="1.5x" class="icons linked" @click="toggle" v-if="fullscreen"></minimize-2-icon>
-
       <div class="screen has-text-center" ref="screen" >
-
-        <br />
 
         <div class="tile is-ancestor me" >
           <div class="tile" v-show="is_streaming"
@@ -33,28 +34,30 @@
             @mouseup="drag('stop',my_pos, $event)"
             :style="{ position: 'fixed', top: my_pos.y + 'px', left: my_pos.x + 'px' }">
 
+
             <video ref="videolocal" class="videolocal" id="videolocal" autoplay playsinline muted="muted"/>
-
-            <div class="overlay name">
-              me
-            </div>
-
+            <div class="overlay name">ME</div>
             <div class="overlay meta">
               <mic-off-icon size="1x" class="icons linked" v-if="muted" @click="muteMe(false)"></mic-off-icon>
               <mic-icon size="1x" class="icons linked" v-if="!muted" @click="muteMe(true)"></mic-icon>
+              <settings-icon size="1x" class="icons linked" @click="showBitrateOptions=!showBitrateOptions"></settings-icon>
             </div>
+            <div class="overlay options" v-show="showBitrateOptions">
+              <v-select dark label="Cap Bitrate" dense v-model="bitrate" :items="bitrates" @change="updateBitrateCap"></v-select>
+            </div>
+
           </div>
 
+          <transition-group name="fade">
           <div v-for="feed in feeds" :key="feed.id" class="tile feed has-text-center"
             v-bind:style="{ position: 'fixed', top: feed.y + 'px', left: feed.x + 'px' }"
             @mousedown="drag('start', feed, $event)"
             @mousemove="drag('drag', feed, $event)"
             @mouseup="drag('stop',feed, $event)"
           >
-
               <video
                 :id="'v'+feed.id" :ref="'feed-' + feed.id"
-               :title="feed"
+               :title="feed.display"
                autoplay playsinline
                :class="{ talking: participants[feed.publisher].talking }"
               />
@@ -69,14 +72,31 @@
                 <span class="bitrate">
                   {{ feed.bitrate }}
                 </span>
+                <settings-icon size="1x" class="icons linked"  @click="feed.showOptions=!feed.showOptions"></settings-icon>
               </div>
 
+              <div class="overlay options" v-show="feed.showOptions">
+                  <v-select dark label="Quality" dense v-model="feed.substream" :items="qualities" @change="changeFeedQuality(feed)"></v-select>
+              </div>
+
+
           </div>
+        </transition-group>
+
         </div>
 
 
       </div>
     </fullscreen>
+
+    <toast ref="toast"></toast>
+    <login-dialog ref="login"></login-dialog>
+    <alert-dialog ref="alert"></alert-dialog>
+
+    <video ref="videosrc" v-if="facetime" style="display:none"></video>
+    <canvas ref="canvas" v-if="facetime" v-show="is_tracking" class="facetrackdebug"></canvas>
+    <canvas ref="face" v-if="facetime" style="display:none" ></canvas>
+    <div class="trackingstats" v-if="facetime" v-show="is_tracking" > {{ fps }} FPS </div>
 
   </div>
 </template>
@@ -84,33 +104,39 @@
 <script>
 import Vue from 'vue';
 import { janusMixin } from "@/mixins/janusMixin";
+import { faceMixin } from "@/mixins/faceMixin";
 import fullscreen from 'vue-fullscreen'
-import { Dialog, Loading } from 'buefy'
 import Janus from '../janus'
 import { MinusIcon, PlusIcon } from 'vue-feather-icons'
 import { MicIcon, MicOffIcon, LoaderIcon } from 'vue-feather-icons'
 import { VideoIcon, VideoOffIcon } from 'vue-feather-icons'
 import { Maximize2Icon, Minimize2Icon } from 'vue-feather-icons'
 import { MessageCircleIcon } from 'vue-feather-icons'
+import { SettingsIcon } from 'vue-feather-icons'
+import LoginDialog from '@/components/dialogs/LoginDialog'
+import AlertDialog from '@/components/dialogs/AlertDialog'
+import Toast from '@/components/dialogs/Toast'
 
-Vue.use(Dialog)
-Vue.use(Loading)
 Vue.use(fullscreen)
 
 export default {
   name: 'Videoroom',
 
-  mixins: [janusMixin],
+  mixins: [janusMixin, faceMixin],
 
   components: {
     MicIcon, MicOffIcon, LoaderIcon,
     VideoIcon, VideoOffIcon, MessageCircleIcon,
-    MinusIcon, PlusIcon,
-    Maximize2Icon, Minimize2Icon
+    MinusIcon, PlusIcon, SettingsIcon,
+    Maximize2Icon, Minimize2Icon,
+    LoginDialog, Toast, AlertDialog,
   },
 
   props: {
-
+    facetime:  {
+      type: Boolean,
+      default: false
+    },
   },
 
   data() {
@@ -120,22 +146,35 @@ export default {
       pluginName: "videoroom",
       opaqueId: this.$options._componentTag  + "-" + Janus.randomString(12),
       intervals: {},
-      initial_participants: [],
       my_stream: null,
       is_streaming: false,
       video_off: false,
       muted: false,
       feeds: {},
       bitrateTimer: null,
-      doSimulcast: false,
+      doSimulcast: true,
       fullscreen: false,
       tile_width: 256,
       tile_height: 256,
       dragging: null,
       my_pos: { x:0, y:0 },
+      bitrates:  [
+        { text: "No Limit", value: 0},
+        { text: "256 Kb", value: 256000} ,
+        { text: "512 Kb", value: 512000},
+        { text: "1 Mb", value: 1000000},
+        { text: "2 Mb", value: 2000000},
+      ],
+      qualities:  [
+        { text: "Low", value: 0},
+        { text: "Medium", value: 1} ,
+        { text: "High", value: 2},
+      ],
+      bitrate: 0,
+      showBitrateOptions: false,
       room_options: {
-         audiolevel_event: true,
-         publishers: 100
+        audiolevel_event: true,
+        publishers: 100
       }
     }
   },
@@ -146,7 +185,6 @@ export default {
     if (this.myJanus == null) {
       this.loadConfig()
     } else {
-      console.log(this.myJanus);
       this.janus = this.myJanus
       this.attachPlugin()
     }
@@ -158,9 +196,8 @@ export default {
 
   methods: {
 
-    toggle () {
-      this.$refs['fullscreen'].toggle() // recommended
-
+    toggleFullscreen () {
+      this.$refs['fullscreen'].toggle()
     },
 
     drag( cmd, who) {
@@ -272,7 +309,7 @@ export default {
           if(event != undefined && event != null) {
 
             if(event === "slow_link") {
-              self.$buefy.toast.open("Slow link! Bitrate is: " + (msg["current-bitrate"]/1000) + " kb")
+              self.toast.open("Slow link! Bitrate is: " + (msg["current-bitrate"]/1000) + " kb")
             }
 
             else if(event === "talking") {
@@ -284,7 +321,7 @@ export default {
             }
 
             else if(event === "joined") {
-              // Publisher/manager created, negotiate WebRTC and attach to existing feeds, if any
+
               self.username = msg["id"];
               self.private_id = msg["private_id"];
               Janus.log("Successfully joined room " + msg["room"] + " with ID " + msg["id"]);
@@ -302,12 +339,11 @@ export default {
                 })
                 self.count = Object.keys(self.participants).length
                 self.$emit('participantNumberChanged', self.count)
-                //self.$forceUpdate();
               }
 
 						} else if(event === "destroyed") {
 							Janus.warn(self.opaqueId, "The room has been destroyed!");
-							self.$buefy.dialog.alert(self.opaqueId, "The room has been destroyed");
+							self.alert.open(self.opaqueId, "The room has been destroyed");
 
 						} else if(event === "event") {
               // Any new feed to attach to?
@@ -326,15 +362,14 @@ export default {
 
               } else if(msg["leaving"] !== undefined && msg["leaving"] !== null) {
                 Janus.log("Publisher left: " + msg["leaving"]);
+
                 if (msg["leaving"] == "ok") {
                   console.log("I left the room");
                   // That's us
                   //for (let f in self.feeds) {
                   //  f.detach()
-                  //}
-                  for (let f in self.feeds) {
-                    f.detach()
-                  }
+                  // }
+
                   for (let i in self.intervals) {
                     clearInterval(i)
                   }
@@ -343,10 +378,14 @@ export default {
                   self.is_streaming = false;
                   self.webRTCUp = false;
                   self.is_open = false;
+                  self.pluginHandle.hangup();
                   self.$forceUpdate()
+                  self.$emit('leftRoom')
                   return;
+
                 } else if(self.feeds) {
                   if(self.feeds[msg["leaving"]]) {
+                    clearInterval(self.intervals[msg["leaving"]])
                     self.feeds[msg["leaving"]].detach();
                     delete self.feeds[msg["leaving"]]
                   }
@@ -367,6 +406,7 @@ export default {
                 }
                 else if(self.feeds) {
                   if(self.feeds[unpublished]) {
+                    clearInterval(self.intervals[unpublished])
                     self.feeds[unpublished].detach();
                     delete self.feeds[unpublished]
                     self.$forceUpdate();
@@ -375,11 +415,11 @@ export default {
 
               } else if(msg["error"] !== undefined && msg["error"] !== null) {
                 if(msg["error_code"] === 426) {
-                  // This is a "no such room" error: give a more meaningful description
-                  self.$buefy.dialog.alert(self.room + " does not exits");
+                  self.alert.open("Room " + self.room + " does not exits");
                   self.is_open = false;
                 } else {
-                  self.$buefy.dialog.alert(msg["error"]);
+                  self.alert.open(msg["error"]);
+                  self.webRTCUp = true
                 }
               }
             }
@@ -394,20 +434,12 @@ export default {
             var audio = msg["audio_codec"];
             if(self.mystream && self.mystream.getAudioTracks() && self.mystream.getAudioTracks().length > 0 && !audio) {
               // Audio has been rejected
-              self.$buefy.dialog.alert("Our audio stream has been rejected, viewers won't hear us");
+              self.alert.open("Our audio stream has been rejected, viewers won't hear us");
             }
             var video = msg["video_codec"];
             if(self.mystream && self.mystream.getVideoTracks() && self.mystream.getVideoTracks().length > 0 && !video) {
               // Video has been rejected
-              self.$buefy.dialog.alert("Our video stream has been rejected, viewers won't see us");
-              // Hide the webcam video
-              /*$('#myvideo').hide();
-              $('#videolocal').append(
-          			'<div class="no-video-container">' +
-          				'<i class="fa fa-video-camera fa-5 no-video-icon" style="height: 100%;"></i>' +
-          				'<span class="no-video-text" style="font-size: 16px;">Video rejected, no webcam</span>' +
-          			'</div>');
-              */
+              self.alert.open("Our video stream has been rejected, viewers won't see us");
             }
           }
         },
@@ -421,7 +453,7 @@ export default {
           self.my_pos = self.getNewPosition()
           self.is_streaming = true;
           self.muteMe(self.muted)
-          // We're not going to attach the local audio stream
+          // We're not going to attach the local audio stream!
 				},
 
         onremotestream: function() {
@@ -436,48 +468,69 @@ export default {
     },
 
     publishOwnFeed(useAudio) {
-      // Publish our stream
       let self = this
-      self.pluginHandle.createOffer( {
-        media: { audioRecv: false, videoRecv: false, audioSend: useAudio, videoSend: true },
-        // Add data:true here if you want to publish datachannels as well
-        // Publishers are sendonly
-        // If you want to test simulcasting (Chrome and Firefox only), then
-        // pass a ?simulcast=true when opening this demo page: it will turn
-        // the following 'simulcast' property to pass to janus.js to true
-        simulcast: self.doSimulcast,
-        simulcast2: self.doSimulcast2,
 
-        success: function(jsep) {
-          Janus.debug(self.opaqueId, "Got publisher SDP!");
-          Janus.debug(jsep);
-          var publish = { "request": "configure", "audio": useAudio, "video": true };
-          // You can force a specific codec to use when publishing by using the
-          // audiocodec and videocodec properties, for instance:
-          // 		publish["audiocodec"] = "opus"
-          // to force Opus as the audio codec to use, or:
-          // 		publish["videocodec"] = "vp9"
-          // to force VP9 as the videocodec to use. In both case, though, forcing
-          // a codec will only work if: (1) the codec is actually in the SDP (and
-          // so the browser supports it), and (2) the codec is in the list of
-          // allowed codecs in a room. With respect to the point (2) above,
-          // refer to the text in janus.plugin.videoroom.jcfg for more details
-          self.pluginHandle.send({"message": publish, "jsep": jsep});
-        },
-        error: function(error) {
-          Janus.error(self.opaqueId, "x WebRTC error:", error);
-          if (useAudio) {
-            self.publishOwnFeed(true);
-          } else {
-            self.$buefy.dialog.alert("WebRTC error... " + JSON.stringify(error));
+      Janus.listDevices((devices) => {
+        devices.forEach( (d) => console.log(d));
+      })
+
+      if (this.facetime) {
+        this.setupFaceTime().then( () => {
+          self.pluginHandle.createOffer( {
+            stream: this.face_canvas.captureStream(),
+            simulcast: self.doSimulcast,
+
+            success: function(jsep) {
+              Janus.debug(self.opaqueId, "Got publisher SDP!");
+              Janus.debug(jsep);
+              var publish = { "request": "configure", "audio": useAudio, "video": true };
+              self.pluginHandle.send({"message": publish, "jsep": jsep});
+            },
+
+            error: function(error) {
+              Janus.error(self.opaqueId, "x WebRTC error:", error);
+              if (useAudio) {
+                self.publishOwnFeed(true);
+              } else {
+                self.alert.open("WebRTC error... " + JSON.stringify(error));
+              }
+            }
+          });
+
+        })
+
+      } else {
+        self.pluginHandle.createOffer( {
+          // media: { video: capture, captureDesktopAudio: true, audioRecv: true, videoRecv: false},	// Screen sharing Publishers are sendonly
+          //media: { audioRecv: false, videoRecv: false, audioSend: useAudio, videoSend: true, data: false }, // standard
+          media: {  audioRecv: false, videoRecv: false, audioSend: useAudio, videoSend: true },
+
+          simulcast: self.doSimulcast,
+          //simulcast2: self.doSimulcast2,
+
+          success: function(jsep) {
+            Janus.debug(self.opaqueId, "Got publisher SDP!");
+            Janus.debug(jsep);
+            var publish = { "request": "configure", "audio": useAudio, "video": true };
+            self.pluginHandle.send({"message": publish, "jsep": jsep});
+          },
+          error: function(error) {
+            Janus.error(self.opaqueId, "x WebRTC error:", error);
+            if (useAudio) {
+              self.publishOwnFeed(true);
+            } else {
+              self.alert.open("WebRTC error... " + JSON.stringify(error));
+            }
           }
-        }
-      });
+        });
+      }
+
+
+
+
     },
 
     unpublishOwnFeed() {
-      // Unpublish our stream
-      //$('#unpublish').attr('disabled', true).unbind('click');
       var unpublish = { "request": "unpublish" };
       this.pluginHandle.send({"message": unpublish});
     },
@@ -515,7 +568,7 @@ export default {
           if(Janus.webRTCAdapter.browserDetails.browser === "safari"
             && (video === "vp9"|| (video === "vp8" && !Janus.safariVp8))) {
               if(video)	video = video.toUpperCase()
-              self.$buefy.toast.open("Publisher is using " + video + ", but Safari doesn't support it: disabling video");
+              self.toast.open("Publisher is using " + video + ", but Safari doesn't support it: disabling video");
               subscribe["offer_video"] = false;
           }
           remoteFeed.videoCodec = video;
@@ -524,7 +577,7 @@ export default {
 
         error: function(error) {
           Janus.error(self.opaqueId,"  -- Error attaching plugin...", error);
-          self.$buefy.dialog.alert(self.opaqueId, "Error attaching plugin... " + error);
+          self.alert.open(self.opaqueId, "Error attaching plugin... " + error);
         },
 
         onmessage: function(msg, jsep) {
@@ -535,13 +588,11 @@ export default {
 
           if(msg["error"] !== undefined && msg["error"] !== null) {
             console.log(self.opaqueId, "GOT AN ERROR", msg);
-            self.$buefy.dialog.alert(msg["error"]);
+            self.alert.open(msg["error"]);
 
           } else if(event != undefined && event != null) {
 
             if(event === "attached") {
-              // Subscriber created and attached
-
               if(self.feeds[msg["id"]] === undefined || self.feeds[msg["id"]] === null) {
                 let newfeed = remoteFeed
                 newfeed.publisher = msg["id"]
@@ -552,8 +603,9 @@ export default {
                 newfeed.y = self.participants[msg["id"]].y
                 self.$set(self.feeds, msg.id, newfeed)
               }
-
-              Janus.log(self.opaqueId, "Successfully attached to feed " + remoteFeed.id + " (" + remoteFeed.rfdisplay + ") in room " + msg["room"]);
+              Janus.log(self.opaqueId,
+                "Successfully attached to feed " + remoteFeed.id + " ("
+                + remoteFeed.rfdisplay + ") in room " + msg["room"]);
 
             } else if(event === "event") {
               // Check if we got an event on a simulcast-related event from this publisher
@@ -562,11 +614,13 @@ export default {
               if((substream !== null && substream !== undefined) || (temporal !== null && temporal !== undefined)) {
                 if(!remoteFeed.simulcastStarted) {
                   remoteFeed.simulcastStarted = true;
-                  // Add some new buttons
-                  //addSimulcastButtons(remoteFeed.rfindex, remoteFeed.videoCodec === "vp8" || remoteFeed.videoCodec === "h264");
+                  remoteFeed.substream = substream
+                  remoteFeed.temporal = temporal
+                  console.log("started simulcast", substream, temporal)
                 }
-                // We just received notice that there's been a switch, update the buttons
-                //updateSimulcastButtons(remoteFeed.rfindex, substream, temporal);
+                remoteFeed.substream = substream
+                remoteFeed.temporal = temporal
+                console.log("update simulcast", substream, temporal)
               }
             } else {
               // What has just happened?
@@ -581,6 +635,7 @@ export default {
               jsep: jsep,
               // Add data:true here if you want to subscribe to datachannels as well
               // (obviously only works if the publisher offered them in the first place)
+
               media: { audioSend: false, videoSend: false },	// We want recvonly audio/video
               success: function(jsep) {
                 Janus.debug(self.opaqueId,"Got SDP!");
@@ -590,7 +645,7 @@ export default {
               },
               error: function(error) {
                 Janus.error(self.opaqueId, "WebRTC error:", error);
-                self.$buefy.dialog.alert("WebRTC error... " + JSON.stringify(error));
+                self.alert.open("WebRTC error... " + JSON.stringify(error));
               }
             });
           }
@@ -606,7 +661,7 @@ export default {
 
         onremotestream: function(stream) {
           Janus.log(self.opaqueId, "Remote feed #" + remoteFeed.id)
-          console.log(self.feeds[remoteFeed.publisher]);
+          console.log("feed", self.feeds[remoteFeed.publisher]);
 
           Janus.attachMediaStream(document.getElementById('v'+ remoteFeed.id), stream)
           self.feeds[remoteFeed.publisher].loading = false;
@@ -629,11 +684,7 @@ export default {
                     self.$set(self.feeds[remoteFeed.publisher],'bitrate', self.feeds[remoteFeed.publisher].getBitrate() )
                     self.$set(self.feeds[remoteFeed.publisher],'muted', self.feeds[remoteFeed.publisher].isAudioMuted() )
                 }, 1000);
-
-              // Check if the resolution changed too
-              //var width = $("#remotevideo"+remoteFeed.rfindex).get(0).videoWidth;
-              //var height = $("#remotevideo"+remoteFeed.rfindex).get(0).videoHeight;
-
+              // // TODO: Check if the resolution changed too
           }
         },
 
@@ -654,13 +705,31 @@ export default {
       this.muted = this.pluginHandle.isAudioMuted();
     },
 
+    updateBitrateCap() {
+      console.log(this.bitrate);
+      this.pluginHandle.send( {
+        "message":
+          { "request": "configure", "bitrate": this.bitrate }
+      });
+      this.showBitrateOptions = false
+    },
 
+    changeFeedQuality(feed) {
+      console.log(feed.substream);
+      feed.send({
+        "message": {
+          request: "configure",
+          substream: feed.substream,
+          success: (r) => { console.log(r)}
+        }
+      })
+    }
   }
 }
 
 </script>
 
-<style lang="css">
+<style lang="css" scoped>
 .videoroom .screen  {
   /* height:100%; */
   /*position: absolute;
@@ -668,7 +737,7 @@ export default {
   height:120%;
   width:200%;
   left:-50%;*/
-  height: 40px;
+  height: 0px;
   /*min-height:200px;*/
   background:white;
   color: #aaa;
@@ -676,45 +745,85 @@ export default {
   text-align: center;
   padding-bottom:1rem;
   margin-bottom:1rem;
+  height: 0px; margin:0;padding:0;
 }
 .videoroom .icons { foat:left; vertical-align: middle}
 .videoroom .fixed { position: fixed; top:5px; right:5px; border: 1px solid black; width: 15%}
-.videoroom .tile { padding:5px; position: relative; z-index:1001}
+.videoroom .tile { padding:5px; position: relative; z-index:101}
 .videoroom .centered { position: absolute; top:50%; left:50%; transform:translate(-50%,-50%)}
 .videoroom .tile {
-  width:256px;
-  height:256px;
-  border-radius: 50%;
-  display:flex !important;
-}
-.videoroom .screen .is-ancestor { margin: 0 auto}
-.videoroom .overlay {
 
 }
+.videoroom .screen .is-ancestor { margin: 0 auto}
+.videoroom .overlay .icons {   opacity: 0.7 }
+.videoroom .overlay .linked{  background:none }
+.videoroom .overlay .linked:hover { opacity: 1; color:white }
 .videoroom .name {
   position: absolute; top:5px; left: 50%; transform:translate(-50%,0);
   background:rgba(0,0,0, 0.1); color:white;padding:0.1rem 0.5rem;
+  opacity: 0.7
 }
 .videoroom .meta {
-    position: absolute;
-    left: 50%; bottom:5px; transform:translate(-50%,0);
+    position: absolute; opacity: 0.7;
+    left: 50%; bottom:5px;transform:translate(-50%,0);
     /*bottom:5px; left: 5px;*/
     /*background:white; color:#333;padding:0.3em;*/
     background:rgba(0,0,0, 0.1); color:white;padding:0.1rem 0.5rem;
 }
+.videoroom .options {
+    opacity: 0.7;  position: absolute;
+    left: 50%; bottom:45px;  height:45px;transform:translate(-50%,0);
+    /*bottom:5px; left: 5px;*/
+    /*background:white; color:#333;padding:0.3em;*/
+     background:rgba(0,0,0, 0.1); color:white;padding:0.5rem 0.5rem;
+}
+
+
 .videoroom .fullscreen { background:white}
 .videoroom .talking { border: 2px solid red}
 
 video {
   object-fit: cover;
   border-radius: 50%;
+  width:256px;
+  height:256px;
+  background:black;
 }
+
+.facetrackdebug {
+  position: fixed; top:5px; right:5px;
+  width:240px;
+  border: 1px solid black;
+  z-index:200;
+}
+
+.trackingstats {
+    position: fixed; top:5px; right:5px;
+    width:100px; background:rgba(0,0,0,0.5); color: white; padding: 2px 10px;
+    text-align:center;
+    z-index:201;
+  }
 
 @media (max-width:461px) {
   .videoroom .tile {
-    width:128px;
-    height:128px;
+    /*width:128px;
+    height:128px;*/
   }
+}
+
+/* Enter and leave animations can use different */
+/* durations and timing functions.              */
+.pop-enter-active {
+  transition: all 2.3s ease;
+}
+.pop-leave-active {
+  transition: all .8s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+}
+.pop-enter, .pop-leave-to
+/* .slide-fade-leave-active below version 2.1.8 */ {
+  transform: translateX(10px);
+  width: 0;
+  height:0
 }
 
 </style>

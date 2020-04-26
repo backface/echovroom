@@ -1,31 +1,20 @@
 <template>
   <div class="echorooms">
-
+    
     <Videoroom
       :roombyId="room"
-      v-if="nick"
+      v-if="nick && showVroom"
       :nick="nick"
       is_muted="true"
-      :myJanus="janus"
       open="false"
+      @leftRoom="recreateVRoom"
     />
 
     <Audioroom
-      v-if="nick && false"
+      v-if="nick"
       :roombyId="room"
       :nick="nick"
-      :myJanus="janus"
     />
-
-    <div class="columns is-mobile headers is-gapless">
-      <div class="column has-text-left">
-        <message-square-icon size="1x" class="icons"></message-square-icon> Foyer ({{ foyer_count}})
-      </div>
-      <div class="column has-text-right">
-        <minus-icon size="1x" class="icons linked" v-if="chat_open" @click="chat_open=false"></minus-icon>
-        <plus-icon size="1x" class="icons linked" v-if="!chat_open" @click="chat_open=true"></plus-icon>
-      </div>
-    </div>
 
     <transition name="fade">
     <Textroom
@@ -37,27 +26,27 @@
       @hasRoomInfo="foye_info = $event"
       @hasJanus="janus = $event"
       :myJanus="janus"
-      :header="false"
-      :internal_dialogs="true"
-      open="true"
-      v-show="chat_open"
+      open="false"
     />
   </transition>
 
+  <toast ref="toast"></toast>
+  <login-dialog ref="login"></login-dialog>
+  <alert-dialog ref="alert"></alert-dialog>
+
   </div>
+
 </template>
 
 <script>
-import Vue from 'vue';
-import Buefy from 'buefy';
-import 'buefy/dist/buefy.css';
+
 import { janusMixin } from "@/mixins/janusMixin";
 import Textroom from './Textroom.vue'
 import Audioroom from './Audioroom.vue'
 import Videoroom from './Videoroom.vue'
-import { MessageSquareIcon,MinusIcon, PlusIcon } from 'vue-feather-icons'
-
-Vue.use(Buefy);
+import LoginDialog from '@/components/dialogs/LoginDialog'
+import AlertDialog from '@/components/dialogs/AlertDialog'
+import Toast from '@/components/dialogs/Toast'
 
 export default {
   name: 'Echorooms',
@@ -66,24 +55,29 @@ export default {
 
   components: {
     Textroom, Audioroom, Videoroom,
-    MessageSquareIcon,  MinusIcon, PlusIcon
+    LoginDialog, AlertDialog, Toast
   },
 
-  props: {},
+  props: {
+    LoginDialog:  {
+      type: String,
+      default: ""
+    },
+  },
 
   mounted() {
     this.loadConfig()
-    if (typeof this.$route.query.username !=  undefined) {
-      this.login_name = this.$route.query.username;
+    if (typeof this.$route.query.login !=  undefined) {
+      this.login_name = this.$route.query.login;
     }
   },
 
   data() {
     return {
       foyer_count: 0,
-      chat_open: true,
+      chat_open: false,
       janusReady: false,
-      loing_name: null
+      showVroom: true,
     }
   },
 
@@ -91,46 +85,18 @@ export default {
     attachPlugin() {
       console.log("janus is ready");
       this.janusReady = true
+    },
+    recreateVRoom() {
+      let self = this
+      this.showVroom = false;
+      setTimeout( () => {self.showVroom = true}, 500)
     }
   }
 
 }
 </script>
 
-<style lang="scss">
-@import "~bulma/sass/utilities/_all";
-@import url('https://fonts.googleapis.com/css?family=Asap+Condensed');
-
-
-// Set your colors
-$primary: #666666;
-$primary-invert: findColorInvert($primary);
-$twitter: #4099FF;
-$twitter-invert: findColorInvert($twitter);
-
-// Setup $colors to use as bulma classes (e.g. 'is-twitter')
-$colors: (
-    "white": ($white, $black),
-    "black": ($black, $white),
-    "light": ($light, $light-invert),
-    "dark": ($dark, $dark-invert),
-    "primary": ($primary, $primary-invert),
-    "info": ($info, $info-invert),
-    "success": ($success, $success-invert),
-    "warning": ($warning, $warning-invert),
-    "danger": ($danger, $danger-invert),
-    "twitter": ($twitter, $twitter-invert)
-);
-
-// Links
-$link: $primary;
-$link-invert: $primary-invert;
-$link-focus-border: $primary;
-$loading-background: rgba(200, 200, 200, 0.9);
-
-// Import Bulma and Buefy styles
-@import "~bulma";
-@import "~buefy/src/scss/buefy";
+<style lang="css">
 
 .echorooms {
     position: relative;

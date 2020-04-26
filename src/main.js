@@ -1,14 +1,28 @@
 import Vue from 'vue'
 import App from './App.vue'
-import Buefy from 'buefy'
 import 'buefy/dist/buefy.css'
 import router from './router'
 
-Vue.use(Buefy)
+import Vuetify from 'vuetify/lib'
 
+const vuetify = new Vuetify({
+  theme: {
+    themes: {
+      light: {
+        primary: '#8A0808',
+        secondary: '#666666',
+        accent: '#8c9eff',
+        error: '#b71c1c',
+      },
+    },
+  },
+})
+
+Vue.use(Vuetify)
 Vue.config.productionTip = false
 
 new Vue({
   router,
-  render: h => h(App),
+  vuetify,
+  render: h => h(App)
 }).$mount('#app')

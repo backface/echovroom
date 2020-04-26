@@ -26,7 +26,12 @@ export const janusMixin = {
     roombyName: {
       type: String,
       default: ""
+    },
+    host: {
+      type: String,
+      default: ""
     }
+
 
   },
 
@@ -47,18 +52,30 @@ export const janusMixin = {
       room_name: "",
       is_open: false,
       room_options: {},
-      dialog_container: null
+      dialog_container: null,
+      loading: true,
+      toast:null,
+      alert:null,
+      webRTCUp:null,
     }
   },
 
   mounted() {
+    this.toast = this.$refs.toast;
+    this.alert = this.$refs.alert;
     if (this.roombyId > 0)
       this.room = this.roombyId
     if (this.roombyName.length > 2) {
       this.room = this.hashCode(this.roombyName)
       this.room_name = this.roombyName
     }
-    this.is_open = this.open == "true"
+    this.is_open = this.open === "true"
+
+    if(this.host) {
+      console.log("has host");
+      this.server = this.host
+    }
+
   },
 
   methods: {
@@ -68,8 +85,8 @@ export const janusMixin = {
         .then(r => r.json())
         .then(json => {
           console.log("load config", json);
-          this.server = json.server;
-          this.iceServers = json.iceServers;
+          if (!this.server) this.server = json.server;
+          if (!this.iceServers) this.iceServers = json.iceServers;
           if (this.room === 0) {
             if (typeof json.room === "string") {
               this.room = this.hashCode(json.room)
@@ -96,6 +113,10 @@ export const janusMixin = {
               iceServers: this.iceServers,
               success: () => {
                 console.log("janus initialized");
+              //  Janus.listDevices( (d) => {
+              //    console.log("available devices: ");
+              //    d.forEach( d => console.log(d))
+              //  })
                 this.$emit("hasJanus", this.janus)
                 this.attachPlugin()
               },
@@ -103,7 +124,7 @@ export const janusMixin = {
                 console.log(cause)
               },
               destroyed: () => {
-                console.log('janus init destroyed')
+                console.log('janus destroyed')
               }
             })
         }
@@ -112,11 +133,23 @@ export const janusMixin = {
 
     attachPlugin() {
       // should be implemented by component!
+
     },
 
-    askForUsername(exists=false, container=null) {
-      let self =this;
+    askForUsername() {
+
+      let self=this;
       //if(/[^a-zA-Z0-9]/.test(username)) {
+        console.log(self.initial_participants)
+      self.$refs.login.open("Your name?", { participants: self.initial_participants} ).then((nick) => {
+        self.display = nick;
+        ////if (self.initial_participants.find(d => d.display == nick)) {
+          //self.askForUsername();
+        //} else {
+          self.registerUser()
+        //}
+      })
+      /*
       self.$buefy.dialog.prompt({
           container: self.dialog_container,
           message: (exists) ? "User exists. Choose another one" : "What's your name?",
@@ -135,7 +168,7 @@ export const janusMixin = {
               self.registerUser()
             }
           }
-      })
+      }) */
     },
 
     registerUser() {
@@ -169,7 +202,15 @@ export const janusMixin = {
       if (self.pluginName === "textroom") {
         request.textroom = request.request;
       }
-      self.pluginHandle.send({"message": request});
+      self.pluginHandle.send({
+        "message": request,
+        success: function(response) {
+          console.log("left room successull");
+          console.log(response);
+        }
+      });
+      self.is_open=false
+      this.$forceUpdate()
     },
 
     login() {
@@ -193,7 +234,7 @@ export const janusMixin = {
           self.initial_participants = response.participants;
           self.count = response.participants.length
           self.$emit('participantNumberChanged', self.count)
-          if (self.loadingComponent) self.loadingComponent.close()
+
 
           if (!self.nick) {
             self.askForUsername();
@@ -309,8 +350,7 @@ export const janusMixin = {
           hash  = ((hash << 5) - hash + string.charCodeAt(i++)) << 0;
       }
       return (hash + 2147483647) + 1
-    }
-
+    },
 
   }
 };

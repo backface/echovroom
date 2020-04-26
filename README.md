@@ -1,4 +1,8 @@
-# echo
+# echoVROOMS
+
+An experimental video, audio and text communication platform based on webRTC and janus-gateway
+
+
 
 ## Project setup
 ```

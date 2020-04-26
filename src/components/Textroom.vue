@@ -2,30 +2,34 @@
   <div ref="textroom" class="textroom">
 
     <div class="header">
-      <div class="columns is-mobile headers is-gapless" v-if="header">
-        <!--<div class="column is-1 has-text-left">
-          <menu-icon size="1x" class="icons"></menu-icon>
-        </div>-->
-        <div class="column has-text-left" v-if="room_info">
-          <message-square-icon size="1x" class="icons"></message-square-icon> {{ room_info.description }} ({{ count }})
+      <div class="columns is-mobile is-narrow headers is-gapless">
+        <div class="column has-text-left is-10">
+          <message-square-icon size="1x" class="icons"></message-square-icon> Foyer
+           <span  v-if="room_info">{{ room_info.description }}  ({{ count }})</span>
         </div>
         <div class="column  has-text-right">
           <minus-icon size="1x" class="icons linked" v-if="is_open" @click="is_open=false"></minus-icon>
-          <plus-icon size="1x" class="icons linked" v-if="!is_open" @click="is_open=true"></plus-icon>
+          <plus-icon size="1x" class="icons linked" v-if="!is_open" @click="openChat"></plus-icon>
         </div>
       </div>
     </div>
 
-    <div class="chatroom" v-if="is_open">
+    <div class="chatroom" v-show="is_open">
       <vue-custom-scrollbar class="participants">
         <div class="has-text-left" ref="chat">
 
           <ul>
             <li v-for="(user, index) in participants" :key="index" class="participant">
-              <b-dropdown aria-role="list" v-if="user.username != username">
-                <span slot="trigger" :style="{ color: user.color }">{{ user.display }}</span>
-                <b-dropdown-item aria-role="listitem" @click="sendWhisper(user.username)">Send Whisper</b-dropdown-item>
-              </b-dropdown>
+              <v-menu v-if="user.username != username">
+                <template v-slot:activator="{ on }">
+                  <span v-on="on" :style="{ color: user.color }">{{ user.display }}</span>
+                </template>
+                <v-list>
+                  <v-list-item @click="sendWhisper(user.username)">
+                    <v-list-item-title>Send Whisper</v-list-item-title>
+                  </v-list-item>
+                </v-list>
+              </v-menu>
              <!--  <span v-if="user.username == username" style="color: #aaa" >(
                 <span style="font-size:0.8rem">Me:</span> {{ display }})</span>-->
             </li>
@@ -36,13 +40,12 @@
 
       <vue-custom-scrollbar class="chat" id="chatbar" ref="chat">
         <div class="has-text-left" id="chat">
-
-          <div class="item ">
+          <div  class="item" v-if="welcome_msg">
             <div class="user">
-              @{{ room_info.description }}:
+              <span>@ {{ room_info.description}}</span>
             </div>
-            <div class="msg">
-              Welcome to the Club!
+            <div class="msg" >
+              <span v-html="welcome_msg.msg"></span>
             </div>
           </div>
 
@@ -58,13 +61,9 @@
 
         </div>
       </vue-custom-scrollbar>
-
     </div>
 
-
-
     <div class="talk" v-if="is_open">
-
       <div class="columns is-mobile">
         <div class="column is-one-quarter has-text-right me">
           talk:
@@ -73,28 +72,36 @@
           <div class="msg_editor" contenteditable="true" v-on:keyup.enter.exact="sendMsg"></div>
         </div>
       </div>
-
     </div>
 
+    <toast ref="toast"></toast>
+    <login-dialog ref="login"></login-dialog>
+    <alert-dialog ref="alert"></alert-dialog>
+    <prompt-dialog ref="prompt"></prompt-dialog>
+
+    <div class="loadingComponent" v-if="loading && is_open">
+      <div><loader-icon size="3x" class="icons loading"></loader-icon></div>
+    </div>
 
   </div>
+
+
 </template>
 
 <script>
-import Vue from 'vue';
 import { janusMixin } from "@/mixins/janusMixin";
-import { Dialog, Loading } from 'buefy'
 import Janus from '../janus'
 import randomColor from 'randomcolor'
 import Autolinker from 'autolinker';
-import { MessageSquareIcon,MinusIcon, PlusIcon } from 'vue-feather-icons'
 import vueCustomScrollbar from 'vue-custom-scrollbar'
 import { strip_tags } from 'locutus/php/strings'
-
-//import { LoaderIcon } from 'vue-feather-icons'
-
-Vue.use(Dialog)
-Vue.use(Loading)
+import LoginDialog from '@/components/dialogs/LoginDialog'
+import AlertDialog from '@/components/dialogs/AlertDialog'
+import PromptDialog from '@/components/dialogs/PromptDialog'
+import Toast from '@/components/dialogs/Toast'
+import { MessageSquareIcon,MinusIcon, PlusIcon } from 'vue-feather-icons'
+import { LoaderIcon } from 'vue-feather-icons'
+import { VMenu, VList } from 'vuetify/lib'
 
 export default {
   name: 'Textroom',
@@ -103,7 +110,9 @@ export default {
 
   components: {
     vueCustomScrollbar,
-    MessageSquareIcon,  MinusIcon, PlusIcon //LoaderIcon, MenuIcon
+    LoginDialog, Toast, AlertDialog, PromptDialog,
+    MessageSquareIcon,  MinusIcon, PlusIcon, LoaderIcon,
+    VMenu, VList
   },
 
   props: {
@@ -125,7 +134,7 @@ export default {
       messages: [],
       users: [],
       msg: "",
-      initial_participants: [],
+      welcome_msg: null,
     }
   },
 
@@ -136,14 +145,11 @@ export default {
   created() {
     if (this.internal_dialogs)
       this.dialog_container = '.textroom'
+
   },
 
   mounted () {
     console.log(this.$options._componentTag + " mounted");
-    this.loadingComponent = this.$buefy.loading.open({
-        container: this.$el,
-    })
-
     if (this.myJanus == null) {
       this.loadConfig()
     } else {
@@ -241,9 +247,8 @@ export default {
             if(whisper === true) {
               // Private message
               let sender = self.participants[from]
-              self.$buefy.dialog.alert({
-                  title: 'Private Message from ' + sender.display,
-                  message: msg,
+              self.alert.open(msg, {
+                  title: 'Private Message from\n, ' + sender.display,
               })
             } else {
               // Public message
@@ -265,19 +270,15 @@ export default {
 
           } else if(what === "leave") {
 
-            self.$buefy.toast.open({
-               message: self.participants[username].display + " left " + self.room_info.description
-            })
+            self.toast.open(self.participants[username].display + " left " + self.room_info.description)
             self.removeUserFromList(username);
 
           } else if(what === "kicked") {
 
             if(username === self.username) {
-              this.$buefy.dialog.alert('You got kicked out!' + self.room);
+              self.alert.open('You got kicked out!' + self.room);
             } else {
-              self.$buefy.toast.open({
-                message: self.participants[username].display + " got kicked out from " + self.room_info.description
-              })
+              self.toast.open(self.participants[username].display + " got kicked out from " + self.room_info.description)
             }
             self.removeUserFromList(username);
 
@@ -285,7 +286,7 @@ export default {
 
             if(json["room"] !== self.room)
               return;
-            this.$buefy.dialog.alert('The room ' + self.room + ' has been destroyed!')
+            self.alert.open('The room ' + self.room + ' has been destroyed!')
             Janus.warn("The room has been destroyed!");
 
           } else if(what === "list") {
@@ -325,8 +326,14 @@ export default {
         }
         // We're in
         console.log("we are in");
-        self.loadingComponent.close()
+        self.loading = false;
+        self.webRTCUp = true;
         self.$emit('hasNick', self.display)
+        self.welcome_msg = {
+          from: '@' + self.room_info.description,
+          msg: "Welcome!"
+        };
+
         if(response.participants && response.participants.length > 0) {
           response.participants.forEach( function(user) {
             let newuser = user;
@@ -416,36 +423,31 @@ export default {
 */
     sendWhisper(username) {
       let self = this;
-      var display = self.participants[username];
+      var display = self.participants[username].display;
       if(!display)
         return;
 
-        self.$buefy.dialog.prompt({
-          message: "Send whisper to " + display,
-          inputAttrs: {
-              placeholder: 'Message',
-              minlength: 2
-          },
-          trapFocus: true,
-          onConfirm: function(result) {
-            if(result && result !== "") {
-              var message = {
-                textroom: "message",
-                transaction: Janus.randomString(12),
-                room: self.room,
-                to: username,
-                text: result
-              };
-              self.pluginHandle.data({
-                text: JSON.stringify(message),
-                error: function(reason) { self.$buefy.dialog.alert(reason) },
-                success: function() {
-                  self.$buefy.toast.open("Whisper send!")
-                }
-              });
+      self.$refs.prompt.open("Send a whisper to " + display,
+        { placeholder: " A private message", confirm: "send", type:"text" }
+      )
+      .then( (result) =>{
+        if(result && result !== "") {
+          var message = {
+            textroom: "message",
+            transaction: Janus.randomString(12),
+            room: self.room,
+            to: username,
+            text: result
+          };
+          self.pluginHandle.data({
+            text: JSON.stringify(message),
+            error: function(reason) { self.alert.open(reason) },
+            success: function() {
+              self.toast.open("Whisper send!")
             }
-          }
-        })
+          });
+        }
+      })
     },
 
     sendMsg(e) {
@@ -475,7 +477,7 @@ export default {
 
       self.pluginHandle.data({
         text: JSON.stringify(message),
-        error: function(reason) { self.$buefy.dialog.alert(reason); },
+        error: function(reason) { self.alert.open(reason); },
         success: function() { e.target.innerText = "" }
       });
     },
@@ -490,9 +492,7 @@ export default {
       self.$set(self.participants, username, newuser)
 
       if (username != self.username)
-        self.$buefy.toast.open({
-          message: self.participants[username].display + " joined " + self.room.description
-        })
+        self.toast.open(self.participants[username].display + " joined " + self.room_info.description)
       self.count = Object.keys(self.participants).length
       self.$emit('participantNumberChanged', self.count)
 
@@ -516,6 +516,13 @@ export default {
         ("0" + when.getUTCMinutes()).slice(-2) + ":" +
         ("0" + when.getUTCSeconds()).slice(-2);
       return dateString;
+    },
+
+    openChat() {
+      if (this.webRTCUp)
+        this.is_open = true
+      else
+        this.login()
     }
   }
 
@@ -526,7 +533,6 @@ export default {
 
 .textroom {
   position: relative;
-  opacity: 0.8;
   height:100%;
   width:100%;max-height:100%;
   display: flex;
@@ -567,5 +573,9 @@ export default {
 
 .talk { flex:  0 0 auto; padding:0.7rem 0; margin-top: 1rem; border-top: 1px solid black; }
 .icons { vertical-align: middle;}
+
+.loadingComponent {position: absolute;top:40px;width:100%;height:100%;background:rgba(200, 200, 200, 0.5)}
+.loadingComponent div {position: absolute; top:50%; left: 50%; transform:translate(-50%,-50%)}
+.loading { }
 
 </style>

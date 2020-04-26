@@ -2,7 +2,7 @@
   <div class="echo">
     <div class="stage">
       <div class='embed-container'>
-        <Stage />
+        <iframe src="https://kontakta.modular-t.org:8443/html/loadbalancer.html" style="border:none;" allowfullscreen="true" scrolling="no" width="640" height=" 360" frameborder="0" align="middle"></iframe>
       </div>
     </div>
     <Echorooms :roombyId="room" />
@@ -10,11 +10,10 @@
 </template>
 
 <script>
-import Stage from '@/components/Stage.vue'
 import Echorooms from '@/components/Echorooms.vue'
 
 export default {
-  name: 'About',
+  name: 'Echoroom',
 
   props: {
     room:  {
@@ -24,7 +23,7 @@ export default {
   },
 
   components: {
-    Stage, Echorooms
+     Echorooms
   },
 
   data() {

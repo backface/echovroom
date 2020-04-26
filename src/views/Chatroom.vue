@@ -10,11 +10,13 @@
     <div class="echorooms">
       <Videoroom
         :roombyName="roombyName"
-        v-if="nick"
+        v-if="nick  && showVroom"
         :nick="nick"
         is_muted="true"
         :myJanus="janus"
         open="false"
+        :facetime="facetime"
+        @leftRoom="recreateVRoom"
       />
 
       <Audioroom
@@ -27,19 +29,22 @@
       <transition name="fade">
         <Textroom
           v-if="janusReady"
+          v-show="chat_open"
+          open="true"
+          :myJanus="janus"
           :roombyName="roombyName"
+          :nick="login_name"
           @participantNumberChanged="foyer_count = $event"
           @hasNick="nick = $event;"
           @hasRoomInfo="foye_info = $event"
           @hasJanus="janus = $event"
-          :myJanus="janus"
-          :nick="login_name"
-          open="true"
-          v-show="chat_open"
         />
       </transition>
 
     </div>
+
+    <toast ref="toast"></toast>
+    <login-dialog ref="login"></login-dialog>
   </div>
 </template>
 
@@ -48,6 +53,8 @@ import Stage from '@/components/Stage.vue'
 import Textroom from '@/components/Textroom.vue'
 import Audioroom from '@/components/Audioroom.vue'
 import Videoroom from '@/components/Videoroom.vue'
+import LoginDialog from '@/components/dialogs/LoginDialog'
+import Toast from '@/components/dialogs/Toast'
 import { janusMixin } from "@/mixins/janusMixin";
 
 export default {
@@ -58,12 +65,20 @@ export default {
   components: {
     Stage,
     Textroom, Audioroom, Videoroom,
+    LoginDialog, Toast
+  },
+
+  props: {
+    facetime:  {
+      type: Boolean,
+      default: false
+    }
   },
 
   mounted() {
-    if (typeof this.$route.query.username !=  undefined) {
-      console.log( this.$route.query.username)
-      this.login_name = this.$route.query.username;
+    if (typeof this.$route.query.login !=  undefined) {
+      console.log( this.$route.query.login)
+      this.login_name = this.$route.query.login;
     }
     this.loadConfig()
   },
@@ -74,6 +89,7 @@ export default {
       chat_open: true,
       janusReady: false,
       login_name: null,
+      showVroom:true
     }
   },
 
@@ -81,6 +97,12 @@ export default {
     attachPlugin() {
       console.log("janus is ready");
       this.janusReady = true
+    },
+    recreateVRoom() {
+      // this is a hack but we completely remove the component to fore recreating a new janus sesssion
+      let self = this
+      this.showVroom = false;
+      setTimeout( () => {self.showVroom = true}, 500)
     }
   }
 
