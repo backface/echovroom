@@ -1,31 +1,37 @@
 <template>
   <v-app id="app">
+
     <nav class="navbar" role="navigation" aria-label="main navigation">
+
       <div class="navbar-brand">
         <router-link :to="{ path: '/' }" v-slot="{ href }">
           <a class="navbar-item" :href="href">
               <arrow-up-left-icon size="1.5x" class="custom-class"></arrow-up-left-icon>
           </a>
         </router-link>
+        <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false"
+          :class="{'is-active':menuOpen}"
+          @click="menuOpen = !menuOpen">
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+        </a>
       </div>
 
-      <div class="navbar-menu">
-
-
+      <div class="navbar-menu" :class="{'is-active':menuOpen}">
         <router-link to="/echoraeume" v-slot="{ href, route, isActive }">
           <div class="navbar-item" :active="isActive" :class="{'is-active':isActive}">
             <a :href="href" >{{ route.name }}</a>
           </div>
         </router-link>
-
         <router-link to="/demoroom" v-slot="{ href, route, isActive }">
           <div class="navbar-item" :active="isActive"  :class="{'is-active':isActive}">
             <a :href="href" >{{ route.name }}</a>
           </div>
         </router-link>
       </div>
-    </nav>
 
+    </nav>
 
     <transition-page>
       <router-view :key="$route.path"></router-view>
@@ -48,6 +54,7 @@ export default {
 
   data() {
     return {
+      menuOpen: false,
     }
   },
 

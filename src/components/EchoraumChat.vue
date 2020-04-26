@@ -1,8 +1,8 @@
 <template>
-  <div class="">
-    <!--<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vuetify@2.2.11/dist/vuetify.min.css">-->
+  <v-app>
+=    <!--<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vuetify@2.2.11/dist/vuetify.min.css">-->
     <Echorooms />
-  </div>
+</v-app>
 </template>
 
 <script>

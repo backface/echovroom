@@ -15,9 +15,9 @@
     </div>
 
     <div class="chatroom" v-show="is_open">
+
       <vue-custom-scrollbar class="participants">
         <div class="has-text-left" ref="chat">
-
           <ul>
             <li v-for="(user, index) in participants" :key="index" class="participant">
               <v-menu v-if="user.username != username">
@@ -34,7 +34,6 @@
                 <span style="font-size:0.8rem">Me:</span> {{ display }})</span>-->
             </li>
           </ul>
-
         </div>
       </vue-custom-scrollbar>
 
@@ -568,7 +567,8 @@ export default {
 .msg_editor {
     text-align:left;
     min-height:2.5em;
-    border: 1px solid #ddd;
+    border-bottom: 1px solid black;
+    margin-right:1rem;
     padding:4px 5px 4px 15px}
 
 .talk { flex:  0 0 auto; padding:0.7rem 0; margin-top: 1rem; border-top: 1px solid black; }
@@ -577,5 +577,9 @@ export default {
 .loadingComponent {position: absolute;top:40px;width:100%;height:100%;background:rgba(200, 200, 200, 0.5)}
 .loadingComponent div {position: absolute; top:50%; left: 50%; transform:translate(-50%,-50%)}
 .loading { }
+
+@media (max-width:421px) {
+  .participants {display: none}
+}
 
 </style>
