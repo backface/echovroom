@@ -145,7 +145,6 @@ export default {
       pluginHandle: null,
       pluginName: "videoroom",
       opaqueId: this.$options._componentTag  + "-" + Janus.randomString(12),
-      intervals: {},
       my_stream: null,
       is_streaming: false,
       video_off: false,
@@ -365,14 +364,7 @@ export default {
 
                 if (msg["leaving"] == "ok") {
                   console.log("I left the room");
-                  // That's us
-                  //for (let f in self.feeds) {
-                  //  f.detach()
-                  // }
 
-                  for (let i in self.intervals) {
-                    clearInterval(i)
-                  }
                   self.feeds = {}
                   self.participants = {}
                   self.is_streaming = false;
@@ -385,12 +377,11 @@ export default {
 
                 } else if(self.feeds) {
                   if(self.feeds[msg["leaving"]]) {
-                    clearInterval(self.intervals[msg["leaving"]])
                     self.feeds[msg["leaving"]].detach();
-                    delete self.feeds[msg["leaving"]]
+                    self.$delete(self.feeds,msg["leaving"])
                   }
                 }
-                delete self.participants[ msg['leaving'] ]
+                self.$delete(self.participants,msg['leaving'])
                 self.count = Object.keys(self.participants).length
                 self.$forceUpdate()
 
@@ -406,9 +397,8 @@ export default {
                 }
                 else if(self.feeds) {
                   if(self.feeds[unpublished]) {
-                    clearInterval(self.intervals[unpublished])
                     self.feeds[unpublished].detach();
-                    delete self.feeds[unpublished]
+                    self.$delete(self.feeds, unpublished)
                     self.$forceUpdate();
                   }
                 }
@@ -678,20 +668,20 @@ export default {
             || Janus.webRTCAdapter.browserDetails.browser === "firefox" ||
             Janus.webRTCAdapter.browserDetails.browser === "safari") {
 
-              if (!self.intervals[remoteFeed.publisher])
-                self.intervals[remoteFeed.publisher] = setInterval(() => {
-                    self.feeds[remoteFeed.publisher].bitrate = self.feeds[remoteFeed.publisher].getBitrate();
-                    self.$set(self.feeds[remoteFeed.publisher],'bitrate', self.feeds[remoteFeed.publisher].getBitrate() )
-                    self.$set(self.feeds[remoteFeed.publisher],'muted', self.feeds[remoteFeed.publisher].isAudioMuted() )
-                }, 1000);
+            setTimeout(function updateBitrate() {
+                if (self.feeds[remoteFeed.publisher]) {
+                  self.feeds[remoteFeed.publisher].bitrate = self.feeds[remoteFeed.publisher].getBitrate();
+                  self.$set(self.feeds[remoteFeed.publisher],'bitrate', self.feeds[remoteFeed.publisher].getBitrate() )
+                  self.$set(self.feeds[remoteFeed.publisher],'muted', self.feeds[remoteFeed.publisher].isAudioMuted() )
+                  setTimeout(updateBitrate, 1000);
+              }
+            }, 1000);
               // // TODO: Check if the resolution changed too
           }
         },
 
         oncleanup: function() {
           Janus.log(" ::: Got a cleanup notification (remote feed " + id + " / "  +  remoteFeed.id +") :::");
-          console.log(self.intervals[id]);
-          clearInterval(self.intervals[id])
         }
       });
     },

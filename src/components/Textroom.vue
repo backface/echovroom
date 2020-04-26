@@ -226,7 +226,7 @@ export default {
           if(self.transactions[transaction]) {
             // Someone was waiting for this
             self.transactions[transaction](json);
-            delete 	self.transactions[transaction];
+            self.$delete(self.transactions, transaction);
             return;
           }
 
@@ -500,7 +500,7 @@ export default {
 
     removeUserFromList(username) {
       let self = this;
-      delete self.participants[username];
+      self.$delete(self.participants, username);
       self.count = Object.keys(self.participants).length
       this.$emit('participantNumberChanged', self.count)
       self.$forceUpdate();

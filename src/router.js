@@ -28,6 +28,18 @@ export default new Router({
       component: About
     },
     {
+      path: '/echoraeume',
+      name: 'echoraeume',
+      component: Echoroom,
+      props: { room: 777 } //2577359740
+    },
+    {
+      path: '/demoroom',
+      name: 'demoroom',
+      component: Demoroom,
+      props: { room: 1234}
+    },
+    {
       path: '/:roombyName',
       name: 'chat',
       component: Chatroom,
@@ -43,18 +55,7 @@ export default new Router({
           facetime:true
       }),
     },
-    {
-      path: '/echoraeume',
-      name: 'echoraeume',
-      component: Echoroom,
-      props: { room: 777 } //2577359740
-    },
-    {
-      path: '/demoroom',
-      name: 'demoroom',
-      component: Demoroom,
-      props: { room: 1234}
-    },
+
     {
       path: '/event',
       name: 'even',
