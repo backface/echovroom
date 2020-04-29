@@ -94,7 +94,7 @@ export default {
   color: #000;
 }
 .navbar .navbar-item.is-active a { font-weight:bold; text-decoration: none; color:#333 }
-.navbar { margin-bottom:40px}
+.navbar { margin-bottom:60px}
 
 .embed-container { position: relative; padding:0; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%;}
 .embed-container iframe, .embed-container object, .embed-container embed, .embed-container div

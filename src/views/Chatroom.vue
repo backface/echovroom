@@ -14,7 +14,7 @@
         :nick="nick"
         is_muted="true"
         :myJanus="janus"
-        open="false"
+        open="true"
         :facetime="facetime"
         @leftRoom="recreateVRoom"
       />

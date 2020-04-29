@@ -8,7 +8,13 @@
         VROOM {{ room_info.description }} ({{ count + (webRTCUp ? 1 : 0) }})
         <mic-off-icon size="1x" class="icons linked" v-if="muted" @click="muteMe(false)"></mic-off-icon>
         <mic-icon size="1x" class="icons linked" v-if="!muted" @click="muteMe(true)"></mic-icon>
-
+        <eye-off-icon size="1x" class="icons linked" v-if="!facetime" @click="toggleFacetime"></eye-off-icon>
+        <eye-icon size="1x" class="icons linked" v-if="facetime" @click="toggleFacetime"></eye-icon>
+        <monitor-icon size="1x" class="icons linked" v-show="is_open" @click="toggleScreenShare"
+          :style="{ color: screenshare ? 'red' : 'black' }"></monitor-icon>
+        <airplay-icon size="1x" class="icons linked" v-show="is_open" @click="sendMeToStage"
+            :style="{ color: username == onstage ? 'red' : 'black' }"
+          ></airplay-icon>
 
       </div>
       <div class="column has-text-left">
@@ -27,13 +33,12 @@
 
       <div class="screen has-text-center" ref="screen" >
 
-        <div class="tile is-ancestor me" >
-          <div class="tile" v-show="is_streaming"
+
+          <div v-show="is_streaming" class="video me" :class="username == onstage ? 'stage' : 'video'"
             @mousedown="drag('start', my_pos, $event)"
             @mousemove="drag('drag', my_pos, $event)"
             @mouseup="drag('stop',my_pos, $event)"
-            :style="{ position: 'fixed', top: my_pos.y + 'px', left: my_pos.x + 'px' }">
-
+            :style="username != onstage ? { position: 'fixed', top: my_pos.y + 'px', left: my_pos.x + 'px' } : {}">
 
             <video ref="videolocal" class="videolocal" id="videolocal" autoplay playsinline muted="muted"/>
             <div class="overlay name">ME</div>
@@ -49,12 +54,13 @@
           </div>
 
           <transition-group name="fade">
-          <div v-for="feed in feeds" :key="feed.id" class="tile feed has-text-center"
-            v-bind:style="{ position: 'fixed', top: feed.y + 'px', left: feed.x + 'px' }"
-            @mousedown="drag('start', feed, $event)"
-            @mousemove="drag('drag', feed, $event)"
-            @mouseup="drag('stop',feed, $event)"
-          >
+
+            <div v-for="feed in feeds" :key="feed.id" :class="feed.publisher == onstage ? 'stage' : 'video' "
+              v-bind:style="feed.publisher != onstage ? { position: 'fixed', top: feed.y + 'px', left: feed.x + 'px' } : {}"
+              @mousedown="drag('start', feed, $event)"
+              @mousemove="drag('drag', feed, $event)"
+              @mouseup="drag('stop',feed, $event)"
+            >
               <video
                 :id="'v'+feed.id" :ref="'feed-' + feed.id"
                :title="feed.display"
@@ -79,13 +85,8 @@
                   <v-select dark label="Quality" dense v-model="feed.substream" :items="qualities" @change="changeFeedQuality(feed)"></v-select>
               </div>
 
-
-          </div>
-        </transition-group>
-
-        </div>
-
-
+            </div>
+          </transition-group>
       </div>
     </fullscreen>
 
@@ -93,10 +94,10 @@
     <login-dialog ref="login"></login-dialog>
     <alert-dialog ref="alert"></alert-dialog>
 
-    <video ref="videosrc" v-if="facetime" style="display:none"></video>
-    <canvas ref="canvas" v-if="facetime" v-show="is_tracking" class="facetrackdebug"></canvas>
-    <canvas ref="face" v-if="facetime" style="display:none" ></canvas>
-    <div class="trackingstats" v-if="facetime" v-show="is_tracking" > {{ fps }} FPS </div>
+    <video ref="videosrc" style="display:none"></video>
+    <canvas ref="canvas" v-show="facetime && is_tracking" class="facetrackdebug"></canvas>
+    <canvas ref="face" style="display:none" ></canvas>
+    <div class="trackingstats" v-if="facetime" v-show="facetime && is_tracking" > {{ fps }} FPS </div>
 
   </div>
 </template>
@@ -113,6 +114,9 @@ import { VideoIcon, VideoOffIcon } from 'vue-feather-icons'
 import { Maximize2Icon, Minimize2Icon } from 'vue-feather-icons'
 import { MessageCircleIcon } from 'vue-feather-icons'
 import { SettingsIcon } from 'vue-feather-icons'
+import { MonitorIcon } from 'vue-feather-icons'
+import { AirplayIcon } from 'vue-feather-icons'
+import { EyeOffIcon, EyeIcon } from 'vue-feather-icons'
 import LoginDialog from '@/components/dialogs/LoginDialog'
 import AlertDialog from '@/components/dialogs/AlertDialog'
 import Toast from '@/components/dialogs/Toast'
@@ -129,14 +133,8 @@ export default {
     VideoIcon, VideoOffIcon, MessageCircleIcon,
     MinusIcon, PlusIcon, SettingsIcon,
     Maximize2Icon, Minimize2Icon,
+    MonitorIcon, AirplayIcon, EyeOffIcon, EyeIcon,
     LoginDialog, Toast, AlertDialog,
-  },
-
-  props: {
-    facetime:  {
-      type: Boolean,
-      default: false
-    },
   },
 
   data() {
@@ -147,6 +145,7 @@ export default {
       opaqueId: this.$options._componentTag  + "-" + Janus.randomString(12),
       my_stream: null,
       is_streaming: false,
+      screenshare: false,
       video_off: false,
       muted: false,
       feeds: {},
@@ -174,7 +173,8 @@ export default {
       room_options: {
         audiolevel_event: true,
         publishers: 100
-      }
+      },
+      onstage: null
     }
   },
 
@@ -391,7 +391,7 @@ export default {
                 Janus.log("Publisher unpublished: " + unpublished);
                 if(unpublished === 'ok') {
                   // That's us
-                  self.$refs.videolocal.detach();
+                  //self.$refs.videolocal.detach();
                   self.is_streaming = false;
                   return;
                 }
@@ -464,7 +464,29 @@ export default {
         devices.forEach( (d) => console.log(d));
       })
 
-      if (this.facetime) {
+      if (this.screenshare) {
+        Janus.debug("Negotiating WebRTC stream for our screen (capture " + capture + ")");
+        let capture = "screen";
+        self.pluginHandle.createOffer( {
+          media: { video: capture, captureDesktopAudio: useAudio, audioRecv: true, videoRecv: false, data: true },
+
+          success: function(jsep) {
+            Janus.debug(self.opaqueId, "Got publisher SDP!");
+            Janus.debug(jsep);
+            var publish = { "request": "configure", "audio": useAudio, "video": true, data: true  };
+            self.pluginHandle.send({"message": publish, "jsep": jsep});
+          },
+          error: function(error) {
+            Janus.error(self.opaqueId, "x WebRTC error:", error);
+            if (useAudio) {
+              self.publishOwnFeed(true);
+            } else {
+              self.alert.open("WebRTC error... " + JSON.stringify(error));
+            }
+          }
+        });	// Screen sharing Publishers are sendonly
+
+      } else if (this.facetime) {
         this.setupFaceTime().then( () => {
           self.pluginHandle.createOffer( {
             stream: this.face_canvas.captureStream(),
@@ -473,7 +495,7 @@ export default {
             success: function(jsep) {
               Janus.debug(self.opaqueId, "Got publisher SDP!");
               Janus.debug(jsep);
-              var publish = { "request": "configure", "audio": useAudio, "video": true };
+              var publish = { "request": "configure", "audio": useAudio, "video": true, data: true  };
               self.pluginHandle.send({"message": publish, "jsep": jsep});
             },
 
@@ -488,12 +510,9 @@ export default {
           });
 
         })
-
-      } else {
+      } else  {
         self.pluginHandle.createOffer( {
-          // media: { video: capture, captureDesktopAudio: true, audioRecv: true, videoRecv: false},	// Screen sharing Publishers are sendonly
-          //media: { audioRecv: false, videoRecv: false, audioSend: useAudio, videoSend: true, data: false }, // standard
-          media: {  audioRecv: false, videoRecv: false, audioSend: useAudio, videoSend: true },
+          media: {  audioRecv: false, videoRecv: false, audioSend: useAudio, videoSend: true, data:true },
 
           simulcast: self.doSimulcast,
           //simulcast2: self.doSimulcast2,
@@ -501,7 +520,7 @@ export default {
           success: function(jsep) {
             Janus.debug(self.opaqueId, "Got publisher SDP!");
             Janus.debug(jsep);
-            var publish = { "request": "configure", "audio": useAudio, "video": true };
+            var publish = { "request": "configure", "audio": useAudio, "video": true, data:true };
             self.pluginHandle.send({"message": publish, "jsep": jsep});
           },
           error: function(error) {
@@ -626,7 +645,7 @@ export default {
               // Add data:true here if you want to subscribe to datachannels as well
               // (obviously only works if the publisher offered them in the first place)
 
-              media: { audioSend: false, videoSend: false },	// We want recvonly audio/video
+              media: { audioSend: false, videoSend: false, data: true },	// We want recvonly audio/video
               success: function(jsep) {
                 Janus.debug(self.opaqueId,"Got SDP!");
                 Janus.debug(jsep);
@@ -639,6 +658,24 @@ export default {
               }
             });
           }
+        },
+
+        ondataopen: function() {
+          Janus.log(self.opaqueId,"The DataChannel is available!");
+        },
+
+        ondata: function(message) {
+          Janus.debug("We got data from the DataChannel! " + message);
+          console.log(message);
+          message = JSON.parse(message);
+          console.log(message["request"]);
+          console.log(message.publisher);
+          if (message.request == "onstage")
+            self.onstage = message.publisher
+          if (message.request == "offstage")
+            if (self.onstage == message.publisher)
+              self.onstage = null
+
         },
 
         webrtcState: function(on) {
@@ -713,7 +750,74 @@ export default {
           success: (r) => { console.log(r)}
         }
       })
-    }
+    },
+
+    toggleScreenShare() {
+      let self = this;
+
+      // unpublish and republsh
+      // not the nicest way to do it.
+      // should be possible to switch tracks!
+
+      this.unpublishOwnFeed()
+      setTimeout(function() {
+          self.screenshare = !self.screenshare;
+          self.publishOwnFeed(true)
+        }, 2000);
+    },
+
+    toggleFacetime() {
+      let self = this;
+
+      // unpublish and republsh
+      // not the nicest way to do it.
+      // should be possible to switch tracks!
+
+      this.unpublishOwnFeed()
+      setTimeout(function() {
+          self.facetime = !self.facetime;
+          self.publishOwnFeed(true)
+        }, 2000);
+    },
+
+    sendMeToStage() {
+      let self = this;
+      console.log("send me on stage");
+      if (this.onstage != this.username)
+        this.pluginHandle.data({
+          text: JSON.stringify({
+            request: "onstage",
+            publisher: this.username,
+          }),
+          error: function(reason) { this.alert.open(reason); },
+          success: function() {
+            self.onstage = self.username
+          }
+        });
+      else
+        this.pluginHandle.data({
+          text: JSON.stringify({
+            request: "offstage",
+            publisher: this.username,
+          }),
+          error: function(reason) { this.alert.open(reason); },
+          success: function() {
+            if (self.onstage == self.username)
+              self.onstage = null
+          }
+        });
+    },
+
+    sendMessage(message) {
+      this.pluginHandle.data({
+        text: message,
+        error: function(reason) { this.alert.open(reason); },
+        success: function() {
+            console.log("sent on data channel");
+        }
+      });
+
+    },
   }
 }
 
@@ -744,7 +848,7 @@ export default {
 .videoroom .tile {
 
 }
-.videoroom .screen .is-ancestor { margin: 0 auto}
+.videoroom .screen { margin: 0 auto; padding:0}
 .videoroom .overlay .icons {   opacity: 0.7 }
 .videoroom .overlay .linked{  background:none }
 .videoroom .overlay .linked:hover { opacity: 1; color:white }
@@ -755,7 +859,7 @@ export default {
 }
 .videoroom .meta {
     position: absolute; opacity: 0.7;
-    left: 50%; bottom:5px;transform:translate(-50%,0);
+    left: 50%; bottom:12px;transform:translate(-50%,0);
     /*bottom:5px; left: 5px;*/
     /*background:white; color:#333;padding:0.3em;*/
     background:rgba(0,0,0, 0.1); color:white;padding:0.1rem 0.5rem;
@@ -768,16 +872,34 @@ export default {
      background:rgba(0,0,0, 0.1); color:white;padding:0.5rem 0.5rem;
 }
 
+.videoroom .video {
+  z-index:1001;
+  position: fixed;
+}
 
+.videoroom .stage {
+  position: absolute;
+  top:0; left: 50%;
+  width:100%;
+  transform:translate(-50%,-100%);
+  padding-bottom:7px;
+}
 .videoroom .fullscreen { background:white}
 .videoroom .talking { border: 2px solid red}
 
-video {
+.videoroom .video video {
   object-fit: cover;
   border-radius: 50%;
   width:256px;
   height:256px;
   background:black;
+}
+
+.videoroom .stage video {
+  object-fit: contain;
+  border-radius: 0%;
+  width:100%;
+  height:100%
 }
 
 .facetrackdebug {

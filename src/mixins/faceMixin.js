@@ -6,6 +6,12 @@ import {version} from '@tensorflow/tfjs-backend-wasm/dist/version';
 
 export const faceMixin = {
 
+  props: {
+    facetime:  {
+      type: Boolean,
+      default: false
+    },
+  },
 
   data() {
     return {
@@ -160,20 +166,8 @@ export const faceMixin = {
       if (this.framecount % 5 == 0)
         this.fps = (5 * (1000 /  ((new Date()).getTime() - this.elapsed_time))).toFixed(2)
 
-      requestAnimationFrame(this.renderface);
-    },
-
-    renderAFrame() {
-      var canvas = this.$refs.canvas;
-      var ctx    = canvas.getContext('2d');
-      var video  = this.$refs.videosrc
-      console.log("render frame");
-
-      //var elapsed_time = (new Date()).getTime();
-      canvas.width  = video.clientWidth * window.devicePixelRatio;
-      canvas.height = video.clientHeight * window.devicePixelRatio;
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      requestAnimationFrame(this.renderAFrame);
+      if (this.facetime )
+        requestAnimationFrame(this.renderface);
     },
 
     isMobile() {
