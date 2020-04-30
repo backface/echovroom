@@ -36,7 +36,7 @@
           :nick="login_name"
           @participantNumberChanged="foyer_count = $event"
           @hasNick="nick = $event;"
-          @hasRoomInfo="foye_info = $event"
+          @hasRoomInfo="foyer_info = $event"
           @hasJanus="janus = $event"
         />
       </transition>
@@ -77,7 +77,6 @@ export default {
 
   mounted() {
     if (typeof this.$route.query.login !=  undefined) {
-      console.log( this.$route.query.login)
       this.login_name = this.$route.query.login;
     }
     this.loadConfig()

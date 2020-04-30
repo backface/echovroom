@@ -3,8 +3,8 @@
 
     <div class="columns is-mobile is-narrow headers is-gapless">
       <div class="column has-text-left is-10">
-        <video-off-icon size="1x" class="icons" v-if="video_off" @click="showMe(false)"></video-off-icon>
-        <video-icon size="1x" class="icons" v-if="!video_off" @click="showMe(true)"></video-icon>
+        <video-off-icon size="1x" class="icons" v-if="!is_streaming" @click="publishOwnFeed"></video-off-icon>
+        <video-icon size="1x" class="icons" v-if="is_streaming" @click="unpublishOwnFeed"></video-icon>
         VROOM {{ room_info.description }} ({{ count + (webRTCUp ? 1 : 0) }})
         <mic-off-icon size="1x" class="icons linked" v-if="muted" @click="muteMe(false)"></mic-off-icon>
         <mic-icon size="1x" class="icons linked" v-if="!muted" @click="muteMe(true)"></mic-icon>
@@ -12,8 +12,8 @@
         <eye-icon size="1x" class="icons linked" v-if="facetime" @click="toggleFacetime"></eye-icon>
         <monitor-icon size="1x" class="icons linked" v-show="is_open" @click="toggleScreenShare"
           :style="{ color: screenshare ? 'red' : 'black' }"></monitor-icon>
-        <airplay-icon size="1x" class="icons linked" v-show="is_open" @click="sendMeToStage"
-            :style="{ color: username == onstage ? 'red' : 'black' }"
+        <airplay-icon size="1x" class="icons linked" v-show="is_open" @click="sendMeToStage(username !=onstage)"
+            :style="{ color: username == onstage && onstage != null ? 'red' : 'black' }"
           ></airplay-icon>
 
       </div>
@@ -46,6 +46,8 @@
               <mic-off-icon size="1x" class="icons linked" v-if="muted" @click="muteMe(false)"></mic-off-icon>
               <mic-icon size="1x" class="icons linked" v-if="!muted" @click="muteMe(true)"></mic-icon>
               <settings-icon size="1x" class="icons linked" @click="showBitrateOptions=!showBitrateOptions"></settings-icon>
+              <maximize-2-icon size="1x" class="icons linked" @click="makeVideoFullscreen"></maximize-2-icon>
+
             </div>
             <div class="overlay options" v-show="showBitrateOptions">
               <v-select dark label="Cap Bitrate" dense v-model="bitrate" :items="bitrates" @change="updateBitrateCap"></v-select>
@@ -79,6 +81,8 @@
                   {{ feed.bitrate }}
                 </span>
                 <settings-icon size="1x" class="icons linked"  @click="feed.showOptions=!feed.showOptions"></settings-icon>
+                <maximize-2-icon size="1x" class="icons linked" @click="makeVideoFullscreen"></maximize-2-icon>
+                <airplay-icon size="1x" class="icons linked" @click="sendToStage(feed.publisher)"></airplay-icon>
               </div>
 
               <div class="overlay options" v-show="feed.showOptions">
@@ -108,6 +112,7 @@ import { janusMixin } from "@/mixins/janusMixin";
 import { faceMixin } from "@/mixins/faceMixin";
 import fullscreen from 'vue-fullscreen'
 import Janus from '../janus'
+import screenfull from 'screenfull'
 import { MinusIcon, PlusIcon } from 'vue-feather-icons'
 import { MicIcon, MicOffIcon, LoaderIcon } from 'vue-feather-icons'
 import { VideoIcon, VideoOffIcon } from 'vue-feather-icons'
@@ -457,65 +462,42 @@ export default {
       });
     },
 
-    publishOwnFeed(useAudio) {
+    publishOwnFeed(useAudio=true) {
       let self = this
 
       Janus.listDevices((devices) => {
         devices.forEach( (d) => console.log(d));
       })
 
-      if (this.screenshare) {
-        Janus.debug("Negotiating WebRTC stream for our screen (capture " + capture + ")");
-        let capture = "screen";
-        self.pluginHandle.createOffer( {
-          media: { video: capture, captureDesktopAudio: useAudio, audioRecv: true, videoRecv: false, data: true },
-
-          success: function(jsep) {
-            Janus.debug(self.opaqueId, "Got publisher SDP!");
-            Janus.debug(jsep);
-            var publish = { "request": "configure", "audio": useAudio, "video": true, data: true  };
-            self.pluginHandle.send({"message": publish, "jsep": jsep});
-          },
-          error: function(error) {
-            Janus.error(self.opaqueId, "x WebRTC error:", error);
-            if (useAudio) {
-              self.publishOwnFeed(true);
-            } else {
-              self.alert.open("WebRTC error... " + JSON.stringify(error));
-            }
-          }
-        });	// Screen sharing Publishers are sendonly
-
-      } else if (this.facetime) {
+      if (this.facetime) {
         this.setupFaceTime().then( () => {
-          self.pluginHandle.createOffer( {
-            stream: this.face_canvas.captureStream(),
-            simulcast: self.doSimulcast,
+          let capture = this.face_canvas.captureStream()
+          navigator.mediaDevices.getUserMedia({ audio: true, video: false })
+            .then(function (audioStream) {
+              capture.addTrack(audioStream.getAudioTracks()[0]);
+              self.pluginHandle.createOffer( {
+                stream: capture,
+                simulcast: self.doSimulcast,
 
-            success: function(jsep) {
-              Janus.debug(self.opaqueId, "Got publisher SDP!");
-              Janus.debug(jsep);
-              var publish = { "request": "configure", "audio": useAudio, "video": true, data: true  };
-              self.pluginHandle.send({"message": publish, "jsep": jsep});
-            },
+                success: function(jsep) {
+                  Janus.debug(self.opaqueId, "Got publisher SDP!");
+                  Janus.debug(jsep);
+                  var publish = { "request": "configure", "audio": useAudio, "video": true, data: true  };
+                  self.pluginHandle.send({"message": publish, "jsep": jsep});
+                },
 
-            error: function(error) {
-              Janus.error(self.opaqueId, "x WebRTC error:", error);
-              if (useAudio) {
-                self.publishOwnFeed(true);
-              } else {
-                self.alert.open("WebRTC error... " + JSON.stringify(error));
-              }
-            }
-          });
+                error: function(error) {
+                  Janus.error(self.opaqueId, "WebRTC error:", error);
+                  self.alert.open("ERROR: " + error);
+                }
+              });
+            })
 
         })
       } else  {
         self.pluginHandle.createOffer( {
           media: {  audioRecv: false, videoRecv: false, audioSend: useAudio, videoSend: true, data:true },
-
           simulcast: self.doSimulcast,
-          //simulcast2: self.doSimulcast2,
 
           success: function(jsep) {
             Janus.debug(self.opaqueId, "Got publisher SDP!");
@@ -524,12 +506,14 @@ export default {
             self.pluginHandle.send({"message": publish, "jsep": jsep});
           },
           error: function(error) {
-            Janus.error(self.opaqueId, "x WebRTC error:", error);
-            if (useAudio) {
+            Janus.error(self.opaqueId, "WebRTC error:", error);
+            self.alert.open("ERROR: " +  error);
+            /*if (useAudio) {
               self.publishOwnFeed(true);
             } else {
+              Janus.error(self.opaqueId, "WebRTC error:", error);
               self.alert.open("WebRTC error... " + JSON.stringify(error));
-            }
+            }*/
           }
         });
       }
@@ -542,6 +526,7 @@ export default {
     unpublishOwnFeed() {
       var unpublish = { "request": "unpublish" };
       this.pluginHandle.send({"message": unpublish});
+      this.is_streaming = false;
     },
 
     newRemoteFeed(id, display, audio, video) {
@@ -662,6 +647,10 @@ export default {
 
         ondataopen: function() {
           Janus.log(self.opaqueId,"The DataChannel is available!");
+
+          // send a sendmetostage message if new data channel comes available and I am on stage
+          if (self.onstage == self.username)
+            self.sendMeToStage(true)
         },
 
         ondata: function(message) {
@@ -754,16 +743,31 @@ export default {
 
     toggleScreenShare() {
       let self = this;
-
-      // unpublish and republsh
-      // not the nicest way to do it.
-      // should be possible to switch tracks!
-
-      this.unpublishOwnFeed()
-      setTimeout(function() {
-          self.screenshare = !self.screenshare;
-          self.publishOwnFeed(true)
-        }, 2000);
+      self.screenshare = !self.screenshare;
+      var body = { "audio": true, "video": true };
+      Janus.debug("Sending message (" + JSON.stringify(body) + ")");
+      self.pluginHandle.send({"message": body});
+      Janus.debug("Trying a createOffer too (audio/video sendrecv)");
+      // media: { video: capture, captureDesktopAudio: useAudio, audioRecv: true, videoRecv: false, data: true },
+      self.pluginHandle.createOffer({
+        media: {
+          video: self.screenshare ? "screen" : true,
+          replaceVideo: true,
+          //audio: self.screenshare ? captureDesktopAudio: true,
+          //replaceAudio: true
+          data: true	// Let's negotiate data channels as well
+        },
+        simulcast: self.doSimulcast,
+        success: function(jsep) {
+          Janus.debug("Got SDP!");
+          Janus.debug(jsep);"screen"
+          self.pluginHandle.send({"message": body, "jsep": jsep});
+        },
+        error: function(error) {
+          Janus.error("WebRTC error:", error);
+          self.alert.open("ERROR" + error);
+        }
+      });
     },
 
     toggleFacetime() {
@@ -771,7 +775,7 @@ export default {
 
       // unpublish and republsh
       // not the nicest way to do it.
-      // should be possible to switch tracks!
+      // should be possible re-negotiate?
 
       this.unpublishOwnFeed()
       setTimeout(function() {
@@ -780,10 +784,10 @@ export default {
         }, 2000);
     },
 
-    sendMeToStage() {
+    sendMeToStage(goUp=true) {
       let self = this;
       console.log("send me on stage");
-      if (this.onstage != this.username)
+      if (goUp)
         this.pluginHandle.data({
           text: JSON.stringify({
             request: "onstage",
@@ -808,6 +812,21 @@ export default {
         });
     },
 
+    sendToStage(id) {
+      let self = this;
+      console.log("send on stage", id);
+      this.pluginHandle.data({
+        text: JSON.stringify({
+          request: "onstage",
+          publisher: id,
+        }),
+        error: function(reason) { this.alert.open(reason); },
+        success: function() {
+          self.onstage = id
+        }
+      });
+    },
+
     sendMessage(message) {
       this.pluginHandle.data({
         text: message,
@@ -816,8 +835,12 @@ export default {
             console.log("sent on data channel");
         }
       });
-
     },
+
+    makeVideoFullscreen(e) {
+      let v = e.target.parentElement.parentElement.querySelector('video')
+      screenfull.request(v)
+    }
   }
 }
 

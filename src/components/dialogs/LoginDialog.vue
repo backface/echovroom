@@ -56,7 +56,7 @@ export default {
     password: "",
     nameRules: [
       value => !!value || 'You must provide a user name',
-      value => value.length > 1 || 'Name should be at least 2 letters long',
+      value => value.length > 0 || 'Name should be at least 1 letter long',
     ],
     options: {
       color: 'primary',

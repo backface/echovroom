@@ -34,6 +34,7 @@
     "node-css": "^0.1.0",
     "node-sass": "^4.13.1",
     "randomcolor": "^0.5.4",
+    "screenfull": "^5.0.2",
     "stylus-loader": "^3.0.2",
     "vue": "^2.6.11",
     "vue-custom-element": "^3.2.14",
