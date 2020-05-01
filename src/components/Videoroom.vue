@@ -3,16 +3,17 @@
 
     <div class="columns is-mobile is-narrow headers is-gapless">
       <div class="column has-text-left is-10">
-        <video-off-icon size="1x" class="icons" v-if="!is_streaming" @click="publishOwnFeed"></video-off-icon>
-        <video-icon size="1x" class="icons" v-if="is_streaming" @click="unpublishOwnFeed"></video-icon>
+        <video-off-icon size="1x" class="icons" v-if="!is_streaming" @click="publishOwnFeed" title="Unpublish Video"></video-off-icon>
+        <video-icon size="1x" class="icons" v-if="is_streaming" @click="unpublishOwnFeed" title="Publish Video"></video-icon>
         VROOM <span v-if="room_info.description">-</span> {{ room_info.description }} ({{ count + (webRTCUp ? 1 : 0) }})
-        <mic-off-icon size="1x" class="icons linked" v-if="muted" @click="muteMe(false)"></mic-off-icon>
-        <mic-icon size="1x" class="icons linked" v-if="!muted" @click="muteMe(true)"></mic-icon>
-        <eye-off-icon size="1x" class="icons linked" v-if="!facetime && is_streaming" @click="toggleFacetime"></eye-off-icon>
-        <eye-icon size="1x" class="icons linked" v-if="facetime && is_streaming" @click="toggleFacetime"></eye-icon>
-        <monitor-icon size="1x" class="icons linked" v-if="is_streaming" v-show="is_open" @click="toggleScreenShare"
+        <mic-off-icon size="1x" class="icons linked" v-if="muted" @click="muteMe(false)" title="Mute Me"></mic-off-icon>
+        <mic-icon size="1x" class="icons linked" v-if="!muted" @click="muteMe(true)" title="Unmute Me"></mic-icon>
+        <eye-off-icon size="1x" class="icons linked" v-if="!facetime && is_streaming" title="Factime is off" @click="toggleFacetime"></eye-off-icon>
+        <eye-icon size="1x" class="icons linked" v-if="facetime && is_streaming" title="Facetime is on" @click="toggleFacetime"></eye-icon>
+        <monitor-icon size="1x" class="icons linked" v-if="is_streaming" v-show="is_open" @click="toggleScreenShare" title="Share screen"
           :style="{ color: screenshare ? 'red' : 'black' }"></monitor-icon>
         <airplay-icon size="1x" class="icons linked" v-if="is_streaming" v-show="is_open" @click="sendMeToStage(username !=onstage)"
+            title="Send me to stage"
             :style="{ color: username == onstage && onstage != null ? 'red' : 'black' }"
           ></airplay-icon>
 
@@ -23,17 +24,18 @@
         <plus-icon size="1x" class="icons linked" v-if="!is_open" @click="login()"></plus-icon>
       </div>
     </div>
-
     <fullscreen ref="fullscreen" :fullscreen.sync="fullscreen"
+
       @change="fullscreenChange"  background="white" v-if="is_open">
 
       <div class="screen has-text-center" ref="screen" v-if="!vr">
 
           <div v-show="is_streaming" class="video me" :class="username == onstage ? 'stage' : 'video'"
-            @mousedown="drag('start', my_pos, $event)"
-            @mousemove="drag('drag', my_pos, $event)"
-            @mouseup="drag('stop',my_pos, $event)"
-            :style="username != onstage ? { position: 'fixed', top: my_pos.y + 'px', left: my_pos.x + 'px' } : {}">
+            v-bind:style="username != onstage ? { position: 'fixed', top: my_pos.y + 'px', left: my_pos.x + 'px' } : {}"
+            v-hammer:pan="(event) => drag('drag', my_pos, event)"
+            v-hammer:panstart="(event) => drag('start', my_pos, event)"
+            v-hammer:panend="(event) => drag('stop', my_pos, event)"
+          >
 
             <video ref="videolocal" class="videolocal" id="videolocal" autoplay playsinline muted="muted"/>
             <div class="overlay name">ME</div>
@@ -52,14 +54,12 @@
 
             <div v-for="feed in feeds" :key="feed.id" :class="feed.publisher == onstage ? 'stage' : 'video' "
               v-bind:style="feed.publisher != onstage ? { position: 'fixed', top: feed.y + 'px', left: feed.x + 'px' } : {}"
-              @mousedown="drag('start', feed, $event)"
-              @mousemove="drag('drag', feed, $event)"
-              @mouseup="drag('stop',feed, $event)"
+              v-hammer:pan="(event) => drag('drag', feed, event)"
+              v-hammer:panstart="(event) => drag('start', feed, event)"
+              v-hammer:panend="(event) => drag('stop', feed, event)"
             >
-              <video
-                :id="'v'+feed.id" :ref="'feed-' + feed.id"
-               :title="feed.display"
-               autoplay playsinline
+
+              <video :id="'v'+feed.id" :ref="'feed-' + feed.id" autoplay playsinline
                :class="{ talking: participants[feed.publisher].talking }"
               />
 
@@ -131,7 +131,9 @@ import { EyeOffIcon, EyeIcon } from 'vue-feather-icons'
 import LoginDialog from '@/components/dialogs/LoginDialog'
 import AlertDialog from '@/components/dialogs/AlertDialog'
 import Toast from '@/components/dialogs/Toast'
+import { VueHammer } from 'vue2-hammer'
 
+Vue.use(VueHammer)
 Vue.use(fullscreen)
 
 export default {
@@ -211,22 +213,27 @@ export default {
       this.$refs['fullscreen'].toggle()
     },
 
-    drag( cmd, who) {
+    drag( cmd, who, event) {
+      console.log(cmd, who, event.clientX, event.clientY, event.center.x, event.center.y, event);
+      let x = event.center.x
+      let y = event.center.y
+      // event.clientX / Y
+
       if (cmd === "start")
         this.dragging = {
           who: who,
-          last_x: event.clientX,
-          last_y: event.clientY
+          last_x: x,
+          last_y: y
         }
       else if (cmd === "stop")
         this.dragging = null
       else if (this.dragging != null) {
-        let diff_x = this.dragging.last_x - event.clientX
-        let diff_y = this.dragging.last_y - event.clientY
+        let diff_x = this.dragging.last_x - x
+        let diff_y = this.dragging.last_y - y
         this.dragging.who.x -= diff_x;
         this.dragging.who.y -= diff_y;
-        this.dragging.last_x = event.clientX
-        this.dragging.last_y = event.clientY
+        this.dragging.last_x = x
+        this.dragging.last_y = y
       }
     },
 
@@ -471,9 +478,9 @@ export default {
     publishOwnFeed(useAudio=true) {
       let self = this
 
-      Janus.listDevices((devices) => {
-        devices.forEach( (d) => console.log(d));
-      })
+      //Janus.listDevices((devices) => {
+      //    devices.forEach( (d) => console.log(d));
+      // })
 
       if (this.facetime) {
         this.setupFaceTime().then( () => {
@@ -494,7 +501,7 @@ export default {
 
                 error: function(error) {
                   Janus.error(self.opaqueId, "WebRTC error:", error);
-                  self.alert.open("ERROR: " + error);
+                  self.alert.open("ERROR setting up facetime: " + error.message);
                 }
               });
             })
@@ -502,7 +509,7 @@ export default {
         })
       } else  {
         self.pluginHandle.createOffer( {
-          media: {  audioRecv: false, videoRecv: false, audioSend: useAudio, videoSend: true, data:true },
+          media: {  audioRecv: false, videoRecv: false, audioSend: useAudio, videoSend: true},
           simulcast: self.doSimulcast,
 
           success: function(jsep) {
@@ -513,7 +520,7 @@ export default {
           },
           error: function(error) {
             Janus.error(self.opaqueId, "WebRTC error:", error);
-            self.alert.open("ERROR: " +  error);
+            self.alert.open("ERROR creating offer: " +  error.message);
             /*if (useAudio) {
               self.publishOwnFeed(true);
             } else {
@@ -882,28 +889,29 @@ export default {
 .videoroom .overlay .linked{  background:none }
 .videoroom .overlay .linked:hover { opacity: 1; color:white }
 .videoroom .name {
-  position: absolute; top:5px; left: 50%; transform:translate(-50%,0);
-  background:rgba(0,0,0, 0.1); color:white;padding:0.1rem 0.5rem;
+  position: absolute; top:0px; left: 50%; transform:translate(-50%,0);
+  background:rgba(0,0,0, 0.2); color:white;padding:0.01rem 0.5rem;
   opacity: 0.7
 }
 .videoroom .meta {
     position: absolute; opacity: 0.7;
-    left: 50%; bottom:12px;transform:translate(-50%,0);
+    left: 50%; bottom:15px;transform:translate(-50%,0);
     /*bottom:5px; left: 5px;*/
     /*background:white; color:#333;padding:0.3em;*/
-    background:rgba(0,0,0, 0.1); color:white;padding:0.1rem 0.5rem;
+    background:rgba(0,0,0, 0.2); color:white;padding:0.1rem 0.5rem;
 }
 .videoroom .options {
     opacity: 0.7;  position: absolute;
-    left: 50%; bottom:45px;  height:45px;transform:translate(-50%,0);
+    left: 50%; bottom:45px;  height:45px; transform:translate(-50%,0);
     /*bottom:5px; left: 5px;*/
     /*background:white; color:#333;padding:0.3em;*/
-     background:rgba(0,0,0, 0.1); color:white;padding:0.5rem 0.5rem;
+     background:rgba(0,0,0, 0.2); color:white;padding:0.15rem 0.5rem;
 }
 
 .videoroom .video {
-  z-index:1001;
+  z-index:151;
   position: fixed;
+
 }
 
 .videoroom .stage {
@@ -922,6 +930,8 @@ export default {
   width:256px;
   height:256px;
   background:black;
+  border:0;
+  box-shadow: 10px 6px 12px rgba(0,0,0,0.55);
 }
 
 .videoroom .stage video {
@@ -946,10 +956,11 @@ export default {
   }
 
 @media (max-width:461px) {
-  .videoroom .tile {
-    /*width:128px;
-    height:128px;*/
+  .videoroom .video video {
+    width:156px;
+    height:156px;
   }
+  .videoroom .overlay { display:none}
 }
 
 /* Enter and leave animations can use different */

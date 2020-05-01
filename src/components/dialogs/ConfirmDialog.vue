@@ -53,7 +53,7 @@ export default {
     options: {
       color: 'primary',
       width: 290,
-      zIndex: 200
+      zIndex: 2000
     }
   }),
   methods: {

@@ -81,6 +81,7 @@ export default {
   color: #333;
 }
 
+
 *:focus {
     outline: none;
 }
@@ -130,5 +131,10 @@ export default {
 }
 
 .linked:hover { background: #eee; color: black}
+
+
+@media (max-width:461px) {
+  .navbar { margin-bottom:0px}
+}
 
 </style>

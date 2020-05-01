@@ -559,7 +559,7 @@ export default {
   overflow-y: auto;
   flex: 1 1 auto;
 }
-.chat { }
+.chat {  padding-left: 0.7rem }
 .chat .item { padding:0px 0px; margin-bottom:0px}
 .chat .user { font-style:italic; font-size: 0.9rem; opacity: 0.8}
 .chat .item .username { padding: 0 0.2rem 0 1rem; }
