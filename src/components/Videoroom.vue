@@ -5,21 +5,17 @@
       <div class="column has-text-left is-10">
         <video-off-icon size="1x" class="icons" v-if="!is_streaming" @click="publishOwnFeed"></video-off-icon>
         <video-icon size="1x" class="icons" v-if="is_streaming" @click="unpublishOwnFeed"></video-icon>
-        VROOM {{ room_info.description }} ({{ count + (webRTCUp ? 1 : 0) }})
+        VROOM <span v-if="room_info.description">-</span> {{ room_info.description }} ({{ count + (webRTCUp ? 1 : 0) }})
         <mic-off-icon size="1x" class="icons linked" v-if="muted" @click="muteMe(false)"></mic-off-icon>
         <mic-icon size="1x" class="icons linked" v-if="!muted" @click="muteMe(true)"></mic-icon>
-        <eye-off-icon size="1x" class="icons linked" v-if="!facetime" @click="toggleFacetime"></eye-off-icon>
-        <eye-icon size="1x" class="icons linked" v-if="facetime" @click="toggleFacetime"></eye-icon>
-        <monitor-icon size="1x" class="icons linked" v-show="is_open" @click="toggleScreenShare"
+        <eye-off-icon size="1x" class="icons linked" v-if="!facetime && is_streaming" @click="toggleFacetime"></eye-off-icon>
+        <eye-icon size="1x" class="icons linked" v-if="facetime && is_streaming" @click="toggleFacetime"></eye-icon>
+        <monitor-icon size="1x" class="icons linked" v-if="is_streaming" v-show="is_open" @click="toggleScreenShare"
           :style="{ color: screenshare ? 'red' : 'black' }"></monitor-icon>
-        <airplay-icon size="1x" class="icons linked" v-show="is_open" @click="sendMeToStage(username !=onstage)"
+        <airplay-icon size="1x" class="icons linked" v-if="is_streaming" v-show="is_open" @click="sendMeToStage(username !=onstage)"
             :style="{ color: username == onstage && onstage != null ? 'red' : 'black' }"
           ></airplay-icon>
 
-      </div>
-      <div class="column has-text-left">
-        <maximize-2-icon size="1x" class="icons linked" v-show="is_open" @click="toggleFullscreen" v-if="!fullscreen"></maximize-2-icon>
-        <minimize-2-icon size="1x" class="icons linked" v-show="is_open" @click="toggleFullscreen" v-if="fullscreen"></minimize-2-icon>
       </div>
       <div class="column has-text-right">
         <minus-icon size="1x" class="icons linked" v-if="webRTCUp && is_open" @click="leaveRoom()"></minus-icon>
@@ -31,8 +27,7 @@
     <fullscreen ref="fullscreen" :fullscreen.sync="fullscreen"
       @change="fullscreenChange"  background="white" v-if="is_open">
 
-      <div class="screen has-text-center" ref="screen" >
-
+      <div class="screen has-text-center" ref="screen" v-if="!vr">
 
           <div v-show="is_streaming" class="video me" :class="username == onstage ? 'stage' : 'video'"
             @mousedown="drag('start', my_pos, $event)"
@@ -47,12 +42,10 @@
               <mic-icon size="1x" class="icons linked" v-if="!muted" @click="muteMe(true)"></mic-icon>
               <settings-icon size="1x" class="icons linked" @click="showBitrateOptions=!showBitrateOptions"></settings-icon>
               <maximize-2-icon size="1x" class="icons linked" @click="makeVideoFullscreen"></maximize-2-icon>
-
             </div>
             <div class="overlay options" v-show="showBitrateOptions">
               <v-select dark label="Cap Bitrate" dense v-model="bitrate" :items="bitrates" @change="updateBitrateCap"></v-select>
             </div>
-
           </div>
 
           <transition-group name="fade">
@@ -79,7 +72,7 @@
                 <loader-icon size="1x" class="icons loading centered" v-if="feed.loading == true"></loader-icon>
                 <span class="bitrate">
                   {{ feed.bitrate }}
-                </span>
+                </span><br />
                 <settings-icon size="1x" class="icons linked"  @click="feed.showOptions=!feed.showOptions"></settings-icon>
                 <maximize-2-icon size="1x" class="icons linked" @click="makeVideoFullscreen"></maximize-2-icon>
                 <airplay-icon size="1x" class="icons linked" @click="sendToStage(feed.publisher)"></airplay-icon>
@@ -92,6 +85,19 @@
             </div>
           </transition-group>
       </div>
+
+      <div class="screen has-text-center" ref="screen" v-if="vr">
+        <a-scene>
+          <a-assets>
+            <video ref="videolocal" id="videolocal" autoplay loop crossorigin="anonymous" muted></video>
+            <video v-for="feed in feeds" :key="feed.id" :id="'v'+feed.id" :ref="'feed-' + feed.id" autoplay playsinline></video>
+          </a-assets>
+          <a-sky color="#6EBAA7"></a-sky>
+          <a-box src="#video" position="-1 0.5 -3" rotation="0 45 0" ></a-box>
+        </a-scene>
+      </div>
+
+
     </fullscreen>
 
     <toast ref="toast"></toast>
@@ -116,7 +122,7 @@ import screenfull from 'screenfull'
 import { MinusIcon, PlusIcon } from 'vue-feather-icons'
 import { MicIcon, MicOffIcon, LoaderIcon } from 'vue-feather-icons'
 import { VideoIcon, VideoOffIcon } from 'vue-feather-icons'
-import { Maximize2Icon, Minimize2Icon } from 'vue-feather-icons'
+import { Maximize2Icon } from 'vue-feather-icons'
 import { MessageCircleIcon } from 'vue-feather-icons'
 import { SettingsIcon } from 'vue-feather-icons'
 import { MonitorIcon } from 'vue-feather-icons'
@@ -137,7 +143,7 @@ export default {
     MicIcon, MicOffIcon, LoaderIcon,
     VideoIcon, VideoOffIcon, MessageCircleIcon,
     MinusIcon, PlusIcon, SettingsIcon,
-    Maximize2Icon, Minimize2Icon,
+    Maximize2Icon, //Minimize2Icon,
     MonitorIcon, AirplayIcon, EyeOffIcon, EyeIcon,
     LoginDialog, Toast, AlertDialog,
   },
@@ -179,7 +185,8 @@ export default {
         audiolevel_event: true,
         publishers: 100
       },
-      onstage: null
+      onstage: null,
+      vr: false,
     }
   },
 
@@ -457,7 +464,6 @@ export default {
 
         oncleanup: function() {
           Janus.log(self.opaqueId, " ::: Got a cleanup notification :::");
-
         }
       });
     },

@@ -1,12 +1,12 @@
 <template>
   <div class="echorooms">
-    
+
     <Videoroom
       :roombyId="room"
       v-if="nick && showVroom"
       :nick="nick"
       is_muted="true"
-      open="false"
+      open="true"
       @leftRoom="recreateVRoom"
     />
 

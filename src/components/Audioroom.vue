@@ -5,7 +5,7 @@
       <div class="column has-text-left is-10">
         <mic-off-icon size="1x" class="icons linked" v-if="muted" @click="muteMe(false)"></mic-off-icon>
         <mic-icon size="1x" class="icons linked" v-if="!muted" @click="muteMe(true)"></mic-icon>
-        Darkroom {{ room_info.description }} ({{ count + (webRTCUp ? 1 : 0) }})
+        Darkroom <span v-if="room_info.description">-</span> {{ room_info.description }} ({{ count + (webRTCUp ? 1 : 0) }})
         <loader-icon size="1x" class="icons loading" v-if="has_stream"></loader-icon>
       </div>
       <div class="column  has-text-right">

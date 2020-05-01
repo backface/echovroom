@@ -5,7 +5,7 @@
       <div class="columns is-mobile is-narrow headers is-gapless">
         <div class="column has-text-left is-10">
           <message-square-icon size="1x" class="icons"></message-square-icon> Foyer
-           <span  v-if="room_info">{{ room_info.description }}  ({{ count }})</span>
+           <span v-if="room_info.description">-</span> <span v-if="room_info">{{ room_info.description }}  ({{ count }})</span>
         </div>
         <div class="column  has-text-right">
           <minus-icon size="1x" class="icons linked" v-if="is_open" @click="is_open=false"></minus-icon>
@@ -49,8 +49,8 @@
           </div>
 
           <div v-for="msg in messages" :key="msg.id" class="item">
-            <div class="user" :style="{ color: participants[msg.from].color }">
-              <span v-if="msg.from != username" >{{ participants[msg.from].display }}</span>
+            <div class="user" :style="{ color: msg.color }">
+              <span v-if="msg.from != username" >{{ msg.from }}</span>
               <span v-else>(me: {{ display }})</span>:
             </div>
             <div class="msg" >
@@ -253,7 +253,8 @@ export default {
               // Public message
               self.messages.push( {
                 id: transaction,
-                from: from,
+                from: self.participants[from].display,
+                color: self.participants[from].color,
                 msg: Autolinker.link(strip_tags(msg)),
                 date: dateString,
               })
@@ -335,12 +336,13 @@ export default {
 
         if(response.participants && response.participants.length > 0) {
           response.participants.forEach( function(user) {
-            let newuser = user;
-            newuser.color = randomColor();
-            self.$set(self.participants, user.username, newuser)
+            //let newuser = user;
+            //newuser.color = randomColor({luminosity: 'dark'})
+            //self.$set(self.participants, user.username, newuser)
+            self.addUserToList(user.username, user.display);
           })
-          self.count = Object.keys(self.participants).length
-          self.$emit('participantNumberChanged', self.count)
+          //self.count = Object.keys(self.participants).length
+          //self.$emit('participantNumberChanged', self.count)
         }
 
       };
@@ -456,7 +458,7 @@ export default {
         e.target.innerText = "";
         return;
       }
-      if(self.msg.length < 2) {
+      if(self.msg.length < 1) {
         e.target.innerText =
           e.target.innerText.replace(new RegExp('\\n', 'g'), '');
         return;
@@ -486,7 +488,7 @@ export default {
       let newuser = {
         username: username,
         display: display,
-        color: randomColor({luminosity: 'dark',hue: 'blue'})
+        color: randomColor({luminosity: 'dark'})
       }
       self.$set(self.participants, username, newuser)
 
@@ -502,7 +504,7 @@ export default {
       self.$delete(self.participants, username);
       self.count = Object.keys(self.participants).length
       this.$emit('participantNumberChanged', self.count)
-      self.$forceUpdate();
+      //self.$forceUpdate();
     },
 
     getDateString(jsonDate) {
