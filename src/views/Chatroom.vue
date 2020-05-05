@@ -1,17 +1,16 @@
 <template>
   <div class="main">
-    <div class="stage">
+    <div class="stage" v-if="$route.name != 'embed'">
       <div class='embed-container'>
         <Stage />
       </div>
     </div>
 
-
     <div class="echorooms">
       <Videoroom
         :roombyName="roombyName"
-        v-if="nick  && showVroom"
-        :nick="nick"
+        v-if="login_name  && showVroom"
+        :nick="login_name"
         is_muted="true"
         :myJanus="janus"
         open="true"
@@ -20,9 +19,9 @@
       />
 
       <Audioroom
-        v-if="nick"
+        v-if="login_name"
         :roombyName="roombyName"
-        :nick="nick"
+        :nick="login_name"
         :myJanus="janus"
       />
 
@@ -35,7 +34,7 @@
           :roombyName="roombyName"
           :nick="login_name"
           @participantNumberChanged="foyer_count = $event"
-          @hasNick="nick = $event;"
+          @hasNick="login_name = $event;"
           @hasRoomInfo="foyer_info = $event"
           @hasJanus="janus = $event"
         />
@@ -72,6 +71,10 @@ export default {
     facetime:  {
       type: Boolean,
       default: false
+    },
+    embed:  {
+      type: Boolean,
+      default: false
     }
   },
 
@@ -88,7 +91,7 @@ export default {
       chat_open: true,
       janusReady: false,
       login_name: null,
-      showVroom:true
+      showVroom:true,
     }
   },
 
@@ -108,12 +111,12 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 
 .embed-container { position: relative; padding:0; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%;}
 .embed-container iframe, .embed-container object, .embed-container embed, .embed-container div
   { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
 
-.stage { width: 640px; margin: 0 auto; max-width: 100%; }
-.echorooms { width: 640px; height:300px; margin: 20px auto;  max-width: 95%; }
+
+
 </style>

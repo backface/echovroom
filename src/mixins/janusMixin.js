@@ -81,10 +81,9 @@ export const janusMixin = {
   methods: {
 
     loadConfig() {
-      fetch('config.json')
+      fetch('vroom/config.json')
         .then(r => r.json())
         .then(json => {
-          console.log("load config", json);
           if (!this.server) this.server = json.server;
           if (!this.iceServers) this.iceServers = json.iceServers;
           if (this.room === 0) {
@@ -140,35 +139,11 @@ export const janusMixin = {
 
       let self=this;
       //if(/[^a-zA-Z0-9]/.test(username)) {
-        console.log(self.initial_participants)
       self.$refs.login.open("Your name?", { participants: self.initial_participants} ).then((nick) => {
         self.display = nick;
-        ////if (self.initial_participants.find(d => d.display == nick)) {
-          //self.askForUsername();
-        //} else {
-          self.registerUser()
-        //}
+        self.registerUser()
       })
-      /*
-      self.$buefy.dialog.prompt({
-          container: self.dialog_container,
-          message: (exists) ? "User exists. Choose another one" : "What's your name?",
-          canCancel: false,
-          inputAttrs: {
-              placeholder: 'e.g. Peter Pan',
-              minlength: 2
-          },
-          trapFocus: true,
-          onConfirm: function(nick) {
-            self.display = nick;
-            if (self.initial_participants.find(d => d.display == nick)) {
-              self.loadingComponent.close()
-              self.askForUsername(true, container);
-            } else {
-              self.registerUser()
-            }
-          }
-      }) */
+
     },
 
     registerUser() {
@@ -186,7 +161,6 @@ export const janusMixin = {
       if (self.pluginName === "textroom") {
         request.textroom = request.request;
       }
-      console.log(self.display, self.room, request, self.pluginHandle);
       self.pluginHandle.send({"message": request});
     },
 
@@ -204,9 +178,8 @@ export const janusMixin = {
       }
       self.pluginHandle.send({
         "message": request,
-        success: function(response) {
+        success: function() {
           console.log("left room successull");
-          console.log(response);
         }
       });
       self.is_open=false
@@ -230,11 +203,9 @@ export const janusMixin = {
       self.pluginHandle.send({
         "message": request,
         success: function(response) {
-          console.log(response);
           self.initial_participants = response.participants;
           self.count = response.participants.length
           self.$emit('participantNumberChanged', self.count)
-
 
           if (!self.nick) {
             self.askForUsername();
@@ -293,7 +264,6 @@ export const janusMixin = {
             if (response.list.find(d => d.room == self.room)) {
               self.room_name = response.list.find(d => d.room == self.room).description
               self.room_info = response.list.find(d => d.room == self.room)
-              console.log(self.opaqueId, "room info for", self.room, self.room_info);
               resolve(true);
             } else {
               self.createRoom().then( () => {
@@ -313,6 +283,7 @@ export const janusMixin = {
       let self = this
       self.getRoomsInfo().then(()=> {
         self.getParticipantList();
+        setInterval(self.getParticipantList, 10000)
         if (self.is_open)
           self.login()
       });

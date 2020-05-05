@@ -40,12 +40,23 @@ export default new Router({
       props: { room: 1234}
     },
     {
+      path: '/embed/:roombyName',
+      name: 'embed',
+      component: Chatroom,
+      props: (route) => ({
+          roombyName: route.params.roombyName,
+          embed:true,
+          hans:"zasdfasd",
+      }),
+    },
+    {
       path: '/:roombyName',
       name: 'chat',
       component: Chatroom,
       props:true,
       //meta: { transitionName: 'zoom' },
     },
+
     {
       path: '/facetime/:roombyName',
       name: 'facetime',

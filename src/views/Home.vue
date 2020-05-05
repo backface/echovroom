@@ -38,7 +38,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .home {  margin-top:15%; }
 .home input {
   border:0px; border-bottom: 1px solid black; background:none; font-size:1.5rem; text-align:center;

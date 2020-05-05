@@ -369,7 +369,7 @@ export default {
 
 </script>
 
-<style lang="css">
+<style lang="css" scoped>
 .audioroom {  }
 .audioroom .isOn { background:black; color: #aaa}
 .audioroom .isOn .headers { border-bottom: 1px solid white; }

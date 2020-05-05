@@ -41,7 +41,7 @@ export default {
 }
 </script>
 
-<style lang="css">
+<style lang="css" scoped>
 
 .embed-container { position: relative; padding:0; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%;}
 .embed-container iframe, .embed-container object, .embed-container embed, .embed-container div

@@ -530,32 +530,28 @@ export default {
 }
 </script>
 
-<style lang="css">
+<style lang="css" scoped>
 
 .textroom {
   position: relative;
-  height:100%;
-  width:100%;max-height:100%;
+  max-height:100vh;
+  width:100%;
   display: flex;
   flex-direction: column;
 }
 
-.header { flex: 0 0 auto}
-.headers { background: none; border-bottom: 1px solid black; padding:5px 0; margin-bottom: 0.7rem !important}
-
-.chatroom { flex: 1 1 auto;display:flex; max-height:70%;}
+.chatroom { flex: 1 1 auto;display:flex; height:70vh; }
 .participants {
-  background: white;
   font-size: 0.9rem;
   overflow-y: auto;
   flex: 0 0 25%;
   margin-right: 20px;
   word-wrap: break-word;
 }
+.participants ul  {padding-left: 24px}
 .participant span { cursor: pointer}
 
 .chat {
-  background: white;
   overflow-y: auto;
   flex: 1 1 auto;
 }

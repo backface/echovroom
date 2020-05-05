@@ -8,13 +8,14 @@
         VROOM <span v-if="room_info.description">-</span> {{ room_info.description }} ({{ count + (webRTCUp ? 1 : 0) }})
         <mic-off-icon size="1x" class="icons linked" v-if="muted" @click="muteMe(false)" title="Mute Me"></mic-off-icon>
         <mic-icon size="1x" class="icons linked" v-if="!muted" @click="muteMe(true)" title="Unmute Me"></mic-icon>
-        <eye-off-icon size="1x" class="icons linked" v-if="!facetime && is_streaming" title="Factime is off" @click="toggleFacetime"></eye-off-icon>
-        <eye-icon size="1x" class="icons linked" v-if="facetime && is_streaming" title="Facetime is on" @click="toggleFacetime"></eye-icon>
-        <monitor-icon size="1x" class="icons linked" v-if="is_streaming" v-show="is_open" @click="toggleScreenShare" title="Share screen"
-          :style="{ color: screenshare ? 'red' : 'black' }"></monitor-icon>
-        <airplay-icon size="1x" class="icons linked" v-if="is_streaming" v-show="is_open" @click="sendMeToStage(username !=onstage)"
+
+        <eye-off-icon size="1x" class="icons linked" v-if="allowFacetime && !facetime && is_streaming" title="Factime is off" @click="toggleFacetime"></eye-off-icon>
+        <eye-icon size="1x" class="icons linked" v-if="allowFacetime && facetime && is_streaming" title="Facetime is on" @click="toggleFacetime"></eye-icon>
+        <monitor-icon size="1x" class="icons linked" v-if="allowScreenshare && is_streaming" v-show="is_open" @click="toggleScreenShare" title="Share screen"
+          :style="{ color: screenshare ? 'red' : '' }"></monitor-icon>
+        <airplay-icon size="1x" class="icons linked" v-if="allowStageSends && is_streaming" v-show="is_open" @click="sendMeToStage(username !=onstage)"
             title="Send me to stage"
-            :style="{ color: username == onstage && onstage != null ? 'red' : 'black' }"
+            :style="{ color: username == onstage && onstage != null ? 'red' : '' }"
           ></airplay-icon>
 
       </div>
@@ -150,6 +151,21 @@ export default {
     LoginDialog, Toast, AlertDialog,
   },
 
+  props: {
+    allowFacetime:  {
+      type: Boolean,
+      default: true
+    },
+    allowScreenshare:  {
+      type: Boolean,
+      default: true
+    },
+    allowStageSends:  {
+      type: Boolean,
+      default: true
+    },
+  },
+
   data() {
     return {
       webRTCUp: null,
@@ -214,7 +230,6 @@ export default {
     },
 
     drag( cmd, who, event) {
-      console.log(cmd, who, event.clientX, event.clientY, event.center.x, event.center.y, event);
       let x = event.center.x
       let y = event.center.y
       // event.clientX / Y
