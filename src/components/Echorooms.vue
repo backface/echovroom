@@ -7,6 +7,8 @@
       :nick="nick"
       is_muted="true"
       open="true"
+      :allowFacetime="true"
+      :allowStageSends="false"
       @leftRoom="recreateVRoom"
     />
 
@@ -20,8 +22,6 @@
         @hasJanus="janus = $event"
         :myJanus="janus"
         open="false"
-        :allowFacetime="false"
-        :allowStageSends="false"
       />
     </transition>
 

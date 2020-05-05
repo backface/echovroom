@@ -12,6 +12,7 @@ import VideoTest from './components/VideoTest.vue'
 import VideoTest2 from './components/VideoTest2.vue'
 import VideoTest3 from './components/VideoTest3.vue'
 import VideoTest4 from './components/VideoTest4.vue'
+import D3test from './components/D3test.vue'
 
 Vue.use(Router)
 
@@ -49,6 +50,36 @@ export default new Router({
           hans:"zasdfasd",
       }),
     },
+
+
+
+        {
+          path: '/videotest',
+          name: 'videotest',
+          component: VideoTest,
+        },
+        {
+          path: '/videotest2',
+          name: 'videotest2',
+          component: VideoTest2,
+        },
+        {
+          path: '/videotest3',
+          name: 'videotest3',
+          component: VideoTest3,
+        },
+        {
+          path: '/VideoTest4',
+          name: 'videotest4',
+          component: VideoTest4,
+        },
+        {
+          path: '/D3test',
+          name: 'D3test',
+          component: D3test,
+        },
+
+
     {
       path: '/:roombyName',
       name: 'chat',
@@ -73,26 +104,6 @@ export default new Router({
       component: Eventroom,
     },
 
-    {
-      path: '/videotest',
-      name: 'videotest',
-      component: VideoTest,
-    },
-    {
-      path: '/videotest2',
-      name: 'videotest2',
-      component: VideoTest2,
-    },
-    {
-      path: '/videotest3',
-      name: 'videotest3',
-      component: VideoTest3,
-    },
-    {
-      path: '/VideoTest4',
-      name: 'videotest4',
-      component: VideoTest4,
-    },
 
     { path: '*', component: NotFound}
   ],

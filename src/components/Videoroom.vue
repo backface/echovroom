@@ -133,6 +133,11 @@ import LoginDialog from '@/components/dialogs/LoginDialog'
 import AlertDialog from '@/components/dialogs/AlertDialog'
 import Toast from '@/components/dialogs/Toast'
 import { VueHammer } from 'vue2-hammer'
+import { forceSimulation }  from 'd3-force';
+import { forceManyBody }  from 'd3-force';
+//import { forceCenter }  from 'd3-force';
+import { forceCollide }  from 'd3-force';
+import { forceRadial }  from 'd3-force';
 
 Vue.use(VueHammer)
 Vue.use(fullscreen)
@@ -205,6 +210,8 @@ export default {
       },
       onstage: null,
       vr: false,
+      force: null,
+      use_force:false,
     }
   },
 
@@ -217,6 +224,9 @@ export default {
       this.janus = this.myJanus
       this.attachPlugin()
     }
+
+
+
   },
 
   destroyed () {
@@ -225,9 +235,34 @@ export default {
 
   methods: {
 
+    resetForce() {
+      let self = this;
+      this.force = forceSimulation(this.feeds)
+        .force('charge', forceManyBody().strength(30))
+        //.force('center', forceCenter(this.getWindowWidth() / 2, this.getWindowHeight() / 2))
+        .force('collision', forceCollide().radius(this.tile_width/2+ 5))
+        .force('r', forceRadial()
+          .radius( (Math.min(this.getWindowWidth(), this.getWindowHeight()) / 2))
+          .x(this.getWindowWidth()/ 2 - this.tile_width/2)
+          .y(this.getWindowHeight()/ 2 - this.tile_width/2)
+        )
+        .on('tick', self.force_ticked);
+    },
+
     toggleFullscreen () {
       this.$refs['fullscreen'].toggle()
     },
+
+    force_ticked() {
+      /*Object.keys(self.feeds).map(function(publisher) {
+          var i = self.feeds[publisher];
+          i.x = Math.max(- this.tile_width / 4, i.x);
+          i.x = Math.min(this.getWindowWidth() - this.tile_width * 3/4, i.x );
+          i.y = Math.max(- this.tile_width / 4, i.y);
+          i.y = Math.min(this.getWindowHeight() - this.tile_width * 3/4, i.y);
+      });*/
+    },
+
 
     drag( cmd, who, event) {
       let x = event.center.x
@@ -240,8 +275,11 @@ export default {
           last_x: x,
           last_y: y
         }
-      else if (cmd === "stop")
-        this.dragging = null
+        else if (cmd === "stop") {
+          this.dragging = null
+          if (this.use_force)
+            if (this.force) this.force.alpha(1).restart();
+        }
       else if (this.dragging != null) {
         let diff_x = this.dragging.last_x - x
         let diff_y = this.dragging.last_y - y
@@ -295,7 +333,9 @@ export default {
         i += 1
       }
       if (i >= 99) console.log("could not find a spot");
+
       return newPos
+
     },
 
     attachPlugin() {
@@ -625,6 +665,7 @@ export default {
                 newfeed.y = self.participants[msg["id"]].y
                 self.$set(self.feeds, msg.id, newfeed)
               }
+              if (self.use_force) self.resetForce()
               Janus.log(self.opaqueId,
                 "Successfully attached to feed " + remoteFeed.id + " ("
                 + remoteFeed.rfdisplay + ") in room " + msg["room"]);
