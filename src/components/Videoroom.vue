@@ -40,14 +40,16 @@
       <div class="screen has-text-center" ref="screen" v-if="!vr">
 
           <div v-show="is_streaming" class="video me" :class="username == onstage ? 'stage' : 'video'"
-            v-bind:style="username != onstage ?  { position: 'fixed', top: my_pos.y + 'px', left: my_pos.x + 'px', width: tile_width + 'px', height: tile_width + 'px !important' } : {}"
+            :style="username != onstage ?  { position: 'fixed', top: my_pos.y + 'px', left: my_pos.x + 'px', width: tile_width + 'px', height: tile_width + 'px !important' } : {}"
             @mousedown="drag('start', my_pos, $event)"
             @mousemove="drag('drag', my_pos, $event)"
             @mouseup="drag('stop',my_pos, $event)"
             @mouseleave="drag('stop',my_pos, $event)"
           >
 
-            <video ref="videolocal" class="videolocal" id="videolocal" autoplay playsinline muted="muted"/>
+            <video ref="videolocal" class="videolocal" id="videolocal" autoplay playsinline muted="muted"
+              :style="username != onstage ?  { width: tile_width + 'px', height: tile_width + 'px !important' } : {}"/>
+
             <div class="overlay name">ME</div>
             <div class="overlay meta">
               <mic-off-icon size="1x" class="icons linked" v-if="muted" @click="muteMe(false)"  title="Unmute Me"></mic-off-icon>
@@ -68,20 +70,20 @@
               @mousemove="drag('drag', feed, $event)"
               @mouseup="drag('stop',feed, $event)"
               @mouseleave="drag('stop',feed, $event)"
+
             >
             <!--
             @mousedown="drag('start', feed, $event)"
             @mousemove="drag('drag', feed, $event)"
             @mouseup="drag('stop', feed, $event)"
             @mouseleave="drag('stop', feed, $event)"
-            v-hammer:pan="isMobile ?  (event) => drag('drag', feed, event) : null"
-            v-hammer:panstart="isMobile ?  (event) => drag('start', feed, event): null"
-            v-hammer:panend="isMobile ?  (event) => drag('stop', feed, event): null"
+
             @mouseleave="drag('stop', feed, $event)"
           -->
 
               <video :id="'v'+feed.id" :ref="'v' + feed.id" autoplay playsinline
                :class="{ talking: participants[feed.publisher].talking }"
+               :style="feed.publisher != onstage ?  { width: tile_width + 'px', height: tile_width + 'px !important' } : {}"
               />
 
               <div class="overlay name">
@@ -260,9 +262,9 @@ export default {
       this.attachPlugin()
     }
     this.force = forceSimulation()
-      .force('charge', forceManyBody().strength(30))
-      .force('collision', forceCollide().radius(this.tile_width/2+ 5))
-      .force('r', forceRadial()
+      .force('charge', forceManyBody().strength(-10))
+      .force('collision', forceCollide().radius(this.tile_width/2 + 10))
+      .force('r', forceRadial().strength(20)
         .radius( (Math.min(this.getWindowWidth(), this.getWindowHeight()) / 2))
         .x(this.getWindowWidth()/ 2 - this.tile_width/2)
         .y(this.getWindowHeight()/ 2 - this.tile_width/2)
@@ -281,21 +283,19 @@ export default {
       console.log("reseting forces");
       let self = this;
 
-      self.force_used_area_perc = Math.round(
+      self.force_used_area_perc =
           (self.tile_width/2 * self.tile_width/2 * Math.PI * self.force_positions.length) / // kugel area
           (self.getWindowWidth() * self.getWindowHeight()) // window already
            *  100 // percentage
-      , 2)
+
 
       while (self.force_used_area_perc > self.force_max_area_perc) {
         self.tile_width--;
-        self.force_used_area_perc = Math.round(
+        self.force_used_area_perc =
             (self.tile_width/2 * self.tile_width/2 * Math.PI * self.force_positions.length) / // kugel area
             (self.getWindowWidth() * self.getWindowHeight()) // window already
              *  100 // percentage
-        , 2)
       }
-      console.log(self.force_used_area_perc, self.force_max_area_perc );
 
       self.force = self.force.nodes(self.force_positions)
         .force('collision', forceCollide().radius(self.tile_width/2+ 5))

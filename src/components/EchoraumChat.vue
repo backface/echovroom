@@ -86,7 +86,7 @@ $title-font: 'Asap Condensed';
 .max-width { width: 640px; margin: 0 auto; max-width: 100%; }
 
 .header { flex: 0 0 auto}
-.headers { background: none; border-bottom: 1px solid white; padding:5px 5px; margin-bottom: 0.7rem !important}
+.headers { background: none; border-bottom: 1px solid black; padding:5px 5px; margin-bottom: 0.7rem !important}
 
 .icons { vertical-align: middle; margin:0px 3px}
 .linked { cursor:pointer}
@@ -135,6 +135,5 @@ $title-font: 'Asap Condensed';
   .echorooms {
     font-size:2rem;
   }
-  .navbar { margin-bottom:0px}
 }
 </style>
