@@ -9,10 +9,14 @@
       open="true"
       :allowFacetime="true"
       :allowStageSends="false"
+      :allowSettings="false"
+      :showRoomInfo="false"
+      videoResolution="lowres"
       @leftRoom="recreateVRoom"
     />
 
     <transition name="fade">
+      <div class="textroomwrapper">
       <Textroom
         v-if="janusReady"
         :roombyId="room"
@@ -21,8 +25,10 @@
         @hasRoomInfo="foye_info = $event"
         @hasJanus="janus = $event"
         :myJanus="janus"
+        :showRoomInfo="false"
         open="false"
       />
+    </div>
     </transition>
 
   <toast ref="toast"></toast>
@@ -81,5 +87,5 @@ export default {
 </script>
 
 <style lang="css" scoped>
-
+.textroomwrapper { height:300px}
 </style>

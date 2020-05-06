@@ -67,16 +67,15 @@ $title-font: 'Asap Condensed';
 @import '~bulma/css/bulma.min.css';
 
 .echorooms {
-  font-family: "Asap Condensed", Arial, Helvetica, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #000;
 }
 .v-dialog__content {
-    font-family: "Asap Condensed", Arial, Helvetica, sans-serif !important;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
 }
-.textroom { max-height: 300px !important }
+.textroom { height: 300px }
 
 *:focus {
     outline: none;
@@ -87,7 +86,7 @@ $title-font: 'Asap Condensed';
 .max-width { width: 640px; margin: 0 auto; max-width: 100%; }
 
 .header { flex: 0 0 auto}
-.headers { background: none; border-bottom: 1px solid black; padding:5px 5px; margin-bottom: 0.7rem !important}
+.headers { background: none; border-bottom: 1px solid white; padding:5px 5px; margin-bottom: 0.7rem !important}
 
 .icons { vertical-align: middle; margin:0px 3px}
 .linked { cursor:pointer}
@@ -133,6 +132,9 @@ $title-font: 'Asap Condensed';
 
 
 @media (max-width:461px) {
+  .echorooms {
+    font-size:2rem;
+  }
   .navbar { margin-bottom:0px}
 }
 </style>

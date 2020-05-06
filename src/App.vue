@@ -163,7 +163,7 @@ export default {
   opacity: 0;
 }
 
-
+.textroom { max-height:300px !important}
 
 @media (max-width:461px) {
   .navbar { margin-bottom:0px}

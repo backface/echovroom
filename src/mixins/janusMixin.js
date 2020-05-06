@@ -30,7 +30,15 @@ export const janusMixin = {
     host: {
       type: String,
       default: ""
-    }
+    },
+    showRoomInfo: {
+      type: Boolean,
+      default: true
+    },
+    allowSettings: {
+      type: Boolean,
+      default: true
+    },
 
 
   },
@@ -183,6 +191,7 @@ export const janusMixin = {
         }
       });
       self.is_open=false
+      setTimeout(self.updateParticipantsInfo, 10000)
       this.$forceUpdate()
     },
 
@@ -234,6 +243,7 @@ export const janusMixin = {
       self.pluginHandle.send({
         "message": request,
         success: function(response) {
+          console.log(response.participants);
           self.initial_participants = response.participants;
           self.count = self.initial_participants.length
         },
@@ -283,10 +293,17 @@ export const janusMixin = {
       let self = this
       self.getRoomsInfo().then(()=> {
         self.getParticipantList();
-        setInterval(self.getParticipantList, 10000)
+        setTimeout(self.updateParticipantsInfo, 10000)
         if (self.is_open)
           self.login()
       });
+    },
+
+    updateParticipantsInfo() {
+      let self = this;
+      self.getParticipantList()
+      if (!self.is_open)
+        setTimeout(self.updateParticipantsInfo, 10000)
     },
 
     createRoom() {
@@ -322,6 +339,12 @@ export const janusMixin = {
       }
       return (hash + 2147483647) + 1
     },
+
+    isMobile() {
+      const isAndroid = /Android/i.test(navigator.userAgent);
+      const isiOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+      return isAndroid || isiOS;
+    }
 
   }
 };

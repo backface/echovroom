@@ -3,14 +3,22 @@
 
     <div class="columns is-mobile is-narrow headers is-gapless">
       <div class="column has-text-left is-10">
-        <video-off-icon size="1x" class="icons" v-if="!is_streaming" @click="publishOwnFeed" title="Unpublish Video"></video-off-icon>
-        <video-icon size="1x" class="icons" v-if="is_streaming" @click="unpublishOwnFeed" title="Publish Video"></video-icon>
-        VROOM <span v-if="room_info.description">-</span> {{ room_info.description }} ({{ count + (webRTCUp ? 1 : 0) }})
+        <video-off-icon size="1x" class="icons linked" v-if="!is_streaming" @click="publishOwnFeed(true)" title="Unpublish Video"></video-off-icon>
+        <video-icon size="1x" class="icons linked" v-if="is_streaming" @click="unpublishOwnFeed" title="Publish Video"></video-icon>
+
+        video
+        <span v-if="room_info.description && showRoomInfo">-{{ room_info.description }}</span>
+        <span v-if="count > 0"> ({{ count + (webRTCUp ? 1 : 0) }})</span>
+
         <mic-off-icon size="1x" class="icons linked" v-if="muted" @click="muteMe(false)" title="Mute Me"></mic-off-icon>
         <mic-icon size="1x" class="icons linked" v-if="!muted" @click="muteMe(true)" title="Unmute Me"></mic-icon>
 
+        <volume-2-icon size="1x" class="icons linked" v-if="!all_muted" @click="muteAll(true)" title="Mute all"></volume-2-icon>
+        <volume-x-icon size="1x"  class="icons linked"  v-if="all_muted" @click="muteAll(false)" title="Unmute all"></volume-x-icon>
+
         <eye-off-icon size="1x" class="icons linked" v-if="allowFacetime && !facetime && is_streaming" title="Factime is off" @click="toggleFacetime"></eye-off-icon>
         <eye-icon size="1x" class="icons linked" v-if="allowFacetime && facetime && is_streaming" title="Facetime is on" @click="toggleFacetime"></eye-icon>
+
         <monitor-icon size="1x" class="icons linked" v-if="allowScreenshare && is_streaming" v-show="is_open" @click="toggleScreenShare" title="Share screen"
           :style="{ color: screenshare ? 'red' : '' }"></monitor-icon>
         <airplay-icon size="1x" class="icons linked" v-if="allowStageSends && is_streaming" v-show="is_open" @click="sendMeToStage(username !=onstage)"
@@ -20,9 +28,9 @@
 
       </div>
       <div class="column has-text-right">
-        <minus-icon size="1x" class="icons linked" v-if="webRTCUp && is_open" @click="leaveRoom()"></minus-icon>
-        <loader-icon size="1x" class="icons loading" v-if="!webRTCUp && is_open"></loader-icon>
-        <plus-icon size="1x" class="icons linked" v-if="!is_open" @click="login()"></plus-icon>
+        <minus-icon size="1x" class="icons linked" v-if="webRTCUp && is_open" @click="leaveRoom()" title="Leave room"></minus-icon>
+        <loader-icon size="1x" class="icons loading" v-if="!webRTCUp && is_open"  title="Loading"></loader-icon>
+        <plus-icon size="1x" class="icons linked" v-if="!is_open" @click="login()" title="Enter room"></plus-icon>
       </div>
     </div>
     <fullscreen ref="fullscreen" :fullscreen.sync="fullscreen"
@@ -32,19 +40,20 @@
       <div class="screen has-text-center" ref="screen" v-if="!vr">
 
           <div v-show="is_streaming" class="video me" :class="username == onstage ? 'stage' : 'video'"
-            v-bind:style="username != onstage ? { position: 'fixed', top: my_pos.y + 'px', left: my_pos.x + 'px' } : {}"
-            v-hammer:pan="(event) => drag('drag', my_pos, event)"
-            v-hammer:panstart="(event) => drag('start', my_pos, event)"
-            v-hammer:panend="(event) => drag('stop', my_pos, event)"
+            v-bind:style="username != onstage ?  { position: 'fixed', top: my_pos.y + 'px', left: my_pos.x + 'px', width: tile_width + 'px', height: tile_width + 'px !important' } : {}"
+            @mousedown="drag('start', my_pos, $event)"
+            @mousemove="drag('drag', my_pos, $event)"
+            @mouseup="drag('stop',my_pos, $event)"
+            @mouseleave="drag('stop',my_pos, $event)"
           >
 
             <video ref="videolocal" class="videolocal" id="videolocal" autoplay playsinline muted="muted"/>
             <div class="overlay name">ME</div>
             <div class="overlay meta">
-              <mic-off-icon size="1x" class="icons linked" v-if="muted" @click="muteMe(false)"></mic-off-icon>
-              <mic-icon size="1x" class="icons linked" v-if="!muted" @click="muteMe(true)"></mic-icon>
-              <settings-icon size="1x" class="icons linked" @click="showBitrateOptions=!showBitrateOptions"></settings-icon>
-              <maximize-2-icon size="1x" class="icons linked" @click="makeVideoFullscreen"></maximize-2-icon>
+              <mic-off-icon size="1x" class="icons linked" v-if="muted" @click="muteMe(false)"  title="Unmute Me"></mic-off-icon>
+              <mic-icon size="1x" class="icons linked" v-if="!muted" @click="muteMe(true)" title="Mute Me"></mic-icon>
+              <settings-icon  v-if="allowSettings" size="1x" class="icons linked" @click="showBitrateOptions=!showBitrateOptions"  title="Show Settings"></settings-icon>
+              <maximize-2-icon size="1x" class="icons linked" @click="makeVideoFullscreen" title="Fullscreen"></maximize-2-icon>
             </div>
             <div class="overlay options" v-show="showBitrateOptions">
               <v-select dark label="Cap Bitrate" dense v-model="bitrate" :items="bitrates" @change="updateBitrateCap"></v-select>
@@ -54,13 +63,24 @@
           <transition-group name="fade">
 
             <div v-for="feed in feeds" :key="feed.id" :class="feed.publisher == onstage ? 'stage' : 'video' "
-              v-bind:style="feed.publisher != onstage ? { position: 'fixed', top: feed.y + 'px', left: feed.x + 'px' } : {}"
-              v-hammer:pan="(event) => drag('drag', feed, event)"
-              v-hammer:panstart="(event) => drag('start', feed, event)"
-              v-hammer:panend="(event) => drag('stop', feed, event)"
+              :style="feed.publisher != onstage ? { position: 'fixed', top: feed.y + 'px', left: feed.x + 'px', width: tile_width + 'px', height: tile_width + 'px !important' } : {}"
+              @mousedown="drag('start', feed, $event)"
+              @mousemove="drag('drag', feed, $event)"
+              @mouseup="drag('stop',feed, $event)"
+              @mouseleave="drag('stop',feed, $event)"
             >
+            <!--
+            @mousedown="drag('start', feed, $event)"
+            @mousemove="drag('drag', feed, $event)"
+            @mouseup="drag('stop', feed, $event)"
+            @mouseleave="drag('stop', feed, $event)"
+            v-hammer:pan="isMobile ?  (event) => drag('drag', feed, event) : null"
+            v-hammer:panstart="isMobile ?  (event) => drag('start', feed, event): null"
+            v-hammer:panend="isMobile ?  (event) => drag('stop', feed, event): null"
+            @mouseleave="drag('stop', feed, $event)"
+          -->
 
-              <video :id="'v'+feed.id" :ref="'feed-' + feed.id" autoplay playsinline
+              <video :id="'v'+feed.id" :ref="'v' + feed.id" autoplay playsinline
                :class="{ talking: participants[feed.publisher].talking }"
               />
 
@@ -74,9 +94,9 @@
                 <span class="bitrate">
                   {{ feed.bitrate }}
                 </span><br />
-                <settings-icon size="1x" class="icons linked"  @click="feed.showOptions=!feed.showOptions"></settings-icon>
-                <maximize-2-icon size="1x" class="icons linked" @click="makeVideoFullscreen"></maximize-2-icon>
-                <airplay-icon size="1x" class="icons linked" @click="sendToStage(feed.publisher)"></airplay-icon>
+                <settings-icon v-if="allowSettings" size="1x" class="icons linked"  @click="feed.showOptions=!feed.showOptions" title="Show Settings"></settings-icon>
+                <maximize-2-icon size="1x" class="icons linked" @click="makeVideoFullscreen" title="Fullscreen"></maximize-2-icon>
+                <airplay-icon v-if="allowStageSends" size="1x" class="icons linked" @click="sendToStage(feed.publisher)" title="Send to Stage"></airplay-icon>
               </div>
 
               <div class="overlay options" v-show="feed.showOptions">
@@ -97,7 +117,6 @@
           <a-box src="#video" position="-1 0.5 -3" rotation="0 45 0" ></a-box>
         </a-scene>
       </div>
-
 
     </fullscreen>
 
@@ -129,6 +148,7 @@ import { SettingsIcon } from 'vue-feather-icons'
 import { MonitorIcon } from 'vue-feather-icons'
 import { AirplayIcon } from 'vue-feather-icons'
 import { EyeOffIcon, EyeIcon } from 'vue-feather-icons'
+import { Volume2Icon, VolumeXIcon } from 'vue-feather-icons'
 import LoginDialog from '@/components/dialogs/LoginDialog'
 import AlertDialog from '@/components/dialogs/AlertDialog'
 import Toast from '@/components/dialogs/Toast'
@@ -139,8 +159,10 @@ import { forceManyBody }  from 'd3-force';
 import { forceCollide }  from 'd3-force';
 import { forceRadial }  from 'd3-force';
 
-Vue.use(VueHammer)
+
 Vue.use(fullscreen)
+Vue.use(VueHammer)
+
 
 export default {
   name: 'Videoroom',
@@ -154,6 +176,7 @@ export default {
     Maximize2Icon, //Minimize2Icon,
     MonitorIcon, AirplayIcon, EyeOffIcon, EyeIcon,
     LoginDialog, Toast, AlertDialog,
+    Volume2Icon, VolumeXIcon
   },
 
   props: {
@@ -169,6 +192,14 @@ export default {
       type: Boolean,
       default: true
     },
+    allowSettings:  {
+      type: Boolean,
+      default: true
+    },
+    videoResolution:  {
+      type: String,
+      default: "stdres"
+    },
   },
 
   data() {
@@ -182,6 +213,7 @@ export default {
       screenshare: false,
       video_off: false,
       muted: false,
+      all_muted: false,
       feeds: {},
       bitrateTimer: null,
       doSimulcast: true,
@@ -211,7 +243,10 @@ export default {
       onstage: null,
       vr: false,
       force: null,
-      use_force:false,
+      use_force: true,
+      force_positions: [],
+      force_max_area_perc: 65,
+      force_used_area_perc: 0,
     }
   },
 
@@ -224,8 +259,15 @@ export default {
       this.janus = this.myJanus
       this.attachPlugin()
     }
-
-
+    this.force = forceSimulation()
+      .force('charge', forceManyBody().strength(30))
+      .force('collision', forceCollide().radius(this.tile_width/2+ 5))
+      .force('r', forceRadial()
+        .radius( (Math.min(this.getWindowWidth(), this.getWindowHeight()) / 2))
+        .x(this.getWindowWidth()/ 2 - this.tile_width/2)
+        .y(this.getWindowHeight()/ 2 - this.tile_width/2)
+      )
+      .on('tick', this.force_tick);
 
   },
 
@@ -235,50 +277,89 @@ export default {
 
   methods: {
 
-    resetForce() {
+    resetForces() {
+      console.log("reseting forces");
       let self = this;
-      this.force = forceSimulation(this.feeds)
-        .force('charge', forceManyBody().strength(30))
-        //.force('center', forceCenter(this.getWindowWidth() / 2, this.getWindowHeight() / 2))
-        .force('collision', forceCollide().radius(this.tile_width/2+ 5))
+
+      self.force_used_area_perc = Math.round(
+          (self.tile_width/2 * self.tile_width/2 * Math.PI * self.force_positions.length) / // kugel area
+          (self.getWindowWidth() * self.getWindowHeight()) // window already
+           *  100 // percentage
+      , 2)
+
+      while (self.force_used_area_perc > self.force_max_area_perc) {
+        self.tile_width--;
+        self.force_used_area_perc = Math.round(
+            (self.tile_width/2 * self.tile_width/2 * Math.PI * self.force_positions.length) / // kugel area
+            (self.getWindowWidth() * self.getWindowHeight()) // window already
+             *  100 // percentage
+        , 2)
+      }
+      console.log(self.force_used_area_perc, self.force_max_area_perc );
+
+      self.force = self.force.nodes(self.force_positions)
+        .force('collision', forceCollide().radius(self.tile_width/2+ 5))
         .force('r', forceRadial()
-          .radius( (Math.min(this.getWindowWidth(), this.getWindowHeight()) / 2))
-          .x(this.getWindowWidth()/ 2 - this.tile_width/2)
-          .y(this.getWindowHeight()/ 2 - this.tile_width/2)
+          .radius( (Math.min(self.getWindowWidth(), self.getWindowHeight()) / 2))
+          .x(self.getWindowWidth()/ 2 - self.tile_width/2)
+          .y(self.getWindowHeight()/ 2 - self.tile_width/2)
         )
-        .on('tick', self.force_ticked);
+      self.force.alpha(1).restart()
     },
 
     toggleFullscreen () {
       this.$refs['fullscreen'].toggle()
     },
 
-    force_ticked() {
-      /*Object.keys(self.feeds).map(function(publisher) {
-          var i = self.feeds[publisher];
-          i.x = Math.max(- this.tile_width / 4, i.x);
-          i.x = Math.min(this.getWindowWidth() - this.tile_width * 3/4, i.x );
-          i.y = Math.max(- this.tile_width / 4, i.y);
-          i.y = Math.min(this.getWindowHeight() - this.tile_width * 3/4, i.y);
-      });*/
+    force_tick() {
+      let self = this;
+      self.force_positions.forEach( (i) => {
+        if (i.id == 0) {
+          self.my_pos.x = Math.max(0, i.x);
+          self.my_pos.x = Math.min(self.getWindowWidth() - self.tile_width, i.x );
+          self.my_pos.y = Math.max(self.tile_width * 2, i.y);
+          self.my_pos.y = Math.min(self.getWindowHeight() - self.tile_width, i.y);
+        } else {
+          self.feeds[i.id].x = Math.max(0, i.x);
+          self.feeds[i.id].x = Math.min(self.getWindowWidth() - self.tile_width, i.x );
+          self.feeds[i.id].y = Math.max(self.tile_width * 2, i.y);
+          self.feeds[i.id].y = Math.min(self.getWindowHeight() - self.tile_width, i.y);
+        }
+
+      })
     },
 
 
     drag( cmd, who, event) {
-      let x = event.center.x
-      let y = event.center.y
-      // event.clientX / Y
+      let x = 0
+      let y = 0
+
+      // ignore mouse events coming from hammer
+      // must be better was to do this
+      //if (event.pointerType == "mouse") {
+      //  return;
+    //  }
+
+      if (event.pointerType) {
+        x = event.center.x
+        y = event.center.y
+      } else {
+        x = event.clientX
+        y = event.clientY
+      }
 
       if (cmd === "start")
         this.dragging = {
           who: who,
           last_x: x,
           last_y: y
+
         }
         else if (cmd === "stop") {
           this.dragging = null
-          if (this.use_force)
-            if (this.force) this.force.alpha(1).restart();
+          if (this.use_force) {
+            this.force.alpha(1).restart()
+          }
         }
       else if (this.dragging != null) {
         let diff_x = this.dragging.last_x - x
@@ -287,6 +368,14 @@ export default {
         this.dragging.who.y -= diff_y;
         this.dragging.last_x = x
         this.dragging.last_y = y
+        if (this.use_force) {
+          console.log(who.publisher);
+          let id = who.publisher ? who.publisher : 0
+          let item = this.force_positions.find( d  => d.id == id)
+          item.x = this.dragging.who.x
+          item.y = this.dragging.who.y
+
+        }
       }
     },
 
@@ -409,6 +498,7 @@ export default {
                   user.y = pos.y;
                   self.$set(self.participants, user.id, user);
                   self.newRemoteFeed(user.id, user.display, user.audio_codec, user.video_codec);
+
                 })
                 self.count = Object.keys(self.participants).length
                 self.$emit('participantNumberChanged', self.count)
@@ -428,6 +518,7 @@ export default {
                     user.y = pos.y;
                     self.$set(self.participants, user.id, user);
                     self.newRemoteFeed(user.id, user.display, user.audio_codec, user.video_codec);
+
                   })
                   console.log(self.opaqueId, self.participants);
                   self.count = Object.keys(self.participants).length
@@ -447,6 +538,8 @@ export default {
                   self.pluginHandle.hangup();
                   self.$forceUpdate()
                   self.$emit('leftRoom')
+                  self.force_positions = []
+                  self.resetForces()
                   return;
 
                 } else if(self.feeds) {
@@ -455,9 +548,12 @@ export default {
                     self.$delete(self.feeds,msg["leaving"])
                   }
                 }
+                self.force_positions = self.force_positions.filter( d => d.id !== msg['leaving'] );
+                self.resetForces()
+
                 self.$delete(self.participants,msg['leaving'])
                 self.count = Object.keys(self.participants).length
-                self.$forceUpdate()
+                //self.$forceUpdate()
 
               } else if(msg["unpublished"] !== undefined && msg["unpublished"] !== null) {
                 // One of the publishers has unpublished?
@@ -476,7 +572,6 @@ export default {
                     self.$forceUpdate();
                   }
                 }
-
               } else if(msg["error"] !== undefined && msg["error"] !== null) {
                 if(msg["error_code"] === 426) {
                   self.alert.open("Room " + self.room + " does not exits");
@@ -515,6 +610,14 @@ export default {
 
           Janus.attachMediaStream(self.$refs.videolocal, stream);
           self.my_pos = self.getNewPosition()
+          if (self.use_force) {
+            self.force_positions.push({
+              x: self.my_pos.x,
+              y: self.my_pos.y,
+              id: 0,
+            })
+            self.resetForces()
+          }
           self.is_streaming = true;
           self.muteMe(self.muted)
           // We're not going to attach the local audio stream!
@@ -564,7 +667,13 @@ export default {
         })
       } else  {
         self.pluginHandle.createOffer( {
-          media: {  audioRecv: false, videoRecv: false, audioSend: useAudio, videoSend: true},
+          media: {
+              audioRecv: false,
+              videoRecv: false,
+              audioSend: useAudio,
+              ideoSend: true,
+              video: self.videoResolution
+          },
           simulcast: self.doSimulcast,
 
           success: function(jsep) {
@@ -664,8 +773,18 @@ export default {
                 newfeed.x = self.participants[msg["id"]].x
                 newfeed.y = self.participants[msg["id"]].y
                 self.$set(self.feeds, msg.id, newfeed)
+                if (self.use_force) {
+                  self.force_positions.push({
+                    x: newfeed.x,
+                    y: newfeed.y,
+                    id: newfeed.publisher,
+                  })
+                  self.resetForces()
+                }
               }
-              if (self.use_force) self.resetForce()
+
+
+
               Janus.log(self.opaqueId,
                 "Successfully attached to feed " + remoteFeed.id + " ("
                 + remoteFeed.rfdisplay + ") in room " + msg["room"]);
@@ -748,7 +867,10 @@ export default {
           Janus.log(self.opaqueId, "Remote feed #" + remoteFeed.id)
           console.log("feed", self.feeds[remoteFeed.publisher]);
 
-          Janus.attachMediaStream(document.getElementById('v'+ remoteFeed.id), stream)
+          //setTimeout( function() {
+          //console.log(document.getElementById('v'+ remoteFeed.id);
+          //Janus.attachMediaStream(document.getElementById('v'+ remoteFeed.id), stream)
+          Janus.attachMediaStream(self.$refs['v'+remoteFeed.id][0], stream)
           self.feeds[remoteFeed.publisher].loading = false;
           self.$forceUpdate();
 
@@ -773,6 +895,7 @@ export default {
             }, 1000);
               // // TODO: Check if the resolution changed too
           }
+          //  }, 1000);
         },
 
         oncleanup: function() {
@@ -788,6 +911,16 @@ export default {
         this.pluginHandle.unmuteAudio();
       }
       this.muted = this.pluginHandle.isAudioMuted();
+    },
+
+    muteAll(muted) {
+      console.log("mute all ", muted);
+      for (let feed in this.feeds) {
+        console.log(feed);
+        console.log(  this.$refs['v'+this.feeds[feed].id]);
+        this.$refs['v'+this.feeds[feed].id][0].muted = muted;
+      }
+      this.all_muted = muted;
     },
 
     updateBitrateCap() {
@@ -983,8 +1116,8 @@ export default {
 .videoroom .video video {
   object-fit: cover;
   border-radius: 50%;
-  width:256px;
-  height:256px;
+  width:100%;
+  height:100%;
   background:black;
   border:0;
   box-shadow: 10px 6px 12px rgba(0,0,0,0.55);
@@ -1012,10 +1145,7 @@ export default {
   }
 
 @media (max-width:461px) {
-  .videoroom .video video {
-    width:156px;
-    height:156px;
-  }
+
   .videoroom .overlay { display:none}
 }
 

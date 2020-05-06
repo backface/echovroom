@@ -4,12 +4,14 @@
     <div class="header">
       <div class="columns is-mobile is-narrow headers is-gapless">
         <div class="column has-text-left is-10">
-          <message-square-icon size="1x" class="icons"></message-square-icon> Foyer
-           <span v-if="room_info.description">-</span> <span v-if="room_info">{{ room_info.description }}  ({{ count }})</span>
+          <message-square-icon size="1x" class="icons linked"></message-square-icon>
+            text
+           <span v-if="room_info.description && showRoomInfo">- {{ room_info.description }} </span>
+           <span v-if="count > 0"> ({{ count }})</span>
         </div>
         <div class="column  has-text-right">
-          <minus-icon size="1x" class="icons linked" v-if="is_open" @click="is_open=false"></minus-icon>
-          <plus-icon size="1x" class="icons linked" v-if="!is_open" @click="openChat"></plus-icon>
+          <minus-icon size="1x" class="icons linked" v-if="is_open" @click="is_open=false" title="Hide room"></minus-icon>
+          <plus-icon size="1x" class="icons linked" v-if="!is_open" @click="openChat" title="Enter room"></plus-icon>
         </div>
       </div>
     </div>
@@ -17,7 +19,7 @@
     <div class="chatroom" v-show="is_open">
 
       <vue-custom-scrollbar class="participants">
-        <div class="has-text-left" ref="chat">
+        <div class="has-text-left" ref="participants">
           <ul>
             <li v-for="(user, index) in participants" :key="index" class="participant">
               <v-menu v-if="user.username != username">
@@ -37,7 +39,7 @@
         </div>
       </vue-custom-scrollbar>
 
-      <vue-custom-scrollbar class="chat" id="chatbar" ref="chat">
+      <vue-custom-scrollbar class="chat" id="chatbar" ref="chatbar">
         <div class="has-text-left" id="chat">
           <div  class="item" v-if="welcome_msg">
             <div class="user">
@@ -259,8 +261,9 @@ export default {
                 date: dateString,
               })
               window.setTimeout( function() {
-                //self.$refs.chat.scrollTop = self.$refs.chat.scrollHeight;
-                document.getElementById("chatbar").scrollTop = document.getElementById("chatbar").scrollHeight;
+                console.log(self.$refs.chatbar.$el);
+                self.$refs.chatbar.$el.scrollTop = self.$refs.chatbar.$el.scrollHeight;
+                //document.getElementById("chatbar").scrollTop = document.getElementById("chatbar").scrollHeight;
               }, 200);
             }
 
@@ -534,13 +537,13 @@ export default {
 
 .textroom {
   position: relative;
-  max-height:100vh;
+  max-height:100%;
   width:100%;
   display: flex;
   flex-direction: column;
 }
 
-.chatroom { flex: 1 1 auto;display:flex; height:70vh; }
+.chatroom { flex: 1 1 auto;display:flex; max-height:70%; }
 .participants {
   font-size: 0.9rem;
   overflow-y: auto;
@@ -570,7 +573,6 @@ export default {
     padding:4px 5px 4px 15px}
 
 .talk { flex:  0 0 auto; padding:0.7rem 0; margin-top: 1rem; border-top: 1px solid black; }
-.icons { vertical-align: middle;}
 
 .loadingComponent {position: absolute;top:40px;width:100%;height:100%;background:rgba(200, 200, 200, 0.5)}
 .loadingComponent div {position: absolute; top:50%; left: 50%; transform:translate(-50%,-50%)}
