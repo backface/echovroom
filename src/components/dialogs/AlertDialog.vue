@@ -1,8 +1,8 @@
 <template>
   <v-dialog v-model="dialog" :max-width="options.width" :style="{ zIndex: options.zIndex }" @keydown.esc="cancel">
     <v-card>
-      <v-card-title class="headline centered"><span v-html="title"></span></v-card-title>
-      <v-card-text v-show="!!message" class="pa-4">{{ message }}</v-card-text>
+      <v-card-title class="" >{{title}}</v-card-title>
+      <v-card-text v-show="!!message" class="pa-4" v-html="message"></v-card-text>
       <v-card-actions class="pt-0">
         <v-spacer></v-spacer>
         <v-btn v-if="options.cancelable" color="grey darken-1" text @click.native="cancel">Cancel</v-btn>

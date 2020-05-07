@@ -86,6 +86,12 @@ export default {
   color: #666;
 }
 
+:root {
+	font-size: 100%;
+	--color-bg: #fff;
+	--color-fg: #333;
+  --color-alert: red;
+}
 
 *:focus {
     outline: none;
@@ -111,7 +117,7 @@ export default {
 .embed-container iframe, .embed-container object, .embed-container embed, .embed-container div
   { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
 
-.stage { width: 640px; margin: 0 auto; max-width: 100%; margin-bottom:20px}
+.stage { width: 640px; margin: 0 auto; max-width: 100%; margin-bottom:30px}
 
 
 /* compoonent pparts */
@@ -120,7 +126,7 @@ export default {
 .textroom { height: 300px}
 
 .header { flex: 0 0 auto}
-.headers { background: none; border-bottom: 1px solid black; padding:5px 5px; margin-bottom: 0.7rem !important}
+.headers { background: none; border-bottom: 1px solid var(--color-fg); padding:5px 5px; margin-bottom: 0.7rem !important}
 
 .icons { vertical-align: middle; margin:0px 3px}
 .linked { cursor:pointer}

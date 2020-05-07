@@ -117,6 +117,4 @@ export default {
 .embed-container iframe, .embed-container object, .embed-container embed, .embed-container div
   { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
 
-
-
 </style>

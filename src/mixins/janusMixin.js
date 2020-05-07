@@ -86,9 +86,18 @@ export const janusMixin = {
 
   },
 
+  computed: {
+    isMobile() {
+      const isAndroid = /Android/i.test(navigator.userAgent);
+      const isiOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+      return isAndroid || isiOS;
+    }
+  },
+
   methods: {
 
     loadConfig() {
+      console.log(this.isMobile ? "is mobile" : "is desktop");
       fetch('vroom/config.json')
         .then(r => r.json())
         .then(json => {
@@ -243,7 +252,7 @@ export const janusMixin = {
       self.pluginHandle.send({
         "message": request,
         success: function(response) {
-          console.log(response.participants);
+          //console.log(response.participants);
           self.initial_participants = response.participants;
           self.count = self.initial_participants.length
         },
@@ -340,11 +349,7 @@ export const janusMixin = {
       return (hash + 2147483647) + 1
     },
 
-    isMobile() {
-      const isAndroid = /Android/i.test(navigator.userAgent);
-      const isiOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-      return isAndroid || isiOS;
-    }
+
 
   }
 };

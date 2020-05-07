@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  <v-app class="v-application">
     <Echorooms />
 </v-app>
 </template>
@@ -65,17 +65,25 @@ $title-font: 'Asap Condensed';
 @import '~vuetify/src/styles/styles.sass';
 */
 @import '~bulma/css/bulma.min.css';
+@import '~perfect-scrollbar/css/perfect-scrollbar.css';
+
+.ps-container {
+  position: relative;
+}
+
+:root {
+	font-size: 100%;
+	--color-bg: #ff5d5d;
+	--color-fg: #fff;
+  --color-alert: #00dd00;
+}
 
 .echorooms {
   text-align: center;
+  font-size: calc(var(--font-size) * 0.8);
 }
-.v-dialog__content {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%,-50%);
-}
-.textroom { height: 300px }
+
+.textroom { height: 500px }
 
 *:focus {
     outline: none;
@@ -86,11 +94,11 @@ $title-font: 'Asap Condensed';
 .max-width { width: 640px; margin: 0 auto; max-width: 100%; }
 
 .header { flex: 0 0 auto}
-.headers { background: none; border-bottom: 1px solid black; padding:5px 5px; margin-bottom: 0.7rem !important}
+.headers { background: none; border-bottom: 1px solid var(--color-fg); padding:5px 5px; margin-bottom: 0.7rem !important}
 
 .icons { vertical-align: middle; margin:0px 3px}
 .linked { cursor:pointer}
-.linked:hover { background: #eee; color: black}
+.linked:hover { background: var(--color-fg); color: var(--color-bg)}
 
 .loading {
   -webkit-animation:spin 4s linear infinite;
@@ -105,19 +113,6 @@ $title-font: 'Asap Condensed';
 /* TRANSITIONS */
 /*-------------------*/
 
-.slide-fade-enter-active {
-  transition: all 2.3s ease;
-}
-.slide-fade-leave-active {
-  transition: all .8s cubic-bezier(1.0, 0.5, 0.8, 1.0);
-}
-.slide-fade-enter, .slide-fade-leave-to
-/* .slide-fade-leave-active below version 2.1.8 */ {
-  transform: translateX(10px);
-  opacity: 0;
-}
-
-
 .fade-enter-active,
 .fade-leave-active {
   transition-duration: 0.3s;
@@ -130,10 +125,4 @@ $title-font: 'Asap Condensed';
 }
 
 
-
-@media (max-width:461px) {
-  .echorooms {
-    font-size:2rem;
-  }
-}
 </style>

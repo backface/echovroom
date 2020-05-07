@@ -6,19 +6,19 @@
       v-if="nick && showVroom"
       :nick="nick"
       is_muted="true"
-      open="true"
+      open="false"
       :allowFacetime="true"
       :allowStageSends="false"
       :allowSettings="false"
       :showRoomInfo="false"
-      videoResolution="lowres"
+      videoResolution="stdres-16:9"
       @leftRoom="recreateVRoom"
     />
 
     <transition name="fade">
-      <div class="textroomwrapper">
+
       <Textroom
-        v-if="janusReady"
+        v-if="janusReady && chat_open"
         :roombyId="room"
         @participantNumberChanged="foyer_count = $event"
         @hasNick="nick = $event;"
@@ -26,10 +26,11 @@
         @hasJanus="janus = $event"
         :myJanus="janus"
         :showRoomInfo="false"
-        open="false"
+        :open="chat_open ? 'true' : 'false'"
       />
-    </div>
     </transition>
+
+    <span @click="chat_open = true" v-if="!chat_open" class="linked">ENTER CHAT</span>
 
   <toast ref="toast"></toast>
   <login-dialog ref="login"></login-dialog>

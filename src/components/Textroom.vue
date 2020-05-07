@@ -6,7 +6,7 @@
         <div class="column has-text-left is-10">
           <message-square-icon size="1x" class="icons linked"></message-square-icon>
             text
-           <span v-if="room_info.description && showRoomInfo">- {{ room_info.description }} </span>
+           <span v-if="room_info.description && showRoomInfo"> - {{ room_info.description }} </span>
            <span v-if="count > 0"> ({{ count }})</span>
         </div>
         <div class="column  has-text-right">
@@ -248,8 +248,8 @@ export default {
             if(whisper === true) {
               // Private message
               let sender = self.participants[from]
-              self.alert.open(msg, {
-                  title: 'Private Message from\n, ' + sender.display,
+              self.alert.open("<p>from: " + sender.display + "</p>" + msg, {
+                  title: 'Private Message',
               })
             } else {
               // Public message
@@ -545,7 +545,7 @@ export default {
 
 .chatroom { flex: 1 1 auto;display:flex; max-height:70%; }
 .participants {
-  font-size: 0.9rem;
+  font-size: 90%;
   overflow-y: auto;
   flex: 0 0 25%;
   margin-right: 20px;
@@ -560,19 +560,20 @@ export default {
 }
 .chat {  padding-left: 0.7rem }
 .chat .item { padding:0px 0px; margin-bottom:0px}
-.chat .user { font-style:italic; font-size: 0.9rem; opacity: 0.8}
+.chat .user { font-style:italic; font-size: 90%; opacity: 0.8}
 .chat .item .username { padding: 0 0.2rem 0 1rem; }
 .chat .item .msg { padding:0.2rem 0 0.5rem 0.4rem;  }
 
-.me {line-height:2.5em;font-size: 0.9rem}
+.me {line-height:2.5em;margin-bottom: 1px}
 .msg_editor {
     text-align:left;
     min-height:2.5em;
-    border-bottom: 1px solid black;
+    line-height:2.5em;
+    border-bottom: 1px solid var(--color-fg);
     margin-right:1rem;
-    padding:4px 5px 4px 15px}
+}
 
-.talk { flex:  0 0 auto; padding:0.7rem 0; margin-top: 1rem; border-top: 1px solid black; }
+.talk { flex:  0 0 auto; padding:0.7rem 0; margin-top: 1rem; border-top: 1px solid var(--color-fg); }
 
 .loadingComponent {position: absolute;top:40px;width:100%;height:100%;background:rgba(200, 200, 200, 0.5)}
 .loadingComponent div {position: absolute; top:50%; left: 50%; transform:translate(-50%,-50%)}
