@@ -5,8 +5,8 @@
       :roombyId="room"
       v-if="nick && showVroom"
       :nick="nick"
-      is_muted="true"
-      :open="video_chat_open ? 'true' : 'false'"
+      :is_muted="true"
+      :open="video_chat_open"
       :allowFacetime="true"
       :allowStageSends="false"
       :allowSettings="false"
@@ -34,7 +34,7 @@
         @hasJanus="janus = $event"
         :myJanus="janus"
         :showRoomInfo="false"
-        :open="chat_open ? 'true' : 'false'"
+        :open="chat_open"
       />
     </transition>
 
@@ -125,5 +125,5 @@ export default {
 
 <style lang="css" scoped>
 .textroomwrapper { height:300px}
-.enter { margin: 10px 0px 20px 0px; opacity: 0.6}
+.enter { margin: 10px 0px 20px 0px; opacity: 0.8}
 </style>

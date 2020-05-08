@@ -10,8 +10,12 @@
            <span v-if="count > 0"> ({{ count }})</span>
         </div>
         <div class="column  has-text-right">
-          <minus-icon size="1x" class="icons linked" v-if="is_open" @click="is_open=false" title="Hide room"></minus-icon>
-          <plus-icon size="1x" class="icons linked" v-if="!is_open" @click="openChat" title="Enter room"></plus-icon>
+          <a v-if="is_open" @click="is_open=false" title="hide room">
+            <minus-icon size="1x" class="icons linked"></minus-icon>
+          </a>
+          <a v-if="!is_open" @click="openChat" title="enter room">
+            <plus-icon size="1x" class="icons linked"></plus-icon>
+          </a>
         </div>
       </div>
     </div>
@@ -344,13 +348,23 @@ export default {
         transaction: transaction,
         room: self.room,
         username: self.username,
-        display: self.display
+        display: self.display,
       };
+
+      if (self.password)
+        register.pin = self.password
 
       self.transactions[transaction] = function(response) {
         if(response["textroom"] === "error") {
           if(response["error_code"] === 417) {
             console.log( self.room + "does not exist." );
+          } else if(response["error_code"] === 413) {
+            console.log( self.room + "needs a pin" );
+            self.alert.open('The room ' + self.room_info.description + ' needs a pin!')
+          } else if(response["error_code"] === 419) {
+            console.log( self.room + " needs a pin" );
+            self.alert.open('Wrong Pin!')
+            self.askForUsername();            
           } else {
             console.log(response["error"]);
           }
@@ -361,6 +375,9 @@ export default {
         self.loading = false;
         self.webRTCUp = true;
         self.$emit('hasNick', self.display)
+        if (self.password)
+          self.$emit('hasPassword', self.password)
+
         self.welcome_msg = {
           from: '@' + self.room_info.description,
           msg: "Welcome!"

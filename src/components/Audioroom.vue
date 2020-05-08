@@ -2,17 +2,28 @@
   <div ref="audioroom" class="audioroom" :class="{ isOn: webRTCUp }">
 
     <div class="columns  is-mobile headers is-gapless">
+
       <div class="column has-text-left is-10">
-        <mic-off-icon size="1x" class="icons linked" v-if="muted" @click="muteMe(false)"></mic-off-icon>
-        <mic-icon size="1x" class="icons linked" v-if="!muted" @click="muteMe(true)"></mic-icon>
+        <a v-if="muted" @click="muteMe(false)" title="unmute me">
+          <mic-off-icon size="1x" class="icons linked"></mic-off-icon>
+        </a>
+        <a v-if="!muted" @click="muteMe(true)" title="mute me">
+          <mic-icon size="1x" class="icons linked"></mic-icon>
+        </a>
         audio
         <span v-if="room_info.description && showRoomInfo"> - {{ room_info.description }}</span>
         <span v-if="count > 0"> ({{ count }})</span>
+
         <loader-icon size="1x" class="icons loading" v-if="has_stream"></loader-icon>
       </div>
+
       <div class="column  has-text-right">
-        <minus-icon size="1x" class="icons linked" v-if="webRTCUp" @click="leaveRoom()"></minus-icon>
-        <plus-icon size="1x" class="icons linked" v-if="!webRTCUp" @click="login()"></plus-icon>
+        <a v-if="webRTCUp" @click="leaveRoom()" title="leave room">
+          <minus-icon size="1x" class="icons linked"></minus-icon>
+        </a>
+        <a v-if="!webRTCUp" @click="login()" title="enter room">
+          <plus-icon size="1x" class="icons linked"></plus-icon>
+        </a>
       </div>
     </div>
 

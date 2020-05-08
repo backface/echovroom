@@ -57,8 +57,6 @@
 
       </div>
 
-
-
     </nav>
 
 
@@ -67,6 +65,12 @@
         <router-view :key="$route.path"></router-view>
       </transition-page>
     </div>
+
+    <footer>
+      <div class="has-text-centered">
+          &copy; 2020 ./<a href="https://www.foovixz.xyz">FOOVIZ.XYZ</a> ./<a href="https://m.ash.to">m.ash.to</a> -
+      </div>
+    </footer>
 
 
   </v-app>
@@ -126,7 +130,7 @@ export default {
 :root {
 	font-size: 100%;
 	--color-bg: #fff;
-	--color-fg: #333;
+	--color-fg: #666;
   --color-alert: red;
 }
 
@@ -166,14 +170,27 @@ export default {
 .headers { background: none; border-bottom: 1px solid var(--color-fg); padding:5px 5px; margin-bottom: 0.7rem !important}
 
 .icons { vertical-align: middle; margin:0px 3px}
-.linked { cursor:pointer}
-.linked:hover { background: #eee; color: black}
+.linked { cursor:pointer; }
+.headers .linked {color: var(--color-fg);}
+.overlay .linked  {color: white;}
+.linked:hover { opacity:0.8 }
 
 .loading {
   -webkit-animation:spin 4s linear infinite;
   -moz-animation:spin 4s linear infinite;
   animation:spin 4s linear infinite;
 }
+
+footer {
+ bottom: 0;
+  left: 0;
+  position: fixed;
+  right: 0;
+  z-index: 30;
+  padding:0px;
+  font-size: .75em; line-height: 1.2em; background:#f9f9f9;padding:5px
+}
+footer a {color:#333 !important; text-decoration:underline}
 
 @-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }
 @-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
@@ -209,7 +226,9 @@ export default {
 .textroom { max-height:300px !important}
 
 @media (max-width:461px) {
-  .navbar { margin-bottom:0px}
+  .navbar { margin-bottom:10px}
+  .echorooms { padding: 0 15px 0 10px;}
+  .stage { padding: 0 5px 0 5px;}
 }
 
 </style>

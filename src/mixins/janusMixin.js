@@ -12,12 +12,12 @@ export const janusMixin = {
       default: null
     },
     is_muted: {
-      type: String,
-      default: "false"
+      type: Boolean,
+      default: false
     },
     open: {
-      type: String,
-      default: "false"
+      type: Boolean,
+      default: false
     },
     roombyId: {
       type: Number,
@@ -39,8 +39,10 @@ export const janusMixin = {
       type: Boolean,
       default: true
     },
-
-
+    login_password: {
+      type: String,
+      default: null
+    },
   },
 
   data () {
@@ -65,6 +67,8 @@ export const janusMixin = {
       toast:null,
       alert:null,
       webRTCUp:null,
+      password:this.login_password,
+      needs_pin: false,
     }
   },
 
@@ -77,7 +81,7 @@ export const janusMixin = {
       this.room = this.hashCode(this.roombyName)
       this.room_name = this.roombyName
     }
-    this.is_open = this.open === "true"
+    this.is_open = this.open
 
     if(this.host) {
       console.log("has host");
@@ -88,24 +92,21 @@ export const janusMixin = {
 
   watch: {
     // whenever question changes, this function will run
-    open: function () {
-      this.is_open = this.open === "true"
-      if (this.open)
+    open: function (value) {
+      console.log(value);
+      if (value)
+        this.is_open = value
         this.login();
     }
   },
 
-  computed: {
+  methods: {
+
     isMobile() {
       const isAndroid = /Android/i.test(navigator.userAgent);
       const isiOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
       return isAndroid || isiOS;
-    }
-  },
-
-
-
-  methods: {
+    },
 
     loadConfig() {
       console.log(this.isMobile ? "is mobile" : "is desktop");
@@ -167,8 +168,13 @@ export const janusMixin = {
 
       let self=this;
       //if(/[^a-zA-Z0-9]/.test(username)) {
-      self.$refs.login.open("Your name?", { participants: self.initial_participants} ).then((nick) => {
-        self.display = nick;
+      self.$refs.login.open("Your name?", {
+        participants: self.initial_participants,
+        with_password: self.needs_pin
+      } ).then((r) => {
+        self.display = r.nick;
+        if (r.pin)
+          self.password = r.pin;
         self.registerUser()
       })
 
@@ -186,6 +192,9 @@ export const janusMixin = {
         display: self.display,
         transaction: transaction
       };
+      if (self.password)
+        request.pin =  self.password
+
       if (self.pluginName === "textroom") {
         request.textroom = request.request;
       }
@@ -295,6 +304,7 @@ export const janusMixin = {
             if (response.list.find(d => d.room == self.room)) {
               self.room_name = response.list.find(d => d.room == self.room).description
               self.room_info = response.list.find(d => d.room == self.room)
+              self.needs_pin = response.list.find(d => d.room == self.room).pin_required;
               resolve(true);
             } else {
               self.createRoom().then( () => {
@@ -330,13 +340,18 @@ export const janusMixin = {
     createRoom() {
       return new Promise((resolve, reject) => {
         let self = this;
-        console.log(self.opaqueId, "create room ", self.room);
+        console.log(self.opaqueId, "create room ", self.room, self.room_name);
         var transaction = Janus.randomString(12);
         var request = self.room_options
         request.transaction = transaction
         request.request = "create"
         request.room = self.room
         request.description = self.room_name
+
+        console.log(self.password);
+        if (self.password) {
+          request.pin = self.password
+        }
         console.log(request);
 
         self.pluginHandle.send({

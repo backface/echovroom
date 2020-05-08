@@ -10,9 +10,9 @@
         :roombyId="room"
         v-if="login_name  && showVroom"
         :nick="login_name"
-        is_muted="true"
+        :is_muted="true"
         :myJanus="janus"
-        open="true"
+        :open="video_chat_open"
         :facetime="facetime"
         @leftRoom="recreateVRoom"
       />
@@ -28,7 +28,7 @@
         <Textroom
           v-if="janusReady"
           v-show="chat_open"
-          open="true"
+          :open="true"
           :myJanus="janus"
           :roombyId="room"
           :nick="login_name"
@@ -88,6 +88,7 @@ export default {
     return {
       foyer_count: 0,
       chat_open: true,
+      video_chat_open: true,
       janusReady: false,
       login_name: null,
       showVroom:true,
@@ -103,6 +104,7 @@ export default {
       // this is a hack but we completely remove the component to fore recreating a new janus sesssion
       let self = this
       this.showVroom = false;
+      this.video_chat_open = "false";
       setTimeout( () => {self.showVroom = true}, 500)
     }
   }

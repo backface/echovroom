@@ -89,7 +89,7 @@ $title-font: 'Asap Condensed';
   font-size: calc(var(--font-size) * 0.8);
 }
 
-.textroom { height: 500px }
+.textroom { height: 450px }
 
 *:focus {
     outline: none;
@@ -113,8 +113,9 @@ $title-font: 'Asap Condensed';
 .headers { background: none; border-bottom: 1px solid var(--color-fg); padding:5px 5px; margin-bottom: 0.7rem !important}
 .loadingComponent {background:var(--color-bg) !important; opacity: 0.7}
 .icons { vertical-align: middle; margin:0px 3px}
-.linked { cursor:pointer}
-.linked:hover { background: var(--color-fg); color: var(--color-bg)}
+.linked { cursor:pointer; color: var(--color-fg)}
+.linked:hover { opacity:0.8 }
+.overlay .linked  {color: white;}
 .participants ul { padding-left: 8px; }
 .darkmode .participants {
   -webkit-filter: invert(100%);

@@ -53,7 +53,7 @@ export default {
     valid: true,
     lazy: false,
     username: "",
-    password: "",
+    password: null,
     nameRules: [
       value => !!value || 'You must provide a user name',
       value => value.length > 0 || 'Name should be at least 1 letter long',
@@ -71,7 +71,6 @@ export default {
     open(title="", options) {
       this.dialog = true
       this.title = title
-      console.log(options);
       setTimeout(() => this.$refs.username.focus())
       this.options = Object.assign(this.options, options)
       return new Promise((resolve, reject) => {
@@ -86,7 +85,7 @@ export default {
 
     login() {
       if (this.$refs.signUpForm.validate()) {
-        this.resolve(this.username, this.password)
+        this.resolve( { nick:this.username, pin:this.password})
         this.dialog = false
       }
     },

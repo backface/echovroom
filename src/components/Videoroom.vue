@@ -3,35 +3,59 @@
 
     <div class="columns is-mobile is-narrow headers is-gapless">
       <div class="column has-text-left is-10">
-        <video-off-icon size="1x" class="icons linked" v-if="!is_streaming" @click="publishOwnFeed(true)" title="Unpublish Video"></video-off-icon>
-        <video-icon size="1x" class="icons linked" v-if="is_streaming" @click="unpublishOwnFeed" title="Publish Video"></video-icon>
+        <a  v-if="!is_streaming" @click="publishOwnFeed(true)" title="publish video">
+          <video-off-icon size="1x" class="icons linked"></video-off-icon>
+        </a>
+        <a v-if="is_streaming" @click="unpublishOwnFeed" title="unpublish video">
+          <video-icon size="1x" class="icons linked"></video-icon>
+        </a>
+
         video
         <span v-if="room_info.description && showRoomInfo"> - {{ room_info.description }}</span>
         <span v-if="count > 0"> ({{ count }}) </span>
 
-        <mic-off-icon size="1x" class="icons linked warn_is_on" v-if="muted" @click="muteMe(false)" title="Mute Me" data-tooltip="Tooltip Text"></mic-off-icon>
-        <mic-icon size="1x" class="icons linked" v-if="!muted" @click="muteMe(true)" title="Unmute Me" data-tooltip="Tooltip Text"></mic-icon>
+        <a title="mute me"  v-if="muted" @click="muteMe(false)" >
+          <mic-off-icon size="1x" class="icons linked warn_is_on"></mic-off-icon>
+        </a>
+        <a v-if="!muted" @click="muteMe(true)" title="unmute me">
+          <mic-icon size="1x" class="icons  linked" ></mic-icon>
+        </a>
 
-        <volume-2-icon size="1x" class="icons linked" v-if="!all_muted" @click="muteAll(true)" title="Mute all"></volume-2-icon>
-        <volume-x-icon size="1x" class="icons linked warn_is_on" v-if="all_muted" @click="muteAll(false)" title="Unmute all"></volume-x-icon>
+        <a v-if="!all_muted" @click="muteAll(true)" title="mute all">
+          <volume-2-icon size="1x" class="icons linked" ></volume-2-icon>
+        </a>
+        <a v-if="all_muted" @click="muteAll(false)" title="unmute all">
+          <volume-x-icon size="1x" class="icons linked warn_is_on"></volume-x-icon>
+        </a>
 
-        <eye-off-icon size="1x" class="icons linked" v-if="allowFacetime && !facetime && is_streaming" title="Factime is off" @click="toggleFacetime"></eye-off-icon>
-        <eye-icon size="1x" class="icons linked" v-if="allowFacetime && facetime && is_streaming" title="Facetime is on" @click="toggleFacetime"></eye-icon>
+        <a v-if="allowFacetime && !facetime && is_streaming" title="factime is off" @click="toggleFacetime">
+          <eye-off-icon size="1x" class="icons linked"></eye-off-icon>
+        </a>
+        <a v-if="allowFacetime && facetime && is_streaming" title="facetime is on" @click="toggleFacetime">
+          <eye-icon size="1x" class="icons linked"></eye-icon>
+        </a>
 
-        <monitor-icon size="1x" class="icons linked {}"  v-if="allowScreenshare && is_streaming" v-show="is_open" @click="toggleScreenShare" title="Share screen"
-          :style="{ color: screenshare ? 'var(--color-alert)' : '' }"></monitor-icon>
-        <airplay-icon size="1x" class="icons linked" v-if="allowStageSends && is_streaming" v-show="is_open" @click="sendMeToStage(username !=onstage)"
-            title="Send me to stage"
+        <a  v-if="allowScreenshare && is_streaming" v-show="is_open" @click="toggleScreenShare" title="share screen">
+          <monitor-icon size="1x" class="icons linked {}" :style="{ color: screenshare ? 'var(--color-alert)' : '' }"></monitor-icon>
+        </a>
+        <a v-if="allowStageSends && is_streaming" v-show="is_open" @click="sendMeToStage(username !=onstage)" title="Send me to stage">
+          <airplay-icon size="1x" class="icons linked"
             :style="{ color: username == onstage && onstage != null ? 'var(--color-alert)' : '' }"
           ></airplay-icon>
-        <compass-icon size="1x" class="icons linked" @click="toggleForce"
-            :style="{ color: use_force ? 'var(--color-alert)' : '' }"></compass-icon>
+        </a>
+        <a @click="toggleForce" title="toggle force-directed layout">
+          <compass-icon size="1x" class="icons linked"  :style="{ color: use_force ? 'var(--color-alert)' : '' }"></compass-icon>
+        </a>
 
       </div>
       <div class="column has-text-right">
         <loader-icon size="1x" class="icons loading" v-if="!webRTCUp && is_open"  title="Loading"></loader-icon>
-        <minus-icon size="1x" class="icons linked" v-if="is_open" @click="leaveRoom()" title="Leave room"></minus-icon>
-        <plus-icon size="1x" class="icons linked" v-if="!is_open" @click="login()" title="Enter room"></plus-icon>
+        <a v-if="is_open" @click="leaveRoom()" title="Leave room">
+          <minus-icon size="1x" class="icons linked" ></minus-icon>
+        </a>
+        <a v-if="!is_open" @click="login()" title="Enter room">
+          <plus-icon size="1x" class="icons linked"></plus-icon>
+        </a>
       </div>
     </div>
     <fullscreen ref="fullscreen" :fullscreen.sync="fullscreen"
@@ -51,10 +75,18 @@
 
               <div class="overlay name">ME</div>
               <div class="overlay meta">
-                <mic-off-icon size="1x" class="icons linked" v-if="muted" @click="muteMe(false)"  title="Unmute Me"></mic-off-icon>
-                <mic-icon size="1x" class="icons linked" v-if="!muted" @click="muteMe(true)" title="Mute Me"></mic-icon>
-                <settings-icon  v-if="allowSettings" size="1x" class="icons linked" @click="showBitrateOptions=!showBitrateOptions"  title="Show Settings"></settings-icon>
-                <maximize-2-icon size="1x" class="icons linked" @click="makeVideoFullscreen" title="Fullscreen"></maximize-2-icon>
+                <a v-if="muted" @click="muteMe(false)"  title="unmute me">
+                  <mic-off-icon size="1x" class="icons linked" ></mic-off-icon>
+                </a>
+                <a v-if="!muted" @click="muteMe(true)" title="mute me">
+                  <mic-icon size="1x" class="icons linked"></mic-icon>
+                </a>
+                <a v-if="allowSettings" @click="showBitrateOptions=!showBitrateOptions"  title="show settings">
+                  <settings-icon size="1x" class="icons linked"></settings-icon>
+                </a>
+                <a @click="makeVideoFullscreen" title="fullscreen">
+                  <maximize-2-icon size="1x" class="icons linked" ></maximize-2-icon>
+                </a>
               </div>
               <div class="overlay options" v-show="showBitrateOptions">
                 <v-select dark label="Cap Bitrate" dense v-model="bitrate" :items="bitrates" @change="updateBitrateCap"></v-select>
@@ -74,10 +106,18 @@
 
               <div class="overlay name">ME</div>
               <div class="overlay meta">
-                <mic-off-icon size="1x" class="icons linked" v-if="muted" @click="muteMe(false)"  title="Unmute Me"></mic-off-icon>
-                <mic-icon size="1x" class="icons linked" v-if="!muted" @click="muteMe(true)" title="Mute Me"></mic-icon>
-                <settings-icon  v-if="allowSettings" size="1x" class="icons linked" @click="showBitrateOptions=!showBitrateOptions"  title="Show Settings"></settings-icon>
-                <maximize-2-icon size="1x" class="icons linked" @click="makeVideoFullscreen" title="Fullscreen"></maximize-2-icon>
+                <a v-if="muted" @click="muteMe(false)"  title="unmute me">
+                  <mic-off-icon size="1x" class="icons linked" ></mic-off-icon>
+                </a>
+                <a v-if="!muted" @click="muteMe(true)" title="mute me">
+                  <mic-icon size="1x" class="icons linked"></mic-icon>
+                </a>
+                <a v-if="allowSettings" @click="showBitrateOptions=!showBitrateOptions"  title="show settings">
+                  <settings-icon size="1x" class="icons linked"></settings-icon>
+                </a>
+                <a @click="makeVideoFullscreen" title="fullscreen">
+                  <maximize-2-icon size="1x" class="icons linked" ></maximize-2-icon>
+                </a>
               </div>
               <div class="overlay options" v-show="showBitrateOptions">
                 <v-select dark label="Cap Bitrate" dense v-model="bitrate" :items="bitrates" @change="updateBitrateCap"></v-select>
@@ -109,9 +149,15 @@
                   <span class="bitrate" v-if="showBitrates && feed.bitrate">
                     {{ feed.bitrate }}<br />
                   </span>
-                  <settings-icon v-if="allowSettings" size="1x" class="icons linked"  @click="feed.showOptions=!feed.showOptions" title="Show Settings"></settings-icon>
-                  <maximize-2-icon size="1x" class="icons linked" @click="makeVideoFullscreen" title="Fullscreen"></maximize-2-icon>
-                  <airplay-icon v-if="allowStageSends" size="1x" class="icons linked" @click="sendToStage(feed.publisher)" title="Send to Stage"></airplay-icon>
+                  <a @click="feed.showOptions=!feed.showOptions" title="show settings">
+                    <settings-icon v-if="allowSettings" size="1x" class="icons linked"></settings-icon>
+                  </a>
+                  <a @click="makeVideoFullscreen" title="fullscreen">
+                    <maximize-2-icon size="1x" class="icons linked"></maximize-2-icon>
+                  </a>
+                  <a @click="sendToStage(feed.publisher)" title="send to stage">
+                    <airplay-icon v-if="allowStageSends" size="1x" class="icons linked"></airplay-icon>
+                  </a>
                 </div>
 
                 <div class="overlay options" v-show="feed.showOptions">
@@ -144,9 +190,15 @@
                     <span class="bitrate" v-if="showBitrates && feed.bitrate">
                       {{ feed.bitrate }}<br />
                     </span>
-                    <settings-icon v-if="allowSettings" size="1x" class="icons linked"  @click="feed.showOptions=!feed.showOptions" title="Show Settings"></settings-icon>
-                    <maximize-2-icon size="1x" class="icons linked" @click="makeVideoFullscreen" title="Fullscreen"></maximize-2-icon>
-                    <airplay-icon v-if="allowStageSends" size="1x" class="icons linked" @click="sendToStage(feed.publisher)" title="Send to Stage"></airplay-icon>
+                    <a @click="feed.showOptions=!feed.showOptions" title="show settings">
+                      <settings-icon v-if="allowSettings" size="1x" class="icons linked"></settings-icon>
+                    </a>
+                    <a @click="makeVideoFullscreen" title="fullscreen">
+                      <maximize-2-icon size="1x" class="icons linked"></maximize-2-icon>
+                    </a>
+                    <a @click="sendToStage(feed.publisher)" title="send to stage">
+                      <airplay-icon v-if="allowStageSends" size="1x" class="icons linked"></airplay-icon>
+                    </a>
                   </div>
 
                   <div class="overlay options" v-show="feed.showOptions">
@@ -268,6 +320,10 @@ export default {
       type: String,
       default: "stdres-16:9"
     },
+    showRoomInfo: {
+      type: Boolean,
+      default: false
+    },
   },
 
   data() {
@@ -280,7 +336,7 @@ export default {
       is_streaming: false,
       screenshare: false,
       video_off: false,
-      muted: false,
+      muted: this.is_muted,
       all_muted: false,
       feeds: {},
       bitrateTimer: null,
@@ -321,7 +377,6 @@ export default {
   mounted () {
     console.log(this.$options._componentTag + " mounted");
     console.log("client sceen is ", this.getWindowWidth(), "x", this.getWindowHeight());
-    this.muted = this.is_muted === "true"
     if (this.myJanus == null) {
       this.loadConfig()
     } else {
@@ -342,6 +397,12 @@ export default {
 
   destroyed () {
     this.janus.destroy();
+  },
+
+  watch: {
+    login_password: function(value) {
+      this.password = value
+    }
   },
 
   methods: {
@@ -644,6 +705,12 @@ export default {
               } else if(msg["error"] !== undefined && msg["error"] !== null) {
                 if(msg["error_code"] === 426) {
                   self.alert.open("Room " + self.room + " does not exits");
+                  self.is_open = false;
+                } else if(msg["error_code"] === 429) {
+                  console.log("missing pin");
+                  self.is_open = false;
+                } else if(msg["error_code"] === 433) {
+                  console.log("wrong pin");
                   self.is_open = false;
                 } else {
                   self.alert.open(msg["error"]);
@@ -1133,7 +1200,7 @@ export default {
     },
 
     makeVideoFullscreen(e) {
-      let v = e.target.parentElement.parentElement.querySelector('video')
+      let v = e.target.parentElement.parentElement.parentElement.querySelector('video')
       screenfull.request(v)
     }
   }
@@ -1222,7 +1289,7 @@ export default {
 
 .videoroom .stage video {
   object-fit: cover;
-  max-height:400px;
+  max-height:340px;
   border-radius: 0%;
 }
 
