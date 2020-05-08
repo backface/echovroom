@@ -74,11 +74,7 @@ export default {
     embed:  {
       type: Boolean,
       default: false
-    },
-    room:  {
-      type: Number,
-      default: 777
-    },
+    }
   },
 
   mounted() {

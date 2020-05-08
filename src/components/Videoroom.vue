@@ -30,7 +30,7 @@
       </div>
       <div class="column has-text-right">
         <loader-icon size="1x" class="icons loading" v-if="!webRTCUp && is_open"  title="Loading"></loader-icon>
-        <minus-icon size="1x" class="icons linked" v-if="is_open" @click="leaveRoom()" title="Leave room"></minus-icon>        
+        <minus-icon size="1x" class="icons linked" v-if="is_open" @click="leaveRoom()" title="Leave room"></minus-icon>
         <plus-icon size="1x" class="icons linked" v-if="!is_open" @click="login()" title="Enter room"></plus-icon>
       </div>
     </div>
@@ -1201,10 +1201,11 @@ export default {
 
 .videoroom .stage {
   position: relative;
-  top:-50px; left: 50%;
+  top:-70px; left: 50%;
   width:100%;
   transform:translate(-50%,-100%);
 }
+.videoroom .stage .meta { bottom:10px}
 .videoroom .fullscreen { background:white}
 .videoroom .talking { border: 2px solid red}
 .videoroom .bitrate { font-size: 80%}
@@ -1220,7 +1221,8 @@ export default {
 }
 
 .videoroom .stage video {
-  object-fit: contain;
+  object-fit: cover;
+  max-height:400px;
   border-radius: 0%;
 }
 

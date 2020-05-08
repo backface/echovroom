@@ -38,7 +38,7 @@ export default new Router({
       path: '/demoroom',
       name: 'demoroom',
       component: Demoroom,
-      props: { room: 1234}
+      props: { roombyId: 1234}
     },
     {
       path: '/embed/:roombyName',

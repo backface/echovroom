@@ -21,6 +21,30 @@
       <vue-custom-scrollbar class="participants">
         <div class="has-text-left" ref="participants">
           <ul>
+
+            <!--
+            <li v-for="(user, index) in participants" :key="'h' + index" class="participant">
+
+
+                <div v-if="user.username != username" class="dropdown is-hoverable">
+                  <a class="dropdown-trigger" aria-haspopup="true" :aria-controls="'dropdown-menu-'+ user.id">
+                    <span :style="{ color: user.color }" >{{ user.display }}</span>
+                  </a>
+                  <div class="dropdown-menu" :id="'dropdown-menu-'+ user.id " role="menu">
+                    <div class="dropdown-content">
+                      <div class="dropdown-item">
+                        <a title="Copy to Clipboard" @click="sendWhisper(user.username)">
+                          Send a Whisper
+                        </a>
+
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+            </li>
+          -->
+
             <li v-for="(user, index) in participants" :key="index" class="participant">
               <v-menu v-if="user.username != username">
                 <template v-slot:activator="{ on }">
@@ -35,6 +59,8 @@
              <!--  <span v-if="user.username == username" style="color: #aaa" >(
                 <span style="font-size:0.8rem">Me:</span> {{ display }})</span>-->
             </li>
+
+
           </ul>
         </div>
       </vue-custom-scrollbar>

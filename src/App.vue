@@ -19,31 +19,62 @@
       </div>
 
       <div class="navbar-menu" :class="{'is-active':menuOpen}">
-        <router-link to="/echoraeume" v-slot="{ href, route, isActive }">
-          <div class="navbar-item" :active="isActive" :class="{'is-active':isActive}">
-            <a :href="href" >{{ route.name }}</a>
+
+        <div class="navbar-start">
+          <router-link to="/echoraeume" v-slot="{ href, route, isActive }">
+            <div class="navbar-item" :active="isActive" :class="{'is-active':isActive}">
+              <a :href="href" >{{ route.name }}</a>
+            </div>
+          </router-link>
+          <router-link to="/demoroom" v-slot="{ href, route, isActive }">
+            <div class="navbar-item" :active="isActive"  :class="{'is-active':isActive}">
+              <a :href="href" >{{ route.name }}</a>
+            </div>
+          </router-link>
+        </div>
+
+        <div class="navbar-end">
+          <div class="navbar-item">
+
+            <div class="dropdown is-hoverable is-right">
+              <a title="Share" class="dropdown-trigger" aria-haspopup="true" aria-controls="dropdown-menu-url">
+                  <share-2-icon size="1.5x" class="icons"></share-2-icon>
+              </a>
+              <div class="dropdown-menu" id="dropdown-menu-url" role="menu">
+                <div class="dropdown-content">
+                  <div class="dropdown-item"  style="white-space: nowrap;">
+                    <span contenteditable ref="url" style="display:inline;line-height:1.5rem"> {{ url }}</span>
+                    <a title="Copy to Clipboard" @click="copyURL">
+                      <clipboard-icon size="1.5x" class="icons"></clipboard-icon>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
           </div>
-        </router-link>
-        <router-link to="/demoroom" v-slot="{ href, route, isActive }">
-          <div class="navbar-item" :active="isActive"  :class="{'is-active':isActive}">
-            <a :href="href" >{{ route.name }}</a>
-          </div>
-        </router-link>
+        </div>
+
       </div>
 
+
+
     </nav>
+
 
     <div :class="embed ? '' : 'max-width'">
       <transition-page>
         <router-view :key="$route.path"></router-view>
       </transition-page>
     </div>
+
+
   </v-app>
 </template>
 
 <script>
 import TransitionPage from './components/TransitionPage.vue';
-import { ArrowUpLeftIcon } from 'vue-feather-icons'
+import { ArrowUpLeftIcon, Share2Icon, ClipboardIcon } from 'vue-feather-icons'
 import 'typeface-asap-condensed'
 
 export default {
@@ -51,13 +82,14 @@ export default {
 
   components: {
     TransitionPage,
-    ArrowUpLeftIcon
+    ArrowUpLeftIcon, Share2Icon, ClipboardIcon
   },
 
   data() {
     return {
       menuOpen: false,
       embed: false,
+      url: "",
     }
   },
 
@@ -65,12 +97,17 @@ export default {
     console.log('App mounted')
     if (this.$route.name == "embed")
       this.embed = true;
+    this.url = document.location.href;
   },
 
   destroyed () {
   },
 
   methods: {
+    copyURL() {
+      window.getSelection().selectAllChildren(this.$refs.url)
+      document.execCommand('copy');
+    }
   }
 
 }
