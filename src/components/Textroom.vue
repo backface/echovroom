@@ -129,6 +129,8 @@ import Toast from '@/components/dialogs/Toast'
 import { MessageSquareIcon,MinusIcon, PlusIcon } from 'vue-feather-icons'
 import { LoaderIcon } from 'vue-feather-icons'
 import { VMenu, VList } from 'vuetify/lib'
+import { replaceEmoticons } from "../libs/emoticon"
+
 
 export default {
   name: 'Textroom',
@@ -264,6 +266,7 @@ export default {
           if(what === "message") {
             // Incoming message: public or private?
             var msg = json["text"];
+            msg = replaceEmoticons(msg);
             msg = msg.replace(new RegExp('<', 'g'), '&lt');
             msg = msg.replace(new RegExp('>', 'g'), '&gt');
             msg = msg.replace(new RegExp('\\n.{1}', 'g'), '<br>');
