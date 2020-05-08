@@ -96,14 +96,49 @@
 
     <div class="talk" v-if="is_open">
       <div class="columns is-mobile">
-        <div class="column is-one-quarter has-text-right me">
+        <div class="column is-one-quarter-desktop is-narrow-mobile has-text-right me">
           talk:
         </div>
         <div class="column">
-          <div class="msg_editor" contenteditable="true" v-on:keyup.enter.exact="sendMsg"></div>
+          <v-text-field class="msg_editor" v-on:keyup.enter.exact="sendMsg" v-model="msg" />
         </div>
+        <div class="column is-narrow has-text-right emojicol">
+          <a @click="sendMsg" title="send">
+            <send-icon size="1x" class="icons linked"></send-icon>
+          </a>
+          <emoji-picker @emoji="insert_emoji" :search="search_emoji" style="display:inline">
+
+            <a slot="emoji-invoker" slot-scope="{ events: { click: clickEvent } }" @click.stop="clickEvent" class="emoji-invoker"
+              title="pick an emoji">
+              <smile-icon size="1x" class="icons linked"></smile-icon>
+            </a>
+            <div slot="emoji-picker" slot-scope="{ emojis, insert }">
+              <div class="emoji-picker">
+                <div class="emoji-picker__search">
+                  <input type="text" v-model="search_emoji">
+                </div>
+                <div >
+                  <div v-for="(emojiGroup, category) in emojis" :key="category">
+                    <h5>{{ category }}</h5>
+                    <div class="emojis">
+                      <span
+                        v-for="(emoji, emojiName) in emojiGroup"
+                        :key="emojiName"
+                        @click="insert(emoji)"
+                        :title="emojiName"
+                      >{{ emoji }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </emoji-picker>
+        </div>
+
       </div>
     </div>
+
+
 
     <toast ref="toast"></toast>
     <login-dialog ref="login"></login-dialog>
@@ -131,10 +166,11 @@ import AlertDialog from '@/components/dialogs/AlertDialog'
 import PromptDialog from '@/components/dialogs/PromptDialog'
 import Toast from '@/components/dialogs/Toast'
 import { MessageSquareIcon,MinusIcon, PlusIcon } from 'vue-feather-icons'
+import { SmileIcon, SendIcon } from 'vue-feather-icons'
 import { LoaderIcon } from 'vue-feather-icons'
 import { VMenu, VList } from 'vuetify/lib'
 import { replaceEmoticons } from "../libs/emoticon"
-
+import EmojiPicker from 'vue-emoji-picker'
 
 export default {
   name: 'Textroom',
@@ -143,9 +179,9 @@ export default {
 
   components: {
     vueCustomScrollbar,
-    LoginDialog, Toast, AlertDialog, PromptDialog,
-    MessageSquareIcon,  MinusIcon, PlusIcon, LoaderIcon,
-    VMenu, VList
+    LoginDialog, Toast, AlertDialog, PromptDialog, SendIcon,
+    MessageSquareIcon,  MinusIcon, PlusIcon, LoaderIcon, SmileIcon,
+    VMenu, VList, EmojiPicker
   },
 
   props: {
@@ -168,6 +204,7 @@ export default {
       users: [],
       msg: "",
       welcome_msg: null,
+      search_emoji: '',
     }
   },
 
@@ -199,6 +236,11 @@ export default {
   },
 
   methods: {
+
+    insert_emoji(emoji) {
+      this.msg += emoji;
+
+    },
 
     attachPlugin() {
       let self = this;
@@ -364,7 +406,7 @@ export default {
           } else if(response["error_code"] === 419) {
             console.log( self.room + " needs a pin" );
             self.alert.open('Wrong Pin!')
-            self.askForUsername();            
+            self.askForUsername();
           } else {
             console.log(response["error"]);
           }
@@ -500,16 +542,11 @@ export default {
       })
     },
 
-    sendMsg(e) {
+    sendMsg() {
       let self = this;
-      self.msg = e.target.innerText.trim();
+      self.msg = self.msg.trim();
       if(self.msg.length < 1) {
-        e.target.innerText = "";
-        return;
-      }
-      if(self.msg.length < 1) {
-        e.target.innerText =
-          e.target.innerText.replace(new RegExp('\\n', 'g'), '');
+        self.msg = ""
         return;
       }
 
@@ -528,7 +565,7 @@ export default {
       self.pluginHandle.data({
         text: JSON.stringify(message),
         error: function(reason) { self.alert.open(reason); },
-        success: function() { e.target.innerText = "" }
+        success: function() { self.msg = "" }
       });
     },
 
@@ -594,7 +631,7 @@ export default {
   font-size: 90%;
   overflow-y: auto;
   flex: 0 0 25%;
-  margin-right: 20px;
+  margin-right: 10px;
   word-wrap: break-word;
 }
 .participants ul  {padding-left: 24px}
@@ -605,18 +642,21 @@ export default {
   flex: 1 1 auto;
 }
 .chat {  padding-left: 0.7rem }
-.chat .item { padding:0px 0px; margin-bottom:0px}
+.chat .item { padding:0px 20px 0px 0px; margin-bottom:0px}
 .chat .user { font-style:italic; font-size: 90%; opacity: 0.8}
 .chat .item .username { padding: 0 0.2rem 0 1rem; }
 .chat .item .msg { padding:0.2rem 0 0.5rem 0.4rem;  }
 
-.me {line-height:2.5em;margin-bottom: 1px}
+.me { line-height:2.5em; margin-right: 10px;}
 .msg_editor {
     text-align:left;
-    min-height:2.5em;
+    padding-top:0px;
     line-height:2.5em;
-    border-bottom: 1px solid var(--color-fg);
-    margin-right:1rem;
+    margin-right:0rem;
+}
+.emojicol {
+  line-height:2.5em;
+  padding-left:0px
 }
 
 .talk { flex:  0 0 auto; padding:0.7rem 0; margin-top: 1rem; border-top: 1px solid var(--color-fg); }
@@ -624,6 +664,62 @@ export default {
 .loadingComponent {position: absolute;top:40px;width:100%;height:100%;background:rgba(255, 255, 255, 0.7)}
 .loadingComponent div {position: absolute; top:50%; left: 50%; transform:translate(-50%,-50%)}
 .loading { }
+
+
+.emoji-picker {
+  text-align: center;
+  position: absolute;
+  z-index: 1;
+  line-height:1em;
+  border: 1px solid #ccc;
+  width: 15rem;
+  height: 20rem;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  padding: 1rem;
+  box-sizing: border-box;
+  border-radius: 0.5rem;
+  background: #fff;
+  box-shadow: 1px 1px 8px #c7dbe6;
+  transform: translate(-14rem,-23rem);
+  margin-bottom:24px;
+}
+.emoji-picker__search {
+  display: flex;
+}
+.emoji-picker__search > input {
+  flex: 1;
+  border-radius: 0rem;
+  border-bottom: 1px solid var(--color-fg) !important;
+  padding: 0.2rem 1rem;
+  margin-bottom:1.5rem;
+}
+.emoji-picker h5 {
+  margin-bottom: 0;
+  color: #b1b1b1;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  cursor: default;
+}
+.emoji-picker .emojis {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+
+}
+.emoji-picker .emojis:after {
+  content: "";
+  flex: auto;
+}
+.emoji-picker .emojis span {
+  padding: 0.2rem;
+  cursor: pointer;
+  border-radius: 0px;
+}
+.emoji-picker .emojis span:hover {
+  background: #ececec;
+  cursor: pointer;
+}
 
 @media (max-width:421px) {
   .participants {display: none}

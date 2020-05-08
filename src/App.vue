@@ -171,10 +171,12 @@ export default {
 
 .icons { vertical-align: middle; margin:0px 3px}
 .linked { cursor:pointer; }
-.headers .linked {color: var(--color-fg);}
+.linked {color: var(--color-fg);}
 .overlay .linked  {color: white;}
 .linked:hover { opacity:0.8 }
-
+svg.linked:hover {
+  transform: scale(1.2);
+}
 .loading {
   -webkit-animation:spin 4s linear infinite;
   -moz-animation:spin 4s linear infinite;

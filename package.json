@@ -44,6 +44,7 @@
     "vue": "^2.6.11",
     "vue-custom-element": "^3.2.14",
     "vue-custom-scrollbar": "^1.1.0",
+    "vue-emoji-picker": "^1.0.1",
     "vue-feather-icons": "^5.0.0",
     "vue-fullscreen": "^2.1.6",
     "vue-router": "^3.1.6",
