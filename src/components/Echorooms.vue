@@ -6,19 +6,27 @@
       v-if="nick && showVroom"
       :nick="nick"
       is_muted="true"
-      open="false"
+      :open="video_chat_open ? 'true' : 'false'"
       :allowFacetime="true"
       :allowStageSends="false"
       :allowSettings="false"
       :showRoomInfo="false"
-      videoResolution="stdres-16:9"
+      videoResolution="videoResolution"
       @leftRoom="recreateVRoom"
+      @opened="video_chat_open = false; show_video_login = false"
     />
+
+    <template v-if="is_component">
+      <button @click="enterVideoroom" v-if="show_video_login && nick" class="button is-white is-inverted is-outlined enter">JOIN VIDEO CHAT</button>
+    </template>
+    <template v-else>
+      <v-btn @click="enterVideoroom" v-if="show_video_login && nick" class="enter">JOIN VIDEO CHAT</v-btn>
+    </template>
 
     <transition name="fade">
 
       <Textroom
-        v-if="janusReady && chat_open"
+        v-if="janusReady"
         :roombyId="room"
         @participantNumberChanged="foyer_count = $event"
         @hasNick="nick = $event;"
@@ -30,7 +38,12 @@
       />
     </transition>
 
-    <span @click="chat_open = true" v-if="!chat_open" class="linked">ENTER CHAT</span>
+    <template v-if="is_component">
+      <button @click="chat_open = true" v-if="!chat_open" class="button is-danger is-white is-outlined enter">ENTER CHAT</button>
+    </template>
+    <template v-else>
+      <v-btn @click="chat_open = true" v-if="!chat_open" class="enter">ENTER CHAT</v-btn>
+    </template>
 
   <toast ref="toast"></toast>
   <login-dialog ref="login"></login-dialog>
@@ -59,6 +72,18 @@ export default {
     LoginDialog, AlertDialog, Toast
   },
 
+  props: {
+    is_component:  {
+      type: Boolean,
+      default: false
+    },
+    videoResolution:  {
+      type: String,
+      default: "low-res"
+    },
+
+  },
+
   mounted() {
     this.loadConfig()
   },
@@ -67,6 +92,8 @@ export default {
     return {
       foyer_count: 0,
       chat_open: false,
+      video_chat_open: false,
+      show_video_login: true,
       janusReady: false,
       showVroom: true,
     }
@@ -80,7 +107,16 @@ export default {
     recreateVRoom() {
       let self = this
       this.showVroom = false;
-      setTimeout( () => {self.showVroom = true}, 500)
+      setTimeout( () => {self.showVroom = true; }, 500)
+      setTimeout( () => {self.video_chat_open = false; }, 1000)
+      if (!this.video_chat_open)
+        this.show_video_login = false
+    },
+    enterVideoroom() {
+      this.video_chat_open = true;
+      this.show_video_login = false;
+      this.recreateVRoom();
+
     }
   }
 
@@ -89,4 +125,5 @@ export default {
 
 <style lang="css" scoped>
 .textroomwrapper { height:300px}
+.enter { margin: 10px 0px 20px 0px; opacity: 0.6}
 </style>

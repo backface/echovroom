@@ -33,7 +33,6 @@
           :myJanus="janus"
           :roombyName="roombyName"
           :nick="login_name"
-          @participantNumberChanged="foyer_count = $event"
           @hasNick="login_name = $event;"
           @hasRoomInfo="foyer_info = $event"
           @hasJanus="janus = $event"
@@ -75,7 +74,11 @@ export default {
     embed:  {
       type: Boolean,
       default: false
-    }
+    },
+    room:  {
+      type: Number,
+      default: 777
+    },
   },
 
   mounted() {
@@ -87,7 +90,6 @@ export default {
 
   data() {
     return {
-      foyer_count: 0,
       chat_open: true,
       janusReady: false,
       login_name: null,

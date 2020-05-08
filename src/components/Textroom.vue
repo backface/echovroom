@@ -575,7 +575,7 @@ export default {
 
 .talk { flex:  0 0 auto; padding:0.7rem 0; margin-top: 1rem; border-top: 1px solid var(--color-fg); }
 
-.loadingComponent {position: absolute;top:40px;width:100%;height:100%;background:rgba(200, 200, 200, 0.5)}
+.loadingComponent {position: absolute;top:40px;width:100%;height:100%;background:rgba(255, 255, 255, 0.7)}
 .loadingComponent div {position: absolute; top:50%; left: 50%; transform:translate(-50%,-50%)}
 .loading { }
 

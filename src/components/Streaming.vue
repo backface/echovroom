@@ -1,7 +1,7 @@
 <template>
 <div class="stage">
   <img src="../assets/testbild.jpg" v-show="!is_streaming">
-  <video ref="stream" playsinline autoplay controls muted v-show="is_streaming"></video>
+  <video ref="stream" playsinline autoplay controls v-show="is_streaming"></video>
 
   <toast ref="toast"></toast>
   <login-dialog ref="login"></login-dialog>

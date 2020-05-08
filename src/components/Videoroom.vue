@@ -29,8 +29,8 @@
 
       </div>
       <div class="column has-text-right">
-        <minus-icon size="1x" class="icons linked" v-if="webRTCUp && is_open" @click="leaveRoom()" title="Leave room"></minus-icon>
         <loader-icon size="1x" class="icons loading" v-if="!webRTCUp && is_open"  title="Loading"></loader-icon>
+        <minus-icon size="1x" class="icons linked" v-if="is_open" @click="leaveRoom()" title="Leave room"></minus-icon>        
         <plus-icon size="1x" class="icons linked" v-if="!is_open" @click="login()" title="Enter room"></plus-icon>
       </div>
     </div>
@@ -40,40 +40,121 @@
 
       <div class="screen has-text-center" ref="screen" v-if="!vr">
 
-          <div v-show="is_streaming" class="video me" :class="username == onstage ? 'stage' : 'video'"
-            v-bind:style="username != onstage ?  { position: 'fixed', top: my_pos.y + 'px', left: my_pos.x + 'px', width: tile_width + 'px !important' , height: tile_width + 'px !important' } : {}"
-          >
-
-            <video v-if="isMobile" ref="videolocal" class="videolocal" id="videolocal" autoplay playsinline muted="muted"
+          <template v-if="isMobile">
+            <div v-show="is_streaming" class="video me" :class="username == onstage ? 'stage' : 'video'"
+              v-bind:style="username != onstage ?  { position: 'fixed', top: my_pos.y + 'px', left: my_pos.x + 'px', width: tile_width + 'px !important' , height: tile_width + 'px !important' } : {}"
               v-hammer:pan="(event) => drag('drag', my_pos, event)"
               v-hammer:panstart="(event) => drag('start', my_pos, event)"
               v-hammer:panend="(event) => drag('stop', my_pos, event)"
-            />
+            >
+              <video  ref="videolocal" class="videolocal" id="videolocal" autoplay playsinline muted="muted" />
 
-            <video v-else ref="videolocal" class="videolocal" id="videolocal" autoplay playsinline muted="muted"
+              <div class="overlay name">ME</div>
+              <div class="overlay meta">
+                <mic-off-icon size="1x" class="icons linked" v-if="muted" @click="muteMe(false)"  title="Unmute Me"></mic-off-icon>
+                <mic-icon size="1x" class="icons linked" v-if="!muted" @click="muteMe(true)" title="Mute Me"></mic-icon>
+                <settings-icon  v-if="allowSettings" size="1x" class="icons linked" @click="showBitrateOptions=!showBitrateOptions"  title="Show Settings"></settings-icon>
+                <maximize-2-icon size="1x" class="icons linked" @click="makeVideoFullscreen" title="Fullscreen"></maximize-2-icon>
+              </div>
+              <div class="overlay options" v-show="showBitrateOptions">
+                <v-select dark label="Cap Bitrate" dense v-model="bitrate" :items="bitrates" @change="updateBitrateCap"></v-select>
+              </div>
+            </div>
+          </template>
+
+          <template v-else>
+            <div v-show="is_streaming" class="video me" :class="username == onstage ? 'stage' : 'video'"
+              v-bind:style="username != onstage ?  { position: 'fixed', top: my_pos.y + 'px', left: my_pos.x + 'px', width: tile_width + 'px !important' , height: tile_width + 'px !important' } : {}"
               @mousedown="drag('start', my_pos, $event)"
               @mousemove="drag('drag', my_pos, $event)"
               @mouseup="drag('stop',my_pos, $event)"
               @mouseleave="drag('stop',my_pos, $event)"
-            />
+            >
+              <video ref="videolocal" class="videolocal" id="videolocal" autoplay playsinline muted="muted" />
 
-            <div class="overlay name">ME</div>
-            <div class="overlay meta">
-              <mic-off-icon size="1x" class="icons linked" v-if="muted" @click="muteMe(false)"  title="Unmute Me"></mic-off-icon>
-              <mic-icon size="1x" class="icons linked" v-if="!muted" @click="muteMe(true)" title="Mute Me"></mic-icon>
-              <settings-icon  v-if="allowSettings" size="1x" class="icons linked" @click="showBitrateOptions=!showBitrateOptions"  title="Show Settings"></settings-icon>
-              <maximize-2-icon size="1x" class="icons linked" @click="makeVideoFullscreen" title="Fullscreen"></maximize-2-icon>
+              <div class="overlay name">ME</div>
+              <div class="overlay meta">
+                <mic-off-icon size="1x" class="icons linked" v-if="muted" @click="muteMe(false)"  title="Unmute Me"></mic-off-icon>
+                <mic-icon size="1x" class="icons linked" v-if="!muted" @click="muteMe(true)" title="Mute Me"></mic-icon>
+                <settings-icon  v-if="allowSettings" size="1x" class="icons linked" @click="showBitrateOptions=!showBitrateOptions"  title="Show Settings"></settings-icon>
+                <maximize-2-icon size="1x" class="icons linked" @click="makeVideoFullscreen" title="Fullscreen"></maximize-2-icon>
+              </div>
+              <div class="overlay options" v-show="showBitrateOptions">
+                <v-select dark label="Cap Bitrate" dense v-model="bitrate" :items="bitrates" @change="updateBitrateCap"></v-select>
+              </div>
             </div>
-            <div class="overlay options" v-show="showBitrateOptions">
-              <v-select dark label="Cap Bitrate" dense v-model="bitrate" :items="bitrates" @change="updateBitrateCap"></v-select>
-            </div>
-          </div>
+          </template>
+
 
           <transition-group name="fade">
 
-            <div v-for="feed in feeds" :key="feed.id" :class="feed.publisher == onstage ? 'stage' : 'video' "
-                :style="feed.publisher != onstage ? { position: 'fixed', top: feed.y + 'px', left: feed.x + 'px', width: tile_width + 'px !important', height: tile_width + 'px !important' } : {}"
-              >
+            <template v-if="isMobile">
+              <div v-for="feed in feeds" :key="feed.id" :class="feed.publisher == onstage ? 'stage' : 'video' "
+                  :style="feed.publisher != onstage ? { position: 'fixed', top: feed.y + 'px', left: feed.x + 'px', width: tile_width + 'px !important', height: tile_width + 'px !important' } : {}"
+                  v-hammer:pan="(event) => drag('drag', feed, event)"
+                  v-hammer:panstart="(event) => drag('start', feed, event)"
+                  v-hammer:panend="(event) => drag('stop', feed, event)"
+                >
+                <video :id="'v'+feed.id" :ref="'v' + feed.id" autoplay playsinline
+                 :class="{ talking: participants[feed.publisher].talking }"
+                />
+
+                <div class="overlay name">
+                  {{ participants[feed.publisher].display }}
+                  <message-circle-icon size="1x" class="icons" v-if="participants[feed.publisher].talking"></message-circle-icon>
+                </div>
+
+                <div class="overlay meta">
+                  <loader-icon size="1x" class="icons loading centered" v-if="feed.loading == true"></loader-icon>
+                  <span class="bitrate" v-if="showBitrates && feed.bitrate">
+                    {{ feed.bitrate }}<br />
+                  </span>
+                  <settings-icon v-if="allowSettings" size="1x" class="icons linked"  @click="feed.showOptions=!feed.showOptions" title="Show Settings"></settings-icon>
+                  <maximize-2-icon size="1x" class="icons linked" @click="makeVideoFullscreen" title="Fullscreen"></maximize-2-icon>
+                  <airplay-icon v-if="allowStageSends" size="1x" class="icons linked" @click="sendToStage(feed.publisher)" title="Send to Stage"></airplay-icon>
+                </div>
+
+                <div class="overlay options" v-show="feed.showOptions">
+                    <v-select dark label="Quality" dense v-model="feed.substream" :items="qualities" @change="changeFeedQuality(feed)"></v-select>
+                </div>
+
+              </div>
+
+            </template>
+
+            <template v-else>
+              <div v-for="feed in feeds" :key="feed.id" :class="feed.publisher == onstage ? 'stage' : 'video' "
+                  :style="feed.publisher != onstage ? { position: 'fixed', top: feed.y + 'px', left: feed.x + 'px', width: tile_width + 'px !important', height: tile_width + 'px !important' } : {}"
+                  @mousedown="drag('start', feed, $event)"
+                  @mousemove="drag('drag', feed, $event)"
+                  @mouseup="drag('stop',feed, $event)"
+                  @mouseleave="drag('stop',feed, $event)"
+                >
+                  <video :id="'v'+feed.id" :ref="'v' + feed.id" autoplay playsinline
+                   :class="{ talking: participants[feed.publisher].talking }"
+                  />
+
+                  <div class="overlay name">
+                    {{ participants[feed.publisher].display }}
+                    <message-circle-icon size="1x" class="icons" v-if="participants[feed.publisher].talking"></message-circle-icon>
+                  </div>
+
+                  <div class="overlay meta">
+                    <loader-icon size="1x" class="icons loading centered" v-if="feed.loading == true"></loader-icon>
+                    <span class="bitrate" v-if="showBitrates && feed.bitrate">
+                      {{ feed.bitrate }}<br />
+                    </span>
+                    <settings-icon v-if="allowSettings" size="1x" class="icons linked"  @click="feed.showOptions=!feed.showOptions" title="Show Settings"></settings-icon>
+                    <maximize-2-icon size="1x" class="icons linked" @click="makeVideoFullscreen" title="Fullscreen"></maximize-2-icon>
+                    <airplay-icon v-if="allowStageSends" size="1x" class="icons linked" @click="sendToStage(feed.publisher)" title="Send to Stage"></airplay-icon>
+                  </div>
+
+                  <div class="overlay options" v-show="feed.showOptions">
+                      <v-select dark label="Quality" dense v-model="feed.substream" :items="qualities" @change="changeFeedQuality(feed)"></v-select>
+                  </div>
+
+                </div>
+            </template>
 
             <!--
             @mousedown="drag('start', feed, $event)"
@@ -86,41 +167,7 @@
             @mouseleave="drag('stop', feed, $event)"
           -->
 
-              <video v-if="isMobile" :id="'v'+feed.id" :ref="'v' + feed.id" autoplay playsinline
-               :class="{ talking: participants[feed.publisher].talking }"
-               v-hammer:pan="(event) => drag('drag', feed, event)"
-               v-hammer:panstart="(event) => drag('start', feed, event)"
-               v-hammer:panend="(event) => drag('stop', feed, event)"
-              />
 
-              <video v-else :id="'v'+feed.id" :ref="'v' + feed.id" autoplay playsinline
-               :class="{ talking: participants[feed.publisher].talking }"
-               @mousedown="drag('start', feed, $event)"
-               @mousemove="drag('drag', feed, $event)"
-               @mouseup="drag('stop',feed, $event)"
-               @mouseleave="drag('stop',feed, $event)"
-              />
-
-              <div class="overlay name">
-                {{ participants[feed.publisher].display }}
-                <message-circle-icon size="1x" class="icons" v-if="participants[feed.publisher].talking"></message-circle-icon>
-              </div>
-
-              <div class="overlay meta">
-                <loader-icon size="1x" class="icons loading centered" v-if="feed.loading == true"></loader-icon>
-                <span class="bitrate" v-if="showBitrates && feed.bitrate">
-                  {{ feed.bitrate }}<br />
-                </span>
-                <settings-icon v-if="allowSettings" size="1x" class="icons linked"  @click="feed.showOptions=!feed.showOptions" title="Show Settings"></settings-icon>
-                <maximize-2-icon size="1x" class="icons linked" @click="makeVideoFullscreen" title="Fullscreen"></maximize-2-icon>
-                <airplay-icon v-if="allowStageSends" size="1x" class="icons linked" @click="sendToStage(feed.publisher)" title="Send to Stage"></airplay-icon>
-              </div>
-
-              <div class="overlay options" v-show="feed.showOptions">
-                  <v-select dark label="Quality" dense v-model="feed.substream" :items="qualities" @change="changeFeedQuality(feed)"></v-select>
-              </div>
-
-            </div>
           </transition-group>
       </div>
 
@@ -273,6 +320,7 @@ export default {
 
   mounted () {
     console.log(this.$options._componentTag + " mounted");
+    console.log("client sceen is ", this.getWindowWidth(), "x", this.getWindowHeight());
     this.muted = this.is_muted === "true"
     if (this.myJanus == null) {
       this.loadConfig()
@@ -358,7 +406,6 @@ export default {
       //if (event.pointerType == "mouse") {
       //  return;
     //  }
-
       if (event.pointerType) {
         x = event.center.x
         y = event.center.y
@@ -381,6 +428,7 @@ export default {
           }
         }
       else if (this.dragging != null) {
+
         let diff_x = this.dragging.last_x - x
         let diff_y = this.dragging.last_y - y
         this.dragging.who.x -= diff_x;
@@ -389,10 +437,10 @@ export default {
         this.dragging.last_y = y
         //if (this.use_force) {
         // also change positison for force layout
-          let id = who.publisher ? who.publisher : 0
-          let item = this.force_positions.find( d  => d.id == id)
-          item.x = this.dragging.who.x
-          item.y = this.dragging.who.y
+        let id = who.publisher ? who.publisher : 0
+        let item = this.force_positions.find( d  => d.id == id)
+        item.x = this.dragging.who.x
+        item.y = this.dragging.who.y
         //}
       }
     },
@@ -489,7 +537,8 @@ export default {
           if(event != undefined && event != null) {
 
             if(event === "slow_link") {
-              self.toast.open("Slow link! Bitrate is: " + (msg["current-bitrate"]/1000) + " kb")
+              //ignre
+              //self.toast.open("Slow link! Bitrate is: " + (msg["current-bitrate"]/1000) + " kb")
             }
 
             else if(event === "talking") {
@@ -505,6 +554,8 @@ export default {
               self.username = msg["id"];
               self.private_id = msg["private_id"];
               Janus.log("Successfully joined room " + msg["room"] + " with ID " + msg["id"]);
+
+              self.$emit("joined");
               self.publishOwnFeed(true);
 
               // Any new feed to attach to?
@@ -1064,6 +1115,19 @@ export default {
       if (!this.use_force) {
         this.force.stop()
       } else {
+        this.force_positions = []
+        this.force_positions.push( {
+          x: this.my_pos.x,
+          y: this.my_pos.y,
+          id: 0
+        })
+        for (let k in Object.keys(this.feeds)) {
+          this.force_positions.push( {
+            x: this.feeds[k].x,
+            y: this.feeds[k].y,
+            id: this.feed[k].publisher
+          })
+        }
         this.force.restart()
       }
     },
@@ -1111,13 +1175,13 @@ export default {
 .videoroom .overlay .linked{  background:none }
 .videoroom .overlay .linked:hover { opacity: 1; color:white }
 .videoroom .name {
-  position: absolute; top:0px; left: 50%; transform:translate(-50%,0);
+  position: absolute; top:2px; left: 50%; transform:translate(-50%,0);
   background:rgba(0,0,0, 0.2); color:white;padding:0.01rem 0.5rem;
   opacity: 0.7
 }
 .videoroom .meta {
     position: absolute; opacity: 0.7;
-    left: 50%; bottom:0px;transform:translate(-50%,0);
+    left: 50%; bottom:2px;transform:translate(-50%,0);
     /*bottom:5px; left: 5px;*/
     /*background:white; color:#333;padding:0.3em;*/
     background:rgba(0,0,0, 0.2); color:white;padding:0.1rem 0.5rem;

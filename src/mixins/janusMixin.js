@@ -86,6 +86,15 @@ export const janusMixin = {
 
   },
 
+  watch: {
+    // whenever question changes, this function will run
+    open: function () {
+      this.is_open = this.open === "true"
+      if (this.open)
+        this.login();
+    }
+  },
+
   computed: {
     isMobile() {
       const isAndroid = /Android/i.test(navigator.userAgent);
@@ -93,6 +102,8 @@ export const janusMixin = {
       return isAndroid || isiOS;
     }
   },
+
+
 
   methods: {
 
@@ -179,6 +190,7 @@ export const janusMixin = {
         request.textroom = request.request;
       }
       self.pluginHandle.send({"message": request});
+      self.$emit("opened");
     },
 
     leaveRoom() {
