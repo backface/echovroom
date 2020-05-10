@@ -10,7 +10,7 @@
           <video-icon size="1x" class="icons linked"></video-icon>
         </a>
 
-        video
+        vroom
         <span v-if="room_info.description && showRoomInfo"> - {{ room_info.description }}</span>
         <span v-if="count > 0"> ({{ count }}) </span>
 

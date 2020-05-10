@@ -100,7 +100,7 @@
           talk:
         </div>
         <div class="column">
-          <v-text-field class="msg_editor" v-on:keyup.enter.exact="sendMsg" v-model="msg" />
+          <v-text-field class="msg_editor" v-on:keyup.enter.exact="sendMsg" v-model="msg" placeholder="type here" />
         </div>
         <div class="column is-narrow has-text-right emojicol">
           <a @click="sendMsg" title="send">
@@ -671,7 +671,7 @@ export default {
   position: absolute;
   z-index: 1;
   line-height:1em;
-  border: 1px solid #ccc;
+  border: 1px solid var(--color-fg);
   width: 15rem;
   height: 20rem;
   overflow-y: scroll;
@@ -679,9 +679,9 @@ export default {
   padding: 1rem;
   box-sizing: border-box;
   border-radius: 0.5rem;
-  background: #fff;
+  background: var(--color-bg);
   box-shadow: 1px 1px 8px #c7dbe6;
-  transform: translate(-14rem,-23rem);
+  transform: translate(-12rem,-23rem);
   margin-bottom:24px;
 }
 .emoji-picker__search {
@@ -696,7 +696,7 @@ export default {
 }
 .emoji-picker h5 {
   margin-bottom: 0;
-  color: #b1b1b1;
+  color: var(--color-fg);
   text-transform: uppercase;
   font-size: 0.8rem;
   cursor: default;

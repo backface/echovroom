@@ -36,7 +36,7 @@ export default {
       opaqueId: this.$options._componentTag  + "-" + Janus.randomString(12),
       pluginHandle: null,
       pluginName: "streaming",
-      room: 1,
+      room: 10,
       is_streaming: false,
 
     }

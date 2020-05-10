@@ -82,6 +82,7 @@ $title-font: 'Asap Condensed';
 	--color-bg: #ff5d5d;
 	--color-fg: #fff;
   --color-alert: #00dd00;
+  --invert-colors: 0%;
 }
 
 .echorooms {
@@ -98,6 +99,8 @@ $title-font: 'Asap Condensed';
 .enter {
   color: var(--color-fg) !important;
   border-color: var(--color-fg) !important;
+  font-size: 100%;
+  font-family: var(--font-body);
 }
 
 .enter:hover {
@@ -116,11 +119,39 @@ $title-font: 'Asap Condensed';
 .linked { cursor:pointer; color: var(--color-fg)}
 .linked:hover { opacity:0.8 }
 .overlay .linked  {color: white;}
-.participants ul { padding-left: 8px; }
-.darkmode .participants {
-  -webkit-filter: invert(100%);
-  filter: invert(100%);
+svg.linked:hover {
+  transform: scale(1.2);
 }
+
+.participants ul { padding-left: 8px; }
+
+.participants {
+  -webkit-filter: invert(var(--invert-colors));
+  filter: invert(var(--invert-colors));
+}
+
+.me { width:auto !important; margin-right:0px !important; }
+
+.v-text-field:not(.v-input--has-state):hover > .v-input__control > .v-input__slot:before,
+.theme--light.v-text-field:not(.v-input--has-state):hover > .v-input__control > .v-input__slot::before,
+.theme--light.v-text-field > .v-input__control > .v-input__slot::before,
+.theme--light.v-input, .theme--light.v-input input, .theme--light.v-input textarea,
+.v-input, .v-input input, .v-input textarea,
+.v-input input::placeholder, .v-input textarea::placeholder,
+.theme--light.v-input input::placeholder, .theme--light.v-input textarea::placeholder,
+.v-text-field > .v-input__control > .v-input__slot:after,
+.v-text-field > .v-input__control > .v-input__slot::before {
+  border-color: var(--color-fg);
+  color: var(--color-fg);
+  font-size:100%;
+  font-family: var(--font-body);
+}
+.v-input input::placeholder, .v-input textarea::placeholder,
+.theme--light.v-input input::placeholder, .theme--light.v-input textarea::placeholder {
+  opacity: 0.7;
+}
+
+
 
 .loading {
   -webkit-animation:spin 4s linear infinite;
