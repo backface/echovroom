@@ -17,6 +17,7 @@
         :open="video_chat_open"
         :facetime="facetime"
         @leftRoom="recreateVRoom"
+        :vr="vr"
       />
 
       <transition name="fade">
@@ -32,6 +33,7 @@
           @hasPassword="password = $event;"
           @hasRoomInfo="foyer_info = $event"
           @hasJanus="janus = $event"
+
         />
       </transition>
 
@@ -79,6 +81,9 @@ export default {
     if (typeof this.$route.query.password !=  undefined) {
       this.password = this.$route.query.password;
     }
+    if (typeof this.$route.query.vr !=  undefined) {
+      this.vr = this.$route.query.vr === 'true';
+    }
     this.loadConfig()
   },
 
@@ -90,6 +95,7 @@ export default {
       login_name: null,
       password: null,
       showVroom:true,
+      vr:false,
     }
   },
 

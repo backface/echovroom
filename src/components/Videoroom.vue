@@ -1,5 +1,5 @@
 <template>
-<div class="videoroom">
+<div class="videoroom" ref="videoroom">
 
     <div class="columns is-mobile is-narrow headers is-gapless">
       <div class="column has-text-left is-10">
@@ -10,7 +10,7 @@
           <video-icon size="1x" class="icons linked"></video-icon>
         </a>
 
-        vroom
+        vroom {{ vr }}
         <span v-if="room_info.description && showRoomInfo"> - {{ room_info.description }}</span>
         <span v-if="count > 0"> ({{ count }}) </span>
 
@@ -58,8 +58,43 @@
         </a>
       </div>
     </div>
-    <fullscreen ref="fullscreen" :fullscreen.sync="fullscreen"
 
+    <div class="screen has-text-center" ref="screen">
+      <div class="vrscreen"
+        ref="screen" v-if="vr"
+        :style="'width:' + getWindowWidth() + 'px; height:' + top + 'px'">
+
+        <a-scene embedded background="color: #ffffff" loading-screen="dotsColor: black; backgroundColor: #ffffff"
+          >
+          <a-assets>
+            <video ref="videolocal" id="videolocal" autoplay loop crossorigin="anonymous" muted></video>
+            <video v-for="feed in feeds" :key="feed.id" :id="'v'+feed.id" :ref="'v' + feed.id" autoplay playsinline></video>
+          </a-assets>
+
+          <!--<a-sky color="white"></a-sky>
+          <a-plane color="#bbb" position="0 0.5 0" rotation="-90 0 0" width="12" height="12"></a-plane>-->as
+
+          <a-plane
+            material="src: #videolocal"
+            :position="my_pos.cx + ' 1.4 ' + my_pos.cy"
+            :rotation="'0 ' + my_pos.rotation + ' 0'"
+            width="4" height="3"
+          ></a-plane>
+
+          <template v-for="feed in feeds">
+            <a-plane v-if="!feed.loading" :key="'p'+feed.id"
+              :material="'src: #v'+feed.id"
+              :position="feed.cx + ' 1.4 ' + feed.cy"
+              :rotation="'0 ' + feed.rotation + ' 0'"
+              width="4" height="3">
+            </a-plane>
+          </template>
+
+        </a-scene>
+      </div>
+    </div>
+
+    <fullscreen ref="fullscreen" :fullscreen.sync="fullscreen"
       @change="fullscreenChange"  background="white" v-if="is_open">
 
       <div class="screen has-text-center" ref="screen" v-if="!vr">
@@ -208,30 +243,7 @@
                 </div>
             </template>
 
-            <!--
-            @mousedown="drag('start', feed, $event)"
-            @mousemove="drag('drag', feed, $event)"
-            @mouseup="drag('stop', feed, $event)"
-            @mouseleave="drag('stop', feed, $event)"
-            v-hammer:pan="isMobile ?  (event) => drag('drag', feed, event) : null"
-            v-hammer:panstart="isMobile ?  (event) => drag('start', feed, event): null"
-            v-hammer:panend="isMobile ?  (event) => drag('stop', feed, event): null"
-            @mouseleave="drag('stop', feed, $event)"
-          -->
-
-
           </transition-group>
-      </div>
-
-      <div class="screen has-text-center" ref="screen" v-if="vr">
-        <a-scene>
-          <a-assets>
-            <video ref="videolocal" id="videolocal" autoplay loop crossorigin="anonymous" muted></video>
-            <video v-for="feed in feeds" :key="feed.id" :id="'v'+feed.id" :ref="'feed-' + feed.id" autoplay playsinline></video>
-          </a-assets>
-          <a-sky color="#6EBAA7"></a-sky>
-          <a-box src="#video" position="-1 0.5 -3" rotation="0 45 0" ></a-box>
-        </a-scene>
       </div>
 
     </fullscreen>
@@ -274,7 +286,7 @@ import { forceManyBody }  from 'd3-force';
 //import { forceCenter }  from 'd3-force';
 import { forceCollide }  from 'd3-force';
 import { forceRadial }  from 'd3-force';
-
+import 'aframe';
 
 Vue.use(fullscreen)
 Vue.use(VueHammer)
@@ -324,6 +336,10 @@ export default {
       type: Boolean,
       default: false
     },
+    vr: {
+      type: Boolean,
+      default: false
+    },
   },
 
   data() {
@@ -345,7 +361,7 @@ export default {
       tile_width: 256,
       tile_height: 256,
       dragging: null,
-      my_pos: { x:0, y:0 },
+      my_pos: { x:0, y:0, cx:0, cy:0 },
       bitrates:  [
         { text: "No Limit", value: 0},
         { text: "256 Kb", value: 256000} ,
@@ -365,12 +381,13 @@ export default {
         publishers: 100
       },
       onstage: null,
-      vr: false,
       force: null,
       use_force: true,
       force_positions: [],
+      vr_positions: [],
       force_max_area_perc: 65,
       force_used_area_perc: 0,
+      top: 0,
     }
   },
 
@@ -383,6 +400,7 @@ export default {
       this.janus = this.myJanus
       this.attachPlugin()
     }
+    this.top = this.$refs['videoroom'].getBoundingClientRect().top;
     this.force = forceSimulation()
       .force('charge', forceManyBody().strength(10))
       .force('collision', forceCollide().radius(this.tile_width/2+ 5))
@@ -403,6 +421,10 @@ export default {
     login_password: function(value) {
       this.password = value
     }
+  },
+
+  computed: {
+
   },
 
   methods: {
@@ -433,6 +455,30 @@ export default {
           .y(self.getWindowHeight()/ 2 - self.tile_width/2)
         )
       self.force.alpha(1).restart()
+    },
+
+    updateVRpositions() {
+      let self =this;
+      let len = Object.keys(self.feeds).length + 1;
+      let r = 4;
+      let start = -90
+      let i = 0
+      let d = (i * 180/len) + (180/len)/2 - start;
+
+      self.$set(self.my_pos,"cx",  0 + r * Math.sin( d * Math.PI / 180))
+      self.$set(self.my_pos,"cy",  1 + r * Math.cos( d * Math.PI / 180))
+      self.$set(self.my_pos,"rotation", 180 + d)
+      if (self.feeds)
+        for (let k of Object.keys(self.feeds)) {
+          i++
+          d = (i * 180/len) + (180/len)/2 - start;
+          let cx = 0 + r * Math.sin( d * Math.PI / 180)
+          let cy = 1 + r * Math.cos( d * Math.PI / 180)
+          self.$set(self.feeds[k], "cx", cx)
+          self.$set(self.feeds[k], "cy", cy)
+          self.$set(self.feeds[k], "rotation", 180 + d)
+        }
+        //self.$forceUpdate()
     },
 
     toggleFullscreen () {
@@ -670,6 +716,11 @@ export default {
                   self.$emit('leftRoom')
                   self.force_positions = []
                   self.resetForces()
+
+                  if (self.vr) {
+                    self.updateVRpositions()
+                  }
+
                   return;
 
                 } else if(self.feeds) {
@@ -680,6 +731,10 @@ export default {
                 }
                 self.force_positions = self.force_positions.filter( d => d.id !== msg['leaving'] );
                 self.resetForces()
+
+                if (self.vr) {
+                  self.updateVRpositions()
+                }
 
                 self.$delete(self.participants,msg['leaving'])
                 self.count = Object.keys(self.participants).length
@@ -754,6 +809,9 @@ export default {
           if (self.use_force) {
             self.resetForces()
           }
+          if (self.vr)
+            self.updateVRpositions()
+
           self.is_streaming = true;
           self.muteMe(self.muted)
           // We're not going to attach the local audio stream!
@@ -917,7 +975,11 @@ export default {
                 if (self.use_force) {
                   self.resetForces()
                 }
+                if (self.vr) {
+                  self.updateVRpositions()
+                }
               }
+
 
 
 
@@ -1213,7 +1275,7 @@ export default {
 .warn_is_on {
   color: var(--color-alert);
 }
-
+.videoroom .headers { z-index:100}
 .videoroom .screen  {
   /* height:100%; */
   /*position: absolute;
@@ -1293,6 +1355,14 @@ export default {
   border-radius: 0%;
 }
 
+.videoroom .vrscreen {
+  position: relative;
+  top:40px; left: 50%;
+  height:400px;
+  transform:translate(-50%,-120%);
+  background:white;
+}
+
 .facetrackdebug {
   position: fixed; bottom:30px; left:5px;
   width:240px;
@@ -1306,6 +1376,11 @@ export default {
     text-align:center;
     z-index:201;
   }
+
+.a-loader-title {
+  background: #ddcccc;
+  color:black;
+}
 
 @media (max-width:461px) {
   .videoroom .overlay { display:none}

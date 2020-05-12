@@ -1,7 +1,7 @@
 <template>
 <div class="stage">
   <img src="../assets/testbild.jpg" v-show="!is_streaming">
-  <video ref="stream" playsinline autoplay controls v-show="is_streaming"></video>
+  <video ref="stream" playsinline autoplay v-show="is_streaming" poster="/img/testbild.jpg"></video>
 
   <toast ref="toast"></toast>
   <login-dialog ref="login"></login-dialog>
@@ -140,8 +140,11 @@ export default {
 
 <style lang="css" scoped>
  video {
-    width:100%; height:100%; border-radius: 5px; border: 1px solid black;
+    width:100%; height:100%;
+   /* border-radius: 5px; border: 1px solid black;
     border-radius:5px;     box-shadow: 10px 6px 12px rgba(0,0,0,0.35);
+    */
+    background:none;
   }
 
 </style>
