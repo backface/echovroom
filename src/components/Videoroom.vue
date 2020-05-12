@@ -10,7 +10,8 @@
           <video-icon size="1x" class="icons linked"></video-icon>
         </a>
 
-        vroom {{ vr }}
+        <span v-if="vr">VRoom</span> <span v-else>vroom</span>
+
         <span v-if="room_info.description && showRoomInfo"> - {{ room_info.description }}</span>
         <span v-if="count > 0"> ({{ count }}) </span>
 
@@ -67,18 +68,30 @@
         <a-scene embedded background="color: #ffffff" loading-screen="dotsColor: black; backgroundColor: #ffffff"
           >
           <a-assets>
+            <!--
+            <a-asset-item id="obj" src="models/banff-test.obj"></a-asset-item>
+            <a-asset-item id="mtl" src="models/banff-test.mtl"></a-asset-item>
+          -->
             <video ref="videolocal" id="videolocal" autoplay loop crossorigin="anonymous" muted></video>
             <video v-for="feed in feeds" :key="feed.id" :id="'v'+feed.id" :ref="'v' + feed.id" autoplay playsinline></video>
           </a-assets>
 
-          <!--<a-sky color="white"></a-sky>
-          <a-plane color="#bbb" position="0 0.5 0" rotation="-90 0 0" width="12" height="12"></a-plane>-->as
+
+         <!--  <a-plane color="#bbb" position="0 0.5 0" rotation="-90 0 0" width="12" height="12" shadow></a-plane>
+         <a-sky color="#ddcccc"></a-sky>
+          <a-entity
+                obj-model="obj: #obj; mtl: #mtl"
+                scale="100 120 100"
+                rotation="0 -20 0"
+                position="1 -5 0">
+          </a-entity>-->
 
           <a-plane
             material="src: #videolocal"
             :position="my_pos.cx + ' 1.4 ' + my_pos.cy"
             :rotation="'0 ' + my_pos.rotation + ' 0'"
-            width="4" height="3"
+            :width="my_pos.cw" :height="my_pos.ch"
+            shadow
           ></a-plane>
 
           <template v-for="feed in feeds">
@@ -86,7 +99,8 @@
               :material="'src: #v'+feed.id"
               :position="feed.cx + ' 1.4 ' + feed.cy"
               :rotation="'0 ' + feed.rotation + ' 0'"
-              width="4" height="3">
+              :width="feed.cw" :height="feed.ch"
+              shadow>
             </a-plane>
           </template>
 
@@ -361,7 +375,7 @@ export default {
       tile_width: 256,
       tile_height: 256,
       dragging: null,
-      my_pos: { x:0, y:0, cx:0, cy:0 },
+      my_pos: { x:0, y:0, cx:0, cy:0, cw:0, ch:0 },
       bitrates:  [
         { text: "No Limit", value: 0},
         { text: "256 Kb", value: 256000} ,
@@ -464,9 +478,14 @@ export default {
       let start = -90
       let i = 0
       let d = (i * 180/len) + (180/len)/2 - start;
+      let total_length = r * Math.PI
+      let width = Math.min(total_length/2, total_length / len);
+
 
       self.$set(self.my_pos,"cx",  0 + r * Math.sin( d * Math.PI / 180))
       self.$set(self.my_pos,"cy",  1 + r * Math.cos( d * Math.PI / 180))
+      self.$set(self.my_pos,"cw",  width)
+      self.$set(self.my_pos,"ch",  width / self.my_pos.ratio)
       self.$set(self.my_pos,"rotation", 180 + d)
       if (self.feeds)
         for (let k of Object.keys(self.feeds)) {
@@ -476,6 +495,8 @@ export default {
           let cy = 1 + r * Math.cos( d * Math.PI / 180)
           self.$set(self.feeds[k], "cx", cx)
           self.$set(self.feeds[k], "cy", cy)
+          self.$set(self.feeds[k], "cw", width)
+          self.$set(self.feeds[k], "ch", width / self.feeds[k].ratio)
           self.$set(self.feeds[k], "rotation", 180 + d)
         }
         //self.$forceUpdate()
@@ -799,6 +820,7 @@ export default {
           Janus.debug(self.opaqueId, " ::: Got a local stream :::");
           Janus.debug(self.opaqueId, stream);
 
+
           Janus.attachMediaStream(self.$refs.videolocal, stream);
           self.my_pos = self.getNewPosition()
           self.force_positions.push({
@@ -810,7 +832,10 @@ export default {
             self.resetForces()
           }
           if (self.vr)
-            self.updateVRpositions()
+            setTimeout(function() {
+              self.my_pos.ratio = self.$refs.videolocal.videoWidth / self.$refs.videolocal.videoHeight
+              self.updateVRpositions()
+            }, 1000)
 
           self.is_streaming = true;
           self.muteMe(self.muted)
@@ -966,6 +991,7 @@ export default {
                 newfeed.muted = false
                 newfeed.x = self.participants[msg["id"]].x
                 newfeed.y = self.participants[msg["id"]].y
+                newfeed.ration = 1
                 self.$set(self.feeds, msg.id, newfeed)
                 self.force_positions.push({
                   x: newfeed.x,
@@ -1079,6 +1105,14 @@ export default {
           } else {
             self.feeds[remoteFeed.publisher].has_remote_video = true;
           }
+
+          if (self.vr)
+            setTimeout(function() {
+              self.$set(self.feeds[remoteFeed.publisher], "ratio" ,
+                self.$refs['v'+remoteFeed.id][0].videoWidth / self.$refs['v'+remoteFeed.id][0].videoHeight
+              )
+              self.updateVRpositions()
+            }, 1000)
 
           if(Janus.webRTCAdapter.browserDetails.browser === "chrome"
             || Janus.webRTCAdapter.browserDetails.browser === "firefox" ||

@@ -348,11 +348,9 @@ export const janusMixin = {
         request.room = self.room
         request.description = self.room_name
 
-        console.log(self.password);
         if (self.password) {
           request.pin = self.password
         }
-        console.log(request);
 
         self.pluginHandle.send({
           "message": request,
