@@ -412,6 +412,7 @@ export default {
     if (this.myJanus == null) {
       this.loadConfig()
     } else {
+      console.log("got a janus session");
       this.janus = this.myJanus
       this.attachPlugin()
     }
@@ -910,7 +911,7 @@ export default {
             Janus.error(self.opaqueId, "WebRTC error:", error);
             self.alert.open("ERROR creating offer: " +  error.message);
             /*if (useAudio) {
-              self.publishOwnFeed(true);
+              self.publishOwnFateed(true);
             } else {
               Janus.error(self.opaqueId, "WebRTC error:", error);
               self.alert.open("WebRTC error... " + JSON.stringify(error));
@@ -1415,7 +1416,7 @@ export default {
     width:100px; background:rgba(0,0,0,0.5); color: white; padding: 2px 10px;
     text-align:center;
     z-index:201;
-  }
+}
 
 .a-loader-title {
   background: #ddcccc;

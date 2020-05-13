@@ -12,7 +12,6 @@
       :allowStageSends="false"
       :allowSettings="false"
       :showRoomInfo="false"
-      :myJanus="janus"
       videoResolution="videoResolution"
       @leftRoom="recreateVRoom"
       @opened="video_chat_open = false; show_video_login = false"
@@ -22,7 +21,7 @@
       <button @click="enterVideoroom" v-if="show_video_login && nick" class="button is-white is-inverted is-outlined enter">JOIN VIDEO CHAT</button>
     </template>
     <template v-else>
-      <v-btn @click="enterVideoroom" v-if="show_video_login && nick" class="enter">JOIN VIDEO CHAT</v-btn>
+      <v-btn @click="enterVideoroom" v-if="show_video_login && nick && showVroom" class="enter">JOIN VIDEO CHAT</v-btn>
     </template>
 
     <transition name="fade">
@@ -110,15 +109,13 @@ export default {
       let self = this
       this.showVroom = false;
       setTimeout( () => {self.showVroom = true; }, 500)
-      setTimeout( () => {self.video_chat_open = false; }, 1000)
       if (!this.video_chat_open)
-        this.show_video_login = false
+        this.show_video_login = true
     },
     enterVideoroom() {
       this.video_chat_open = true;
       this.show_video_login = false;
-      this.recreateVRoom();
-
+      setTimeout( () => {self.video_chat_open = false; }, 1000)
     }
   }
 

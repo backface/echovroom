@@ -94,9 +94,14 @@ export const janusMixin = {
     // whenever question changes, this function will run
     open: function (value) {
       console.log(value);
-      if (value === true)
+      if (value === true) {
         console.log("got an open request");
-        this.is_open = value
+        this.login();
+      }
+    },
+    login: function (value) {
+      if (value === true)
+        console.log("got a login request");
         this.login();
     }
   },
@@ -131,7 +136,7 @@ export const janusMixin = {
     initJanus () {
       this.loading = true
 
-      console.log(self.opaqueId, 'calling Janus init')
+      console.log(this.opaqueId, 'calling Janus init')
 
       Janus.init({
         debug: 'all',
@@ -166,7 +171,7 @@ export const janusMixin = {
     },
 
     askForUsername() {
-      console.log(self.opaqueId, "Ask for username");
+      console.log(this.opaqueId, "Ask for username");
       let self=this;
       //if(/[^a-zA-Z0-9]/.test(username)) {
       self.$refs.login.open("Your name?", {
@@ -327,6 +332,7 @@ export const janusMixin = {
     initRoom() {
       let self = this
       self.getRoomsInfo().then(()=> {
+        console.log(self.opaqueId, "init room");
         self.getParticipantList();
         setTimeout(self.updateParticipantsInfo, 10000)
         if (self.is_open)
