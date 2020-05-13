@@ -10,7 +10,7 @@
           <video-icon size="1x" class="icons linked"></video-icon>
         </a>
 
-        <span v-if="vr">VRoom</span> <span v-else>vroom</span>
+        <span v-if="vr">VR/</span>vroom
 
         <span v-if="room_info.description && showRoomInfo"> - {{ room_info.description }}</span>
         <span v-if="count > 0"> ({{ count }}) </span>
@@ -72,10 +72,12 @@
             <a-asset-item id="obj" src="models/banff-test.obj"></a-asset-item>
             <a-asset-item id="mtl" src="models/banff-test.mtl"></a-asset-item>
           -->
+            <img id="grid" src="/img/grid.png" />
             <video ref="videolocal" id="videolocal" autoplay loop crossorigin="anonymous" muted></video>
             <video v-for="feed in feeds" :key="feed.id" :id="'v'+feed.id" :ref="'v' + feed.id" autoplay playsinline></video>
           </a-assets>
-
+          <a-plane rotation="-90 0 0" width="100" height="100" material="src:#grid;repeat:200 200"
+          ></a-plane>
 
          <!--  <a-plane color="#bbb" position="0 0.5 0" rotation="-90 0 0" width="12" height="12" shadow></a-plane>
          <a-sky color="#ddcccc"></a-sky>
@@ -304,7 +306,6 @@ import 'aframe';
 
 Vue.use(fullscreen)
 Vue.use(VueHammer)
-
 
 export default {
   name: 'Videoroom',

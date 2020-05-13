@@ -11,7 +11,6 @@ import Eventroom from './views/Eventroom.vue'
 import VideoTest from './components/VideoTest.vue'
 import VideoTest2 from './components/VideoTest2.vue'
 import VideoTest3 from './components/VideoTest3.vue'
-import VideoTest4 from './components/VideoTest4.vue'
 import D3test from './components/D3test.vue'
 
 Vue.use(Router)
@@ -67,11 +66,6 @@ export default new Router({
           path: '/videotest3',
           name: 'videotest3',
           component: VideoTest3,
-        },
-        {
-          path: '/VideoTest4',
-          name: 'videotest4',
-          component: VideoTest4,
         },
         {
           path: '/D3test',

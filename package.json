@@ -30,7 +30,6 @@
     "core-js": "^3.6.4",
     "css-loader": "^3.4.2",
     "d3-force": "^2.0.1",
-    "face-api.js": "^0.22.2",
     "facedetector": "^1.0.1",
     "hammerjs": "^2.0.8",
     "instal": "0.0.1-security",
