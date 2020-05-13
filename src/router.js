@@ -7,7 +7,6 @@ import NotFound from './views/NotFound.vue'
 import Echoroom from './views/Echoroom.vue'
 import Demoroom from './views/Demoroom.vue'
 import Eventroom from './views/Eventroom.vue'
-
 import VideoTest from './components/VideoTest.vue'
 import VideoTest2 from './components/VideoTest2.vue'
 import VideoTest3 from './components/VideoTest3.vue'
@@ -46,42 +45,8 @@ export default new Router({
       props: (route) => ({
           roombyName: route.params.roombyName,
           embed:true,
-          hans:"zasdfasd",
       }),
     },
-
-
-
-        {
-          path: '/videotest',
-          name: 'videotest',
-          component: VideoTest,
-        },
-        {
-          path: '/videotest2',
-          name: 'videotest2',
-          component: VideoTest2,
-        },
-        {
-          path: '/videotest3',
-          name: 'videotest3',
-          component: VideoTest3,
-        },
-        {
-          path: '/D3test',
-          name: 'D3test',
-          component: D3test,
-        },
-
-
-    {
-      path: '/:roombyName',
-      name: 'chat',
-      component: Chatroom,
-      props:true,
-      //meta: { transitionName: 'zoom' },
-    },
-
     {
       path: '/facetime/:roombyName',
       name: 'facetime',
@@ -91,7 +56,48 @@ export default new Router({
           facetime:true
       }),
     },
+    {
+      path: '/vr/:roombyName',
+      name: 'vr',
+      component: Chatroom,
+      props: (route) => ({
+          roombyName: route.params.roombyName,
+          enterVR:true
+      }),
+    },
 
+    // testing toom
+    {
+      path: '/videotest',
+      name: 'videotest',
+      component: VideoTest,
+    },
+    {
+      path: '/videotest2',
+      name: 'videotest2',
+      component: VideoTest2,
+    },
+    {
+      path: '/videotest3',
+      name: 'videotest3',
+      component: VideoTest3,
+    },
+    {
+      path: '/D3test',
+      name: 'D3test',
+      component: D3test,
+    },
+
+    // main chat
+    {
+      path: '/:roombyName',
+      name: 'chat',
+      component: Chatroom,
+      props:true,
+      //meta: { transitionName: 'zoom' },
+    },
+
+    // wtf is eventroom?
     {
       path: '/event',
       name: 'even',

@@ -3,7 +3,7 @@
     <v-card>
       <v-card-title class="headline">{{title}}</v-card-title>
       <v-card-text>
-        <v-form ref="signUpForm" v-model="valid" :lazy-validation="lazy" @submit.prevent="submit">
+        <v-form ref="signUpForm" v-model="valid" :lazy-validation="lazy" @submit.prevent="">
           <v-text-field
             placeholder="Peter Pan"
             v-model="username"

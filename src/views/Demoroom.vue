@@ -7,7 +7,7 @@
     </div>
     <div class="echorooms">
       <Videoroom
-        :roombyId="room"
+        roombyName="demoroom"
         v-if="login_name  && showVroom"
         :nick="login_name"
         :is_muted="true"
@@ -15,11 +15,12 @@
         :open="video_chat_open"
         :facetime="facetime"
         @leftRoom="recreateVRoom"
+        :vr="vr"
       />
 
       <Audioroom
         v-if="login_name"
-        :roombyId="room"
+        roombyName="demoroom"
         :nick="login_name"
         :myJanus="janus"
       />
@@ -30,7 +31,7 @@
           v-show="chat_open"
           :open="true"
           :myJanus="janus"
-          :roombyId="room"
+          roombyName="demoroom"
           :nick="login_name"
           @participantNumberChanged="foyer_count = $event"
           @hasNick="login_name = $event;"
@@ -81,6 +82,9 @@ export default {
     if (typeof this.$route.query.login !=  undefined) {
       this.login_name = this.$route.query.login;
     }
+    if (typeof this.$route.query.vr !=  undefined) {
+      this.vr = this.$route.query.vr === 'true';
+    }
     this.loadConfig()
   },
 
@@ -92,6 +96,7 @@ export default {
       janusReady: false,
       login_name: null,
       showVroom:true,
+      vr:false,
     }
   },
 

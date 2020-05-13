@@ -10,7 +10,7 @@
           <video-icon size="1x" class="icons linked"></video-icon>
         </a>
 
-        <span v-if="vr">VR/</span>vroom
+        <span v-if="vr">VR/</span> vroom
 
         <span v-if="room_info.description && showRoomInfo"> - {{ room_info.description }}</span>
         <span v-if="count > 0"> ({{ count }}) </span>
@@ -151,7 +151,7 @@
               @mousedown="drag('start', my_pos, $event)"
               @mousemove="drag('drag', my_pos, $event)"
               @mouseup="drag('stop',my_pos, $event)"
-              @mouseleave="drag('stop',my_pos, $event)"
+              @mouseout="drag('stop',my_pos, $event)"
             >
               <video ref="videolocal" class="videolocal" id="videolocal" autoplay playsinline muted="muted" />
 
@@ -225,7 +225,7 @@
                   @mousedown="drag('start', feed, $event)"
                   @mousemove="drag('drag', feed, $event)"
                   @mouseup="drag('stop',feed, $event)"
-                  @mouseleave="drag('stop',feed, $event)"
+                  @mouseout="drag('stop',feed, $event)"
                 >
                   <video :id="'v'+feed.id" :ref="'v' + feed.id" autoplay playsinline
                    :class="{ talking: participants[feed.publisher].talking }"
@@ -302,7 +302,7 @@ import { forceManyBody }  from 'd3-force';
 //import { forceCenter }  from 'd3-force';
 import { forceCollide }  from 'd3-force';
 import { forceRadial }  from 'd3-force';
-import 'aframe';
+
 
 Vue.use(fullscreen)
 Vue.use(VueHammer)
@@ -415,7 +415,7 @@ export default {
       this.janus = this.myJanus
       this.attachPlugin()
     }
-    this.top = this.$refs['videoroom'].getBoundingClientRect().top;
+    this.top = this.$refs['videoroom'].getBoundingClientRect().top - 70;
     this.force = forceSimulation()
       .force('charge', forceManyBody().strength(10))
       .force('collision', forceCollide().radius(this.tile_width/2+ 5))
@@ -516,10 +516,12 @@ export default {
           self.my_pos.y = Math.max(0, i.y);
           self.my_pos.y = Math.min(self.getWindowHeight() - self.tile_width, self.my_pos.y);
         } else {
-          self.feeds[i.id].x = Math.max(0, i.x);
-          self.feeds[i.id].x = Math.min(self.getWindowWidth() - self.tile_width, self.feeds[i.id].x );
-          self.feeds[i.id].y = Math.max(0, i.y);
-          self.feeds[i.id].y = Math.min(self.getWindowHeight() - self.tile_width, self.feeds[i.id].y);
+          if (self.feeds[i.id]) {
+            self.feeds[i.id].x = Math.max(0, i.x);
+            self.feeds[i.id].x = Math.min(self.getWindowWidth() - self.tile_width, self.feeds[i.id].x );
+            self.feeds[i.id].y = Math.max(0, i.y);
+            self.feeds[i.id].y = Math.min(self.getWindowHeight() - self.tile_width, self.feeds[i.id].y);
+          }
         }
 
       })
@@ -568,8 +570,10 @@ export default {
         // also change positison for force layout
         let id = who.publisher ? who.publisher : 0
         let item = this.force_positions.find( d  => d.id == id)
-        item.x = this.dragging.who.x
-        item.y = this.dragging.who.y
+        if (item) {
+          item.x = this.dragging.who.x
+          item.y = this.dragging.who.y
+        }
         //}
       }
     },
@@ -994,12 +998,13 @@ export default {
                 newfeed.y = self.participants[msg["id"]].y
                 newfeed.ration = 1
                 self.$set(self.feeds, msg.id, newfeed)
-                self.force_positions.push({
-                  x: newfeed.x,
-                  y: newfeed.y,
-                  id: newfeed.publisher,
-                })
+
                 if (self.use_force) {
+                  self.force_positions.push({
+                    x: newfeed.x,
+                    y: newfeed.y,
+                    id: newfeed.publisher,
+                  })
                   self.resetForces()
                 }
                 if (self.vr) {
@@ -1285,14 +1290,15 @@ export default {
           y: this.my_pos.y,
           id: 0
         })
-        for (let k in Object.keys(this.feeds)) {
-          this.force_positions.push( {
-            x: this.feeds[k].x,
-            y: this.feeds[k].y,
-            id: this.feed[k].publisher
-          })
+        for (let k of  Object.keys(this.feeds)) {
+          if (this.feeds[k])
+            this.force_positions.push( {
+              x: this.feeds[k].x,
+              y: this.feeds[k].y,
+              id: this.feeds[k].publisher
+            })
         }
-        this.force.restart()
+        this.resetForces()
       }
     },
 
@@ -1392,9 +1398,8 @@ export default {
 
 .videoroom .vrscreen {
   position: relative;
-  top:40px; left: 50%;
-  height:400px;
-  transform:translate(-50%,-120%);
+  top:-70px; left: 50%;
+  transform:translate(-50%,-100%);
   background:white;
 }
 

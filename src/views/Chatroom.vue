@@ -68,6 +68,10 @@ export default {
       type: Boolean,
       default: false
     },
+    enterVR:  {
+      type: Boolean,
+      default: false
+    },
     embed:  {
       type: Boolean,
       default: false
@@ -84,6 +88,7 @@ export default {
     if (typeof this.$route.query.vr !=  undefined) {
       this.vr = this.$route.query.vr === 'true';
     }
+    if (this.enterVR) this.vr = this.enterVR;
     this.loadConfig()
   },
 

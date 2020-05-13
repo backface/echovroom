@@ -78,19 +78,21 @@ $title-font: 'Asap Condensed';
 }
 
 :root {
-	font-size: 100%;
+	--font-size: 100%;
 	--color-bg: #ff5d5d;
 	--color-fg: #fff;
   --color-alert: #00dd00;
   --invert-colors: 0%;
+  --lineHeight: calc(1.1 * var(--fontSize));
 }
 
 .echorooms {
   text-align: center;
   font-size: calc(var(--font-size) * 0.8);
+  line-height: var(--lineHeight);
 }
 
-.textroom { height: 450px }
+.textroom { height: 400px }
 
 *:focus {
     outline: none;
@@ -101,6 +103,9 @@ $title-font: 'Asap Condensed';
   border-color: var(--color-fg) !important;
   font-size: 100%;
   font-family: var(--font-body);
+  margin-bottom:20px;
+  text-transform: lowercase;
+  border-radius: 0px;
 }
 
 .enter:hover {
@@ -151,12 +156,14 @@ svg.linked:hover {
   opacity: 0.7;
 }
 
-
-
 .loading {
   -webkit-animation:spin 4s linear infinite;
   -moz-animation:spin 4s linear infinite;
   animation:spin 4s linear infinite;
+}
+
+@media (max-width:1000px) {
+  .echorooms { font-size:2rem}
 }
 
 @-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }

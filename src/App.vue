@@ -1,7 +1,7 @@
 <template>
   <v-app id="app">
     {{ $route.embed }}
-    <nav class="navbar" role="navigation" aria-label="main navigation" v-if="!embed">
+    <nav class="navbar is-transparent" role="navigation" aria-label="main navigation" v-if="!embed">
 
       <div class="navbar-brand">
         <router-link :to="{ path: '/' }" v-slot="{ href }">

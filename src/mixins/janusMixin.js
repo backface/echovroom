@@ -77,7 +77,7 @@ export const janusMixin = {
     this.alert = this.$refs.alert;
     if (this.roombyId > 0)
       this.room = this.roombyId
-    if (this.roombyName.length > 2) {
+    else if (this.roombyName.length > 0) {
       this.room = this.hashCode(this.roombyName)
       this.room_name = this.roombyName
     }
@@ -94,7 +94,8 @@ export const janusMixin = {
     // whenever question changes, this function will run
     open: function (value) {
       console.log(value);
-      if (value)
+      if (value === true)
+        console.log("got an open request");
         this.is_open = value
         this.login();
     }
@@ -130,7 +131,7 @@ export const janusMixin = {
     initJanus () {
       this.loading = true
 
-      console.log('calling Janus init')
+      console.log(self.opaqueId, 'calling Janus init')
 
       Janus.init({
         debug: 'all',
@@ -165,7 +166,7 @@ export const janusMixin = {
     },
 
     askForUsername() {
-
+      console.log(self.opaqueId, "Ask for username");
       let self=this;
       //if(/[^a-zA-Z0-9]/.test(username)) {
       self.$refs.login.open("Your name?", {
@@ -230,7 +231,8 @@ export const janusMixin = {
       if (!self.is_open)
         self.is_open = true;
 
-      console.log(self.opaqueId, "ask for participants");
+      console.log(self.opaqueId, "login");
+      console.log(self.opaqueId, "ask for existing participants");
       var transaction = Janus.randomString(12);
       var request = {
         transaction: transaction,
@@ -247,8 +249,10 @@ export const janusMixin = {
           self.$emit('participantNumberChanged', self.count)
 
           if (!self.nick) {
+            console.log(self.opaqueId, "no name provided");
             self.askForUsername();
           } else if (self.initial_participants.find(d => d.display == self.nick)) {
+            console.log(self.opaqueId, "username already taken");
             self.askForUsername(true);
           } else {
             self.display = self.nick
@@ -367,11 +371,17 @@ export const janusMixin = {
     },
 
     hashCode(string) {
+      if(string == "echoraeume")
+        return 777;
+      if(string == "demoroom")
+        return 1234
+
       var hash = 0, i = 0, len = string.length;
       while ( i < len ) {
           hash  = ((hash << 5) - hash + string.charCodeAt(i++)) << 0;
       }
       return (hash + 2147483647) + 1
+
     },
 
 
