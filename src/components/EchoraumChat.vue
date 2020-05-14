@@ -159,11 +159,11 @@ svg.linked:hover {
 .loading {
   -webkit-animation:spin 4s linear infinite;
   -moz-animation:spin 4s linear infinite;
-  animation:spin 4s linear infinite;
+  animation:spin 4s linear infinie;
 }
 
-@media (max-width:1000px) {
-  .echorooms { font-size:2rem}
+@media (max-width:461px) {
+  .echorooms { font-size:1.35rem }
 }
 
 @-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }

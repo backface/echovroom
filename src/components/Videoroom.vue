@@ -302,7 +302,7 @@ import { forceManyBody }  from 'd3-force';
 //import { forceCenter }  from 'd3-force';
 import { forceCollide }  from 'd3-force';
 import { forceRadial }  from 'd3-force';
-import 'aframe'
+import "aframe"
 
 Vue.use(fullscreen)
 Vue.use(VueHammer)
@@ -756,8 +756,10 @@ export default {
                     self.$delete(self.feeds,msg["leaving"])
                   }
                 }
-                self.force_positions = self.force_positions.filter( d => d.id !== msg['leaving'] );
-                self.resetForces()
+                if (self.use_force) {
+                  self.force_positions = self.force_positions.filter( d => d.id !== msg['leaving'] );
+                  self.resetForces()
+                }
 
                 if (self.vr) {
                   self.updateVRpositions()
@@ -910,7 +912,7 @@ export default {
           },
           error: function(error) {
             Janus.error(self.opaqueId, "WebRTC error:", error);
-            self.alert.open("ERROR creating offer: " +  error.message);
+            self.alert.open("ERROR creating offer: " +  error);
             /*if (useAudio) {
               self.publishOwnFateed(true);
             } else {
@@ -920,10 +922,6 @@ export default {
           }
         });
       }
-
-
-
-
     },
 
     unpublishOwnFeed() {

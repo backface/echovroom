@@ -164,7 +164,7 @@ export default {
 /* compoonent pparts */
 
 .max-width { width: 640px; margin: 0 auto; max-width: 100%; }
-.textroom { height: 300px}
+.textroom { height: 250px}
 
 .header { flex: 0 0 auto}
 .headers { background: none; border-bottom: 1px solid var(--color-fg); padding:5px 5px; margin-bottom: 0.7rem !important}

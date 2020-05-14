@@ -6,6 +6,9 @@
       </div>
     </div>
     <Echorooms :roombyId="room" />
+    <p style="font-size:80%">
+      live version at &nbsp; <a href="https://echoraeume.klingt.org/" style="color:black;text-decoration:underline">echoraeume.klingt.org</a>
+    </p>
   </div>
 </template>
 

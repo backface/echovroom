@@ -18,10 +18,10 @@
     />
 
     <template v-if="is_component">
-      <button @click="enterVideoroom" v-if="show_video_login && nick" class="button is-white is-inverted is-outlined enter">JOIN VIDEO CHAT</button>
+      <button @click="enterVideoroom" v-if="show_video_login && nick  && showVroom && !video_chat_open" class="button is-white is-inverted is-outlined enter">JOIN VIDEO CHAT</button>
     </template>
     <template v-else>
-      <v-btn @click="enterVideoroom" v-if="show_video_login && nick && showVroom" class="enter">JOIN VIDEO CHAT</v-btn>
+      <v-btn @click="enterVideoroom" v-if="show_video_login && nick && showVroom && !video_chat_open" class="enter">JOIN VIDEO CHAT</v-btn>
     </template>
 
     <transition name="fade">

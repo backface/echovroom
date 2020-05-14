@@ -645,7 +645,7 @@ export default {
 .chat .item { padding:0px 20px 0px 0px; margin-bottom:0px}
 .chat .user { font-style:italic; font-size: 90%; opacity: 0.8}
 .chat .item .username { padding: 0 0.2rem 0 1rem; }
-.chat .item .msg { padding:0.2rem 0 0.5rem 0.4rem;  }
+.chat .item .msg { padding:0.2rem 0 0.5rem 0.4rem; word-break: break-word}
 
 .me { line-height:2.5em; margin-right: 10px;}
 .msg_editor {
