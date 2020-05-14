@@ -479,22 +479,31 @@ export default {
       let r = 4;
       let start = -90
       let i = 0
-      let d = (i * 180/len) + (180/len)/2 - start;
+      let spread = 180;
+      let pos = { x: 0, y: 1 }
       let total_length = r * Math.PI
+
+      if (len > 7) {
+        spread = 360
+        pos = { x: 0, y: 0 }
+        total_length = 2 * r * Math.PI
+      }
+
+      let d = (i * spread/len) + (spread/len)/2 - start;
       let width = Math.min(total_length/2, total_length / len);
 
-
-      self.$set(self.my_pos,"cx",  0 + r * Math.sin( d * Math.PI / 180))
-      self.$set(self.my_pos,"cy",  1 + r * Math.cos( d * Math.PI / 180))
+      self.$set(self.my_pos,"cx",  pos.x + r * Math.sin( d * Math.PI / 180))
+      self.$set(self.my_pos,"cy",  pos.y + r * Math.cos( d * Math.PI / 180))
       self.$set(self.my_pos,"cw",  width)
       self.$set(self.my_pos,"ch",  width / self.my_pos.ratio)
       self.$set(self.my_pos,"rotation", 180 + d)
+
       if (self.feeds)
         for (let k of Object.keys(self.feeds)) {
           i++
-          d = (i * 180/len) + (180/len)/2 - start;
-          let cx = 0 + r * Math.sin( d * Math.PI / 180)
-          let cy = 1 + r * Math.cos( d * Math.PI / 180)
+          d = (i * spread/len) + (spread/len)/2 - start;
+          let cx = pos.x + r * Math.sin( d * Math.PI / 180)
+          let cy = pos.y + r * Math.cos( d * Math.PI / 180)
           self.$set(self.feeds[k], "cx", cx)
           self.$set(self.feeds[k], "cy", cy)
           self.$set(self.feeds[k], "cw", width)
