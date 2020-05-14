@@ -5,7 +5,7 @@
       <v-card-text>
         <v-form ref="signUpForm" v-model="valid" :lazy-validation="lazy" @submit.prevent="">
           <v-text-field
-            placeholder="Peter Pan"
+            placeholder="Petra Pan"
             v-model="username"
             :rules="nameRules.concat(userExistsRule)"
             @keyup.enter.exact="login"

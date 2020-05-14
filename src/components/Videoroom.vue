@@ -302,7 +302,7 @@ import { forceManyBody }  from 'd3-force';
 //import { forceCenter }  from 'd3-force';
 import { forceCollide }  from 'd3-force';
 import { forceRadial }  from 'd3-force';
-
+import 'aframe'
 
 Vue.use(fullscreen)
 Vue.use(VueHammer)
@@ -896,8 +896,9 @@ export default {
               audioRecv: false,
               videoRecv: false,
               audioSend: useAudio,
-              ideoSend: true,
-              video: self.videoResolution
+              videoSend: true,
+              video: self.videoResolution,
+              data: true
           },
           simulcast: self.doSimulcast,
 
@@ -1012,10 +1013,6 @@ export default {
                   self.updateVRpositions()
                 }
               }
-
-
-
-
               Janus.log(self.opaqueId,
                 "Successfully attached to feed " + remoteFeed.id + " ("
                 + remoteFeed.rfdisplay + ") in room " + msg["room"]);
@@ -1065,7 +1062,7 @@ export default {
         },
 
         ondataopen: function() {
-          Janus.log(self.opaqueId,"The DataChannel is available!");
+          Janus.log(self.opaqueId, "The DataChannel is available!");
 
           // send a sendmetostage message if new data channel comes available and I am on stage
           if (self.onstage == self.username)
@@ -1073,7 +1070,7 @@ export default {
         },
 
         ondata: function(message) {
-          Janus.debug("We got data from the DataChannel! " + message);
+          Janus.debug(self.opaqueId, "We got data from the DataChannel! " + message);
           console.log(message);
           message = JSON.parse(message);
           console.log(message["request"]);
@@ -1393,7 +1390,9 @@ export default {
 
 .videoroom .stage video {
   object-fit: cover;
-  max-height:340px;
+  max-height:360px;
+  width:100%;
+  height:100%;
   border-radius: 0%;
 }
 
