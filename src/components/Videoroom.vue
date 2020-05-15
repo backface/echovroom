@@ -36,15 +36,15 @@
           <eye-icon size="1x" class="icons linked"></eye-icon>
         </a>
 
-        <a  v-if="allowScreenshare && is_streaming" v-show="is_open" @click="toggleScreenShare" title="share screen">
+        <a v-if="allowScreenshare && is_streaming" v-show="is_open" @click="toggleScreenShare" title="share screen">
           <monitor-icon size="1x" class="icons linked {}" :style="{ color: screenshare ? 'var(--color-alert)' : '' }"></monitor-icon>
         </a>
-        <a v-if="allowStageSends && is_streaming" v-show="is_open" @click="sendMeToStage(username !=onstage)" title="Send me to stage">
+        <a v-if="allowStageSends && is_streaming && !vr" v-show="is_open" @click="sendMeToStage(username !=onstage)" title="Send me to stage">
           <airplay-icon size="1x" class="icons linked"
             :style="{ color: username == onstage && onstage != null ? 'var(--color-alert)' : '' }"
           ></airplay-icon>
         </a>
-        <a @click="toggleForce" title="toggle force-directed layout">
+        <a v-if="!vr" @click="toggleForce" title="toggle force-directed layout">
           <compass-icon size="1x" class="icons linked"  :style="{ color: use_force ? 'var(--color-alert)' : '' }"></compass-icon>
         </a>
 
@@ -922,7 +922,7 @@ export default {
           },
           error: function(error) {
             Janus.error(self.opaqueId, "WebRTC error:", error);
-            self.alert.open("ERROR creating offer: " +  error);
+            self.alert.open("ERROR creating offer: " +  error.message);
             /*if (useAudio) {
               self.publishOwnFateed(true);
             } else {
@@ -1365,7 +1365,7 @@ export default {
 }
 .videoroom .options {
     opacity: 0.7;  position: absolute;
-    left: 50%; bottom:45px;  height:45px; transform:translate(-50%,0);
+    left: 50%; bottom:28px;  height:45px; transform:translate(-50%,0);
     /*bottom:5px; left: 5px;*/
     /*background:white; color:#333;padding:0.3em;*/
      background:rgba(0,0,0, 0.2); color:white;padding:0.15rem 0.5rem;
