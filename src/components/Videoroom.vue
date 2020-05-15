@@ -792,7 +792,8 @@ export default {
                   if(self.feeds[unpublished]) {
                     self.feeds[unpublished].detach();
                     self.$delete(self.feeds, unpublished)
-                    self.$forceUpdate();
+                    if (self.use_force)
+                      self.$forceUpdate();
                   }
                 }
               } else if(msg["error"] !== undefined && msg["error"] !== null) {
@@ -1108,7 +1109,8 @@ export default {
           Janus.attachMediaStream(self.$refs['v'+remoteFeed.id][0], stream)
           self.$refs['v'+remoteFeed.id][0].muted = self.all_muted;
           self.feeds[remoteFeed.publisher].loading = false;
-          self.$forceUpdate();
+          if (self.use_force)
+            self.$forceUpdate();
 
           var videoTracks = stream.getVideoTracks();
           if(videoTracks === null || videoTracks === undefined || videoTracks.length === 0) {
