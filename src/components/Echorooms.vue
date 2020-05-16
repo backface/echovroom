@@ -123,6 +123,5 @@ export default {
 </script>
 
 <style lang="css" scoped>
-.textroomwrapper { height:300px}
 .enter { margin: 10px 0px 20px 0px; opacity: 0.8}
 </style>

@@ -73,6 +73,9 @@ export const janusMixin = {
   },
 
   mounted() {
+    console.log("screen size is ", window.screen.width, window.screen.height);
+    console.log("device ratio is ",  window.devicePixelRatio);
+    console.log("screen size with ratio is", window.screen.width * window.devicePixelRatio, window.screen.height * window.devicePixelRatio);
     this.toast = this.$refs.toast;
     this.alert = this.$refs.alert;
     if (this.roombyId > 0)

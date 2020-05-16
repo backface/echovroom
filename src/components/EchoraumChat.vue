@@ -83,13 +83,15 @@ $title-font: 'Asap Condensed';
 	--color-fg: #fff;
   --color-alert: #00dd00;
   --invert-colors: 0%;
-  --lineHeight: calc(1.1 * var(--fontSize));
+  --lineHeight: calc(1.1 * var(--font-size));
+
 }
 
 .echorooms {
   text-align: center;
   font-size: calc(var(--font-size) * 0.8);
   line-height: var(--lineHeight);
+  margin-bottom:1rem;
 }
 
 .textroom { height: 400px }
@@ -113,6 +115,26 @@ $title-font: 'Asap Condensed';
    background-color: var(--color-fg) !important;
 }
 
+@media (max-device-width:1024px) {
+  .me {flex:none}
+  .textroom {
+    height:330px;
+  }
+}
+
+@media (  max-device-width:768px) {
+  .echorooms {
+    /*font-size:1.2em;*/
+  }
+}
+
+@media (  max-device-width:461px) {
+  .echorooms {
+    font-size:2em;
+  }
+}
+
+
 /* compoonent pparts */
 
 .max-width { width: 640px; margin: 0 auto; max-width: 100%; }
@@ -128,7 +150,7 @@ svg.linked:hover {
   transform: scale(1.2);
 }
 
-.participants ul { padding-left: 8px; }
+.participants ul { padding-left: 8px !important }
 
 .participants {
   -webkit-filter: invert(var(--invert-colors));
