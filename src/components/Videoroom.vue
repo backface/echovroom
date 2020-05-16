@@ -3,12 +3,19 @@
 
     <div class="columns is-mobile is-narrow headers is-gapless">
       <div class="column has-text-left is-10">
-        <a  v-if="!is_streaming" @click="publishOwnFeed(true)" title="publish video">
-          <video-off-icon size="1x" class="icons linked"></video-off-icon>
-        </a>
-        <a v-if="is_streaming" @click="unpublishOwnFeed" title="unpublish video">
-          <video-icon size="1x" class="icons linked"></video-icon>
-        </a>
+
+        <template v-if="allowUnpublish">
+          <a  v-if="!is_streaming" @click="publishOwnFeed(true)" title="publish video">
+            <video-off-icon size="1x" class="icons linked"></video-off-icon>
+          </a>
+          <a v-if="is_streaming" @click="unpublishOwnFeed" title="unpublish video">
+            <video-icon size="1x" class="icons linked"></video-icon>
+          </a>
+        </template>
+        <template v-else>
+          <video-off-icon v-if="!is_streaming" size="1x" class="icons"></video-off-icon>
+          <video-icon  v-if="is_streaming" size="1x" class="icons"></video-icon>
+        </template>
 
         <span v-if="vr">VR/</span> vroom
 
@@ -332,6 +339,10 @@ export default {
       default: true
     },
     allowStageSends:  {
+      type: Boolean,
+      default: true
+    },
+    allowUnpublish:  {
       type: Boolean,
       default: true
     },
