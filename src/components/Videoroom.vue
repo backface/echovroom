@@ -419,7 +419,8 @@ export default {
       showBitrateOptions: false,
       room_options: {
         audiolevel_event: true,
-        publishers: 100
+        publishers: 50,
+        bitrate: 512000,
       },
       onstage: null,
       force: null,
