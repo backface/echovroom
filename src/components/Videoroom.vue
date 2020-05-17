@@ -51,6 +51,15 @@
             :style="{ color: username == onstage && onstage != null ? 'var(--color-alert)' : '' }"
           ></airplay-icon>
         </a>
+
+
+        <a v-if="allowRTPforward && is_streaming" title="configure RTP Forward" @click="toggleRTPForward">
+          <arrow-right-icon size="1x" class="icons linked"
+              :style="{ color: isRTPforwarding ? 'var(--color-alert)' : '' }"
+            ></arrow-right-icon>
+        </a>
+
+
         <a v-if="!vr" @click="toggleForce" title="toggle force-directed layout">
           <compass-icon size="1x" class="icons linked"  :style="{ color: use_force ? 'var(--color-alert)' : '' }"></compass-icon>
         </a>
@@ -274,6 +283,7 @@
     <toast ref="toast"></toast>
     <login-dialog ref="login"></login-dialog>
     <alert-dialog ref="alert"></alert-dialog>
+    <rtp-dialog ref="rtp_dialog"></rtp-dialog>
 
     <video ref="videosrc" style="display:none"></video>
     <canvas ref="canvas" v-show="facetime && is_tracking" class="facetrackdebug"></canvas>
@@ -299,9 +309,10 @@ import { SettingsIcon } from 'vue-feather-icons'
 import { MonitorIcon, AirplayIcon } from 'vue-feather-icons'
 import { CompassIcon } from 'vue-feather-icons'
 import { EyeOffIcon, EyeIcon } from 'vue-feather-icons'
-import { Volume2Icon, VolumeXIcon } from 'vue-feather-icons'
+import { Volume2Icon, VolumeXIcon, ArrowRightIcon } from 'vue-feather-icons'
 import LoginDialog from '@/components/dialogs/LoginDialog'
 import AlertDialog from '@/components/dialogs/AlertDialog'
+import RtpDialog from '@/components/dialogs/RtpDialog'
 import Toast from '@/components/dialogs/Toast'
 import { VueHammer } from 'vue2-hammer'
 import { forceSimulation }  from 'd3-force';
@@ -322,10 +333,10 @@ export default {
   components: {
     MicIcon, MicOffIcon, LoaderIcon,
     VideoIcon, VideoOffIcon, MessageCircleIcon,
-    MinusIcon, PlusIcon, SettingsIcon,
+    MinusIcon, PlusIcon, SettingsIcon, ArrowRightIcon,
     Maximize2Icon, CompassIcon, //Minimize2Icon,
     MonitorIcon, AirplayIcon, EyeOffIcon, EyeIcon,
-    LoginDialog, Toast, AlertDialog,
+    LoginDialog, Toast, AlertDialog, RtpDialog,
     Volume2Icon, VolumeXIcon
   },
 
@@ -347,6 +358,10 @@ export default {
       default: true
     },
     allowSettings:  {
+      type: Boolean,
+      default: true
+    },
+    allowRTPforward:  {
       type: Boolean,
       default: true
     },
@@ -414,12 +429,16 @@ export default {
       force_max_area_perc: 65,
       force_used_area_perc: 0,
       top: 0,
+      rtp_dialog:null,
+      isRTPforwarding:false,
+      rtp_forward: null,
     }
   },
 
   mounted () {
     console.log(this.$options._componentTag + " mounted");
     console.log("client sceen is ", this.getWindowWidth(), "x", this.getWindowHeight());
+    this.rtp_dialog = this.$refs.rtp_dialog;
     if (this.myJanus == null) {
       this.loadConfig()
     } else {
@@ -437,7 +456,6 @@ export default {
         .y(this.getWindowHeight()/ 2 - this.tile_width/2)
       )
       .on('tick', this.force_tick);
-
   },
 
   destroyed () {
@@ -464,7 +482,6 @@ export default {
           (self.tile_width/2 * self.tile_width/2 * Math.PI * self.force_positions.length) / // kugel area
           (self.getWindowWidth() * self.getWindowHeight()) // window already
            *  100 // percentage
-
 
       while (self.force_used_area_perc > self.force_max_area_perc) {
         self.tile_width--;
@@ -1201,6 +1218,61 @@ export default {
       })
     },
 
+    toggleRTPForward() {
+      let self=this
+      if (!self.isRTPforwarding) {
+        self.rtp_dialog.open().then(function(r) {
+          console.log(r);
+          self.pluginHandle.send({
+            "message": {
+              request: "rtp_forward",
+              room: self.room,
+              publisher_id: self.username,
+              host:r.host,
+              audio_port:r.audio_port,
+              video_port:r.video_port
+            },
+            success: function(r) {
+              console.log(r);
+              if (r.error_code) {
+                self.alert.open("ERROR:" + r.error);
+              } else {
+                console.log(r.rtp_stream);
+                self.isRTPforwarding = true
+                self.rtp_forward = r.rtp_stream;
+              }
+            },
+          })
+        })
+      } else {
+        self.pluginHandle.send({
+          "message": {
+            request: "stop_rtp_forward",
+            room: self.room,
+            publisher_id: self.username,
+            stream_id: self.rtp_forward.audio_stream_id,
+          },
+          success: function(r) {
+            console.log(r);
+          }
+        })
+        self.pluginHandle.send({
+          "message": {
+            request: "stop_rtp_forward",
+            room: self.room,
+            publisher_id: self.username,
+            stream_id: self.rtp_forward.video_stream_id,
+          },
+          success: function(r) {
+              console.log(r);
+            self.isRTPforwarding = false
+            self.rtp_forward = null
+          }
+        })
+
+      }
+    },
+
     toggleScreenShare() {
       let self = this;
       self.screenshare = !self.screenshare;
@@ -1265,7 +1337,8 @@ export default {
             publisher: this.username,
           }),
           error: function(reason) { this.alert.open(reason); },
-          success: function() {
+          success: function(r) {
+            console.log(r);
             if (self.onstage == self.username)
               self.onstage = null
           }

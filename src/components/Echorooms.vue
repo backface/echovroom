@@ -12,6 +12,7 @@
       :allowStageSends="false"
       :allowSettings="false"
       :allowUnpublish="false"
+      :allowRTPforward="false"
       :showRoomInfo="false"
       :showBitrates="false"
       videoResolution="videoResolution"
