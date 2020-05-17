@@ -1213,9 +1213,9 @@ export default {
       feed.send({
         "message": {
           request: "configure",
-          substream: feed.substream,
-          success: (r) => { console.log(r)}
-        }
+          substream: feed.substream
+        },
+        success: (r) => { console.log(r)}
       })
     },
 
