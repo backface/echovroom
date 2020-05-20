@@ -2,7 +2,14 @@
   <div class="main">
     <div class="stage" v-if="$route.name != 'embed'">
       <div class='embed-container'>
-        <Stage />
+        <Streaming
+          :roombyName="roombyName"
+          v-if="hasStreaming"
+        />
+        <Stage
+          v-else
+          :roombyName="roombyName"
+        />
       </div>
     </div>
 
@@ -50,6 +57,7 @@
 import Stage from '@/components/Stage.vue'
 import Textroom from '@/components/Textroom.vue'
 import Videoroom from '@/components/Videoroom.vue'
+import Streaming from '@/components/Streaming.vue'
 import LoginDialog from '@/components/dialogs/LoginDialog'
 import Toast from '@/components/dialogs/Toast'
 import { janusMixin } from "@/mixins/janusMixin";
@@ -63,6 +71,7 @@ export default {
     Stage,
     Textroom,
     Videoroom,
+    Streaming,
     LoginDialog, Toast
   },
 
@@ -78,6 +87,10 @@ export default {
     embed:  {
       type: Boolean,
       default: false
+    },
+    hasStreaming:  {
+      type: Boolean,
+      default: true,
     }
   },
 

@@ -1,7 +1,7 @@
 <template>
 <div class="stage">
   <img src="../assets/testbild.jpg" v-show="!is_streaming">
-  <video ref="stream" playsinline autoplay v-show="is_streaming" poster="/img/testbild.jpg"></video>
+  <video ref="stream" playsinline autoplay controls v-show="is_streaming" poster="/img/testbild.jpg"></video>
 
   <toast ref="toast"></toast>
   <login-dialog ref="login"></login-dialog>
@@ -36,9 +36,7 @@ export default {
       opaqueId: this.$options._componentTag  + "-" + Janus.randomString(12),
       pluginHandle: null,
       pluginName: "streaming",
-      room: 10,
       is_streaming: false,
-
     }
   },
 
@@ -74,7 +72,7 @@ export default {
           self.pluginHandle = pluginHandle;
           Janus.log(self.opaqueId, "Plugin attached! (" + self.pluginHandle.getPlugin() + ", id=" + self.pluginHandle.getId() + ")");
           let body = { 'request': 'watch', id: self.room }
-          console.log("sending watch request")
+          console.log(self.opaqueId, "sending watch request for", self.room)
           pluginHandle.send({ 'message': body })
         },
 
