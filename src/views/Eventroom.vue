@@ -13,7 +13,6 @@
         v-if="nick  && showVroom"
         :nick="nick"
         is_muted="true"
-        :myJanus="janus"
         open="false"
         @leftRoom="recreateVRoom"
       />

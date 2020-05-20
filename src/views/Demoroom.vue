@@ -11,7 +11,6 @@
         v-if="login_name  && showVroom"
         :nick="login_name"
         :is_muted="true"
-        :myJanus="janus"
         :open="video_chat_open"
         :facetime="facetime"
         @leftRoom="recreateVRoom"

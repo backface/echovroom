@@ -65,7 +65,7 @@
 
       </div>
       <div class="column has-text-right">
-        <loader-icon size="1x" class="icons loading" v-if="!webRTCUp && is_open"  title="Loading"></loader-icon>
+          <loader-icon size="1x" class="icons loading" v-if="!webRTCUp && is_open"  title="Loading"></loader-icon>
         <a v-if="is_open" @click="leaveRoom()" title="Leave room">
           <minus-icon size="1x" class="icons linked" ></minus-icon>
         </a>
@@ -958,7 +958,14 @@ export default {
           },
           error: function(error) {
             Janus.error(self.opaqueId, "WebRTC error:", error);
-            self.alert.open("ERROR creating offer: " +  error.message);
+            self.alert.open("ERROR creating offer: " +  error.message).then(
+              function() {
+                self.is_open = false
+                self.$emit("leftRoom")
+                self.$emit("Failed")
+              }
+            );
+
             /*if (useAudio) {
               self.publishOwnFateed(true);
             } else {
