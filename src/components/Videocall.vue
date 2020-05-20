@@ -1,8 +1,8 @@
 <template>
 
-  <div ref="videocall" class="videocall" :class="{ isOn: webRTCUp }">
+  <div ref="videocall" class="videocall">
 
-    <div class="columns  is-mobile headers is-gapless">
+    <div class="columns is-mobile headers is-gapless">
       <div class="column has-text-left is-10">
         <video-icon size="1x" class="icons linked"></video-icon>
         videocall
@@ -173,7 +173,7 @@ export default {
     },
 
     getSize() {
-      return Math.min(this.getWindowWidth(), this.getWindowHeight())/2
+      return Math.min(this.getWindowWidth(), this.getWindowHeight()) * 0.75
     },
 
     attachPlugin() {
@@ -243,28 +243,31 @@ export default {
 
               } else if(event === 'incomingcall') {
                 self.peer =  result["username"]
-                self.alert.open("Incoming call from " + result["username"] + "!", {cancelable: true}).then( function(d){
-                  if (!d)
-                    self.hangup()
-                  else {
-                    console.log("creating answer");
-                    self.is_loading = true;
-                    self.pluginHandle.createAnswer({
-                      jsep: jsep,
-                      media: { data: true },
-                      simulcast: self.doSimulcast,
-                      success: function(jsep) {
-                        Janus.debug("Got SDP!");
-                        Janus.debug(jsep);
-                        var body = { "request": "accept" };
-                        self.pluginHandle.send({"message": body, "jsep": jsep});
-                      },
-                      error: function(error) {
-                        console.log("WebRTC error:", error);
-                        self.alert.open("WebRTC error... " + JSON.stringify(error));
-                      }
-                    });
-                  }
+                self.alert.open("Incoming call from " + result["username"] + "!", {
+                    cancelable: true,
+                    cancelText: "decline",
+                  }).then( function(d){
+                    if (!d)
+                      self.hangup()
+                    else {
+                      console.log("creating answer");
+                      self.is_loading = true;
+                      self.pluginHandle.createAnswer({
+                        jsep: jsep,
+                        media: { data: true },
+                        simulcast: self.doSimulcast,
+                        success: function(jsep) {
+                          Janus.debug("Got SDP!");
+                          Janus.debug(jsep);
+                          var body = { "request": "accept" };
+                          self.pluginHandle.send({"message": body, "jsep": jsep});
+                        },
+                        error: function(error) {
+                          console.log("WebRTC error:", error);
+                          self.alert.open("WebRTC error... " + JSON.stringify(error));
+                        }
+                      });
+                    }
                 })
                 // Notify user
 
@@ -503,11 +506,13 @@ export default {
 </script>
 
 <style lang="css" scoped>
- video {
+.videocall .headers {display: none}
+
+video {
    object-fit: cover;
    width:100%;
    height:100%;
-  border-radius: 50%;
+   border-radius: 50%;
    box-shadow: 10px 6px 12px rgba(0,0,0,0.35);
    background: black;
    color:white;
@@ -544,5 +549,6 @@ export default {
     /*background:white; color:#333;padding:0.3em;*/
      background:rgba(0,0,0, 0.2); color:white;padding:0.15rem 0.5rem;
 }
+
 
 </style>

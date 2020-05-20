@@ -5,7 +5,7 @@
       type="text"
       v-model="room_name"
       v-on:keyup.enter.exact="enterRoom"
-      placeholder="Enter a Room"
+      placeholder="Enter or create a Room"
     />
   </div>
 </template>

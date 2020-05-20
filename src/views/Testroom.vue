@@ -152,6 +152,7 @@ export default {
       this.recreateVRoom()
     },
     restoreVideoMuted() {
+      /*
       console.log("hung up");
       if (this.video_was_muted)  {
         console.log("video was muted");
@@ -161,6 +162,7 @@ export default {
         console.log("video was not muted, turn it on again");
         this.video_muted = false;
       }
+      */
     }
 
   }

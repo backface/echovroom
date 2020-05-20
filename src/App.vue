@@ -21,6 +21,11 @@
       <div class="navbar-menu" :class="{'is-active':menuOpen}">
 
         <div class="navbar-start">
+          <router-link to="/AMRO2020" v-slot="{ href, route, isActive }">
+            <div class="navbar-item" :active="isActive" :class="{'is-active':isActive}">
+              <a :href="href" >AMRO2020</a>
+            </div>
+          </router-link>
           <router-link to="/echoraeume" v-slot="{ href, route, isActive }">
             <div class="navbar-item" :active="isActive" :class="{'is-active':isActive}">
               <a :href="href" >{{ route.name }}</a>

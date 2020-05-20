@@ -5,7 +5,7 @@
       <v-card-text v-show="!!message" class="pa-4" v-html="message"></v-card-text>
       <v-card-actions class="pt-0">
         <v-spacer></v-spacer>
-        <v-btn v-if="options.cancelable" color="grey darken-1" text @click.native="cancel">Cancel</v-btn>
+        <v-btn v-if="options.cancelable" color="grey darken-1" text @click.native="cancel">{{cancelText}}</v-btn>
         <v-btn color="green darken-1" text @click.native="agree">OK</v-btn>
       </v-card-actions>
     </v-card>
@@ -28,11 +28,13 @@ export default {
     reject: null,
     message: null,
     title: null,
+    cancelText: "cancel",
     options: {
       color: 'primary',
       width: 290,
       zIndex: 2000,
-      cancelable: false
+      cancelable: false,
+
     }
   }),
   methods: {
@@ -42,7 +44,10 @@ export default {
       if (options) {
         if (options.title)
           this.title  =  options.title.replace(new RegExp('\\n.{1}', 'g'), '<br>');
+        if (options.cancelText)
+          this.cancelText = options.cancelText
       }
+
       this.options = Object.assign(this.options, options)
       return new Promise((resolve, reject) => {
         this.resolve = resolve

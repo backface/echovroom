@@ -25,6 +25,15 @@
         :myJanus="janus"
       />
 
+      <Videocall
+        :roombyName="roombyName"
+        v-if="login_name"
+        :nick="login_name + '@' + roombyName"
+        :is_muted="true"
+        :callee="callee"
+        @takingCall="recreateVRoom"
+      />
+
       <transition name="fade">
         <Textroom
           v-if="janusReady"
@@ -37,6 +46,8 @@
           @hasNick="login_name = $event;"
           @hasRoomInfo="foyer_info = $event"
           @hasJanus="janus = $event"
+          :emitCallEvents="true"
+          @call="handleCall"
         />
       </transition>
 
@@ -52,6 +63,7 @@ import Streaming from '@/components/Streaming.vue'
 import Textroom from '@/components/Textroom.vue'
 import Audioroom from '@/components/Audioroom.vue'
 import Videoroom from '@/components/Videoroom.vue'
+import Videocall from '@/components/Videocall.vue'
 import LoginDialog from '@/components/dialogs/LoginDialog'
 import Toast from '@/components/dialogs/Toast'
 import { janusMixin } from "@/mixins/janusMixin";
@@ -64,6 +76,7 @@ export default {
   components: {
     Streaming,
     Textroom, Audioroom, Videoroom,
+    Videocall,
     LoginDialog, Toast
   },
 
@@ -97,6 +110,7 @@ export default {
       login_name: null,
       showVroom:true,
       vr:false,
+      callee:"",
     }
   },
 
@@ -109,9 +123,14 @@ export default {
       // this is a hack but we completely remove the component to fore recreating a new janus sesssion
       let self = this
       this.showVroom = false;
-      this.video_chat_open = "false";
+      this.video_chat_open = false;
       setTimeout( () => {self.showVroom = true}, 500)
-    }
+    },
+    handleCall(callee) {
+      console.log(callee);
+      this.callee = callee + "@" + this.roombyName;
+      setTimeout( () => {this.callee = ""}, 700)
+    },
   }
 
 }
