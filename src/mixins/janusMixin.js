@@ -223,12 +223,16 @@ export const janusMixin = {
       if (self.pluginName === "textroom") {
         request.textroom = request.request;
       }
-      self.pluginHandle.send({
-        "message": request,
-        success: function() {
-          console.log("left room successull");
-        }
-      });
+
+      if (self.pluginHandle) {
+        self.pluginHandle.send({
+          "message": request,
+          success: function() {
+            console.log("left room successull");
+          }
+        });
+      }
+      self.$emit('leavingRoom')
       self.is_open=false
       setTimeout(self.updateParticipantsInfo, 10000)
       this.$forceUpdate()

@@ -71,7 +71,10 @@ export default {
   },
 
   props: {
-
+    is_muted: {
+      type: Boolean,
+      default: false
+    },
   },
 
   data() {

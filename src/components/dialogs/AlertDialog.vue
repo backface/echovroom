@@ -40,7 +40,8 @@ export default {
       this.dialog = true
       this.message = message
       if (options) {
-        this.title  =  options.title.replace(new RegExp('\\n.{1}', 'g'), '<br>');
+        if (options.title)
+          this.title  =  options.title.replace(new RegExp('\\n.{1}', 'g'), '<br>');
       }
       this.options = Object.assign(this.options, options)
       return new Promise((resolve, reject) => {

@@ -12,12 +12,24 @@
         :roombyName="roombyName"
         v-if="login_name  && showVroom"
         :nick="login_name"
-        :is_muted="true"
+        :is_muted="false"
         :login_password="password"
         :open="video_chat_open"
         :facetime="facetime"
         @leavingRoom="recreateVRoom"
+        @muteChanged="muteChanged"
+        :doMute="video_muted"
         :vr="vr"
+      />
+
+      <Videocall
+        :roombyName="roombyName"
+        v-if="login_name"
+        :nick="login_name + '@' + roombyName"
+        :is_muted="true"
+        :callee="callee"
+        @hangup="restoreVideoMuted"
+        @takingCall="muteVideo"
       />
 
       <transition name="fade">
@@ -50,12 +62,13 @@
 import Stage from '@/components/Stage.vue'
 import Textroom from '@/components/Textroom.vue'
 import Videoroom from '@/components/Videoroom.vue'
+import Videocall from '@/components/Videocall.vue'
 import LoginDialog from '@/components/dialogs/LoginDialog'
 import Toast from '@/components/dialogs/Toast'
 import { janusMixin } from "@/mixins/janusMixin";
 
 export default {
-  name: 'App',
+  name: 'Testing',
 
   mixins: [janusMixin],
 
@@ -63,6 +76,7 @@ export default {
     Stage,
     Textroom,
     Videoroom,
+    Videocall,
     LoginDialog, Toast
   },
 
@@ -105,6 +119,9 @@ export default {
       showVroom:true,
       vr:false,
       callee: "",
+      video_muted:false,
+      is_video_muted:false,
+      video_was_muted:false,
     }
   },
 
@@ -124,6 +141,26 @@ export default {
       console.log(callee);
       this.callee = callee + "@" + this.roombyName;
       setTimeout( () => {this.callee = ""}, 700)
+    },
+    muteChanged(status) {
+      console.log("mute changed", status);
+      this.is_video_muted = status
+    },
+    muteVideo() {
+      console.log("tell video to shut up");
+      //this.video_muted = true;
+      this.recreateVRoom()
+    },
+    restoreVideoMuted() {
+      console.log("hung up");
+      if (this.video_was_muted)  {
+        console.log("video was muted");
+
+      } else {
+
+        console.log("video was not muted, turn it on again");
+        this.video_muted = false;
+      }
     }
 
   }

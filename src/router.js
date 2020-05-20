@@ -6,6 +6,7 @@ import About from './views/About.vue'
 import NotFound from './views/NotFound.vue'
 import Echoroom from './views/Echoroom.vue'
 import Demoroom from './views/Demoroom.vue'
+import Testroom from './views/Testroom.vue'
 import Eventroom from './views/Eventroom.vue'
 import VideoTest from './components/VideoTest.vue'
 import VideoTest2 from './components/VideoTest2.vue'
@@ -63,6 +64,14 @@ export default new Router({
       props: (route) => ({
           roombyName: route.params.roombyName,
           enterVR:true
+      }),
+    },
+    {
+      path: '/testing/:roombyName',
+      name: 'vr',
+      component: Testroom,
+      props: (route) => ({
+          roombyName: route.params.roombyName,
       }),
     },
 

@@ -58,6 +58,9 @@
                   <v-list-item @click="sendWhisper(user.username)">
                     <v-list-item-title>Send Whisper</v-list-item-title>
                   </v-list-item>
+                  <v-list-item v-if="emitCallEvents" @click="$emit('call', user.display)">
+                    <v-list-item-title>Call face 2 face</v-list-item-title>
+                  </v-list-item>
                 </v-list>
               </v-menu>
              <!--  <span v-if="user.username == username" style="color: #aaa" >(
@@ -190,6 +193,10 @@ export default {
       default: true
     },
     internal_dialogs: {
+      type: Boolean,
+      default: false
+    },
+    emitCallEvents: {
       type: Boolean,
       default: false
     }
@@ -624,6 +631,7 @@ export default {
   width:100%;
   display: flex;
   flex-direction: column;
+
 }
 
 .chatroom { flex: 1 1 auto;display:flex; max-height:70%; }

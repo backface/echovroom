@@ -18,7 +18,6 @@
         </template>
 
         <span v-if="vr">VR/</span> vroom
-
         <span v-if="room_info.description && showRoomInfo"> - {{ room_info.description }}</span>
         <span v-if="count > 0"> ({{ count }}) </span>
 
@@ -381,6 +380,10 @@ export default {
       type: Boolean,
       default: false
     },
+    doMute: {
+      type: Boolean,
+      default: false
+    },
   },
 
   data() {
@@ -466,6 +469,10 @@ export default {
   watch: {
     login_password: function(value) {
       this.password = value
+    },
+    doMute: function(value) {
+      console.log("got mute me request");
+      this.muteMe(value)
     }
   },
 
@@ -699,12 +706,12 @@ export default {
         },
 
         onmessage: function(msg, jsep) {
-          Janus.debug(" ::: Got a message :::");
-          Janus.debug(msg);
+          //Janus.debug(" ::: Got a message :::");
+          //Janus.debug(msg);
           var event = msg[self.pluginName];
 					Janus.debug("Event: " + event);
 
-          console.log(self.opaqueId, msg, event);
+          //console.log(self.opaqueId, msg, event);
 
           if(event != undefined && event != null) {
 
@@ -1015,10 +1022,10 @@ export default {
         },
 
         onmessage: function(msg, jsep) {
-          Janus.debug(self.opaqueId, " ::: Got a message (subscriber) :::");
-          Janus.debug(self.opaqueId, msg);
+          //Janus.debug(self.opaqueId, " ::: Got a message (subscriber) :::");
+          //Janus.debug(self.opaqueId, msg);
           var event = msg["videoroom"];
-          Janus.debug(self.opaqueId, "REMOTE Event: " + event);
+          //Janus.debug(self.opaqueId, "REMOTE Event: " + event);
 
           if(msg["error"] !== undefined && msg["error"] !== null) {
             console.log(self.opaqueId, "GOT AN ERROR", msg);
@@ -1181,12 +1188,14 @@ export default {
     },
 
     muteMe(muted) {
+      console.log("set muteme:", muted);
       if (muted) {
           this.pluginHandle.muteAudio();
       } else {
         this.pluginHandle.unmuteAudio();
       }
       this.muted = this.pluginHandle.isAudioMuted();
+      this.$emit("muteChanged", this.muted)
     },
 
     muteAll(muted) {
