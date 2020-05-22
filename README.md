@@ -1,12 +1,16 @@
 # echoVrooms
 
+Who needs Zoom? We vroom!
+
 Experimental chat spaces.
+
+Vroom is in progress. Things might be messy and break.
 
 https://vroom.fooviz.xyz
 
 written in [Vue.js](https://vuejs.org/), based on WebRTC and [janus-gateway](https://janus.conf.meetecho.com/) 
 
-written by [Michael Aschauer](https://m.ash.to/)
+by [Michael Aschauer](https://m.ash.to/)
 
 
 

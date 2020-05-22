@@ -4,7 +4,7 @@
       <div class='embed-container'>
         <Streaming
           :roombyName="roombyName"
-          v-if="hasStreaming"
+          v-if="hasStreaming && !enterVR"
         />
         <Stage
           v-else
