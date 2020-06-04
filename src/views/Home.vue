@@ -1,5 +1,6 @@
 <template>
   <div class="home">
+    <p>A Preview?</p>
     <input ref="room_input"
       class="in"
       type="text"

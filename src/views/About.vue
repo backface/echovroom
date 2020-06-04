@@ -1,6 +1,7 @@
 <template>
   <div class="about">
     <h1 class="title">Who needs Zoom? We Vroom!</h1>
+    <p>A preview?</p>
     <p>Vroom is in progress. <br />Things might break. <br /> Don't complain.</p>
     <p>
       Anything else:<br />
