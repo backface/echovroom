@@ -11,7 +11,7 @@
       :allowScreenshare="false"
       :allowStageSends="false"
       :allowSettings="false"
-      :allowUnpublish="true"
+      :allowUnpublish="false"
       :allowRTPforward="false"
       :showRoomInfo="false"
       :showBitrates="false"

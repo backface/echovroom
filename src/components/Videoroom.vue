@@ -319,7 +319,7 @@ import { forceManyBody }  from 'd3-force';
 //import { forceCenter }  from 'd3-force';
 import { forceCollide }  from 'd3-force';
 import { forceRadial }  from 'd3-force';
-//import "aframe"
+import "aframe"
 
 Vue.use(fullscreen)
 Vue.use(VueHammer)
