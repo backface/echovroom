@@ -27,6 +27,15 @@
         :vr="vr"
       />
 
+      <Videocall
+        :roombyName="roombyName"
+        v-if="login_name"
+        :nick="login_name + '@' + roombyName"
+        :is_muted="true"
+        :callee="callee"
+        @takingCall="recreateVRoom"
+      />
+
       <transition name="fade">
         <Textroom
           v-if="janusReady"
@@ -57,6 +66,7 @@
 import Stage from '@/components/Stage.vue'
 import Textroom from '@/components/Textroom.vue'
 import Videoroom from '@/components/Videoroom.vue'
+import Videocall from '@/components/Videocall.vue'
 import Streaming from '@/components/Streaming.vue'
 import LoginDialog from '@/components/dialogs/LoginDialog'
 import Toast from '@/components/dialogs/Toast'
@@ -71,6 +81,7 @@ export default {
     Stage,
     Textroom,
     Videoroom,
+    Videocall,
     Streaming,
     LoginDialog, Toast
   },

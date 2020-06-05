@@ -41,13 +41,6 @@
             </div>
           </router-link>
 
-
-          <router-link to="/AMRO2020" v-slot="{ href, route, isActive }">
-            <div class="navbar-item" :active="isActive" :class="{'is-active':isActive}">
-              <a :href="href">#AMRO2020</a>
-            </div>
-          </router-link>
-
         </div>
 
         <div class="navbar-end">

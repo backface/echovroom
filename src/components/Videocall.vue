@@ -15,8 +15,8 @@
       </a>
     </div>
 
-    <div v-show="is_streaming" class="videocalllocal" >
-      <video ref="videolocal" id="videolocal" autoplay loop crossorigin="anonymous" muted></video>
+    <div v-show="is_streaming && has_stream" class="videocalllocal" >
+      <video ref="videolocal" id="videolocal" autoplay loop  muted></video>
       <div class="overlay name">ME</div>
       <div class="overlay meta">
         <a v-if="muted" @click="muteMe(false)"  title="unmute me">
@@ -37,8 +37,8 @@
       </div>
     </div>
 
-    <div v-show="has_stream || is_loading" class="videocallremote" :style="'width:'+width+'px; height:'+width+'px'">
-      <video ref="videoremote" id="videoremote" autoplay loop crossorigin="anonymous"></video>
+    <div v-show="has_stream " class="videocallremote" :style="'width:'+width+'px; height:'+width+'px'">
+      <video ref="videoremote" id="videoremote" autoplay playsinline />
       <div class="overlay name">{{ peer }}</div>
       <div class="overlay loading" v-if="is_loading">
         <loader-icon size="3x" class="icons loading" title="Loading"></loader-icon>
@@ -51,7 +51,7 @@
         <a @click="makeVideoFullscreen" title="fullscreen">
           <maximize-2-icon size="1x" class="icons linked"></maximize-2-icon>
         </a>
-        <a @click="showSimulcastOptions=!showSimulcastOptions" title="show settings">
+        <a @click="showSimulcastOptions=!showSimulcastOptions" title="show settings" v-if="doSimulcast">
           <settings-icon v-if="allowSettings" size="1x" class="icons linked"></settings-icon>
         </a>
         <a @click="hangup" title="hang up">
@@ -114,7 +114,7 @@ export default {
       muted:false,
       initial_participants: null,
       participants: null,
-      doSimulcast: true,
+      doSimulcast: false,
       width:400,
       peer: null,
       bitrates:  [
@@ -157,7 +157,6 @@ export default {
 
   watch: {
     callee: function(value) {
-      console.log("got call request to:", value);
       if (value)
         this.call(value)
     }
@@ -189,9 +188,6 @@ export default {
         success: function(pluginHandle) {
           self.pluginHandle = pluginHandle;
           Janus.log(self.opaqueId, "Plugin attached! (" + self.pluginHandle.getPlugin() + ", id=" + self.pluginHandle.getId() + ")");
-          //console.log("sending watch request")
-          //pluginHandle.send({ 'message': body })
-
           self.pluginHandle.send({
             "message": {
                "request": "list",
@@ -217,7 +213,7 @@ export default {
         onmessage: function(msg, jsep) {
           //console.log(msg);
           var result = msg["result"];
-
+          console.log("got message", result);
           if(result !== null && result !== undefined) {
             if(result["list"] !== undefined && result["list"] !== null) {
               console.log("Got a list of registered peers:");
@@ -243,9 +239,11 @@ export default {
 
               } else if(event === 'incomingcall') {
                 self.peer =  result["username"]
-                self.alert.open("Incoming call from " + result["username"] + "!", {
+                self.alert.open("Incoming call from " + result["username"].split("@")[0] + "!", {
+                    title: "Incoming call",
                     cancelable: true,
                     cancelText: "decline",
+                    confirmText: "accept",
                   }).then( function(d){
                     if (!d)
                       self.hangup()
@@ -254,7 +252,7 @@ export default {
                       self.is_loading = true;
                       self.pluginHandle.createAnswer({
                         jsep: jsep,
-                        media: { data: true },
+                        media: { data: true, video:true, audio:true },
                         simulcast: self.doSimulcast,
                         success: function(jsep) {
                           Janus.debug("Got SDP!");
@@ -272,7 +270,7 @@ export default {
                 // Notify user
 
               } else if(event === 'accepted') {
-                console.log("Peer accepted ...");
+                console.log("Peer accepted ...", msg, jsep);
                 var peer = result["username"];
 								if(peer === null || peer === undefined) {
                   self.toast.open("Call started!");
@@ -290,7 +288,7 @@ export default {
                 }
 
               } else if(event === 'update') {
-
+                console.log("got update", jsep);
                 // An 'update' event may be used to provide renegotiation attempts
                 if(jsep) {
                   if(jsep.type === "answer") {
@@ -345,10 +343,14 @@ export default {
           console.log(self.opaqueId, "we have a local stream");
           Janus.attachMediaStream(self.$refs.videolocal, stream);
           self.is_streaming = true;
+          self.pluginHandle.send( {
+            "message":
+              { "request": "set", "bitrate": self.bitrates[2].value }
+          });
 				},
 
         onremotestream: function(stream) {
-          console.log(self.opaqueId, "we have a remote stream");
+          console.log(self.opaqueId, "we have a remote stream", stream.getVideoTracks());
           self.$emit("takingCall")
           Janus.attachMediaStream(self.$refs.videoremote, stream);
           self.has_stream = true;
@@ -386,14 +388,14 @@ export default {
       let self = this
       console.log("creating offer");
       self.pluginHandle.createOffer({
-        media: { data: true },
+        media: { data: true},
         simulcast: self.doSimulcast,
         success: function(jsep) {
-          Janus.debug("Got SDP!");
-          Janus.debug(jsep);
+          console.log("Got SDP!");
+          console.log(jsep);
           var body = { "request": "call", "username": callee };
           console.log("calling ", callee);
-          self.pluginHandle.send({"message": body, "jsep": jsep});
+          self.pluginHandle.send({"message": body, "jsep": jsep });
         },
         error: function(error) {
           console.log();("WebRTC error...", error);
@@ -441,6 +443,7 @@ export default {
       this.pluginHandle.hangup()
       this.is_streaming = false
       this.has_stream =false
+      this.peer = null
     },
 
     sendData(data) {

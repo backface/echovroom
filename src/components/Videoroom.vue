@@ -35,7 +35,7 @@
           <volume-x-icon size="1x" class="icons linked warn_is_on"></volume-x-icon>
         </a>
 
-        <a v-if="allowFacetime && !facetime && is_streaming" title="factime is off" @click="toggleFacetime">
+        <a v-if="allowFacetime && !facetime && is_streaming" title="facetime is off" @click="toggleFacetime">
           <eye-off-icon size="1x" class="icons linked"></eye-off-icon>
         </a>
         <a v-if="allowFacetime && facetime && is_streaming" title="facetime is on" @click="toggleFacetime">
@@ -463,7 +463,8 @@ export default {
   },
 
   destroyed () {
-    this.janus.destroy();
+    if (this.janus)
+      this.janus.destroy();
   },
 
   watch: {
