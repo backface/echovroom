@@ -11,7 +11,7 @@
       :allowScreenshare="false"
       :allowStageSends="false"
       :allowSettings="false"
-      :allowUnpublish="false"
+      :allowUnpublish="true"
       :allowRTPforward="false"
       :showRoomInfo="false"
       :showBitrates="false"
@@ -27,6 +27,15 @@
       <v-btn @click="enterVideoroom" v-if="show_video_login && nick && showVroom && !video_chat_open" class="enter">JOIN VIDEO CHAT</v-btn>
     </template>
 
+    <Videocall
+      roombyName="echoræume"
+      v-if="nick"
+      :nick="nick + '@echoræume'"
+      :is_muted="true"
+      :callee="callee"
+      @takingCall="recreateVRoom"
+    />
+
     <transition name="fade">
 
       <Textroom
@@ -39,6 +48,8 @@
         :myJanus="janus"
         :showRoomInfo="false"
         :open="chat_open"
+        :emitCallEvents="true"
+        @call="handleCall"
       />
     </transition>
 
@@ -62,6 +73,7 @@
 import { janusMixin } from "@/mixins/janusMixin";
 import Textroom from './Textroom.vue'
 import Videoroom from './Videoroom.vue'
+import Videocall from '@/components/Videocall.vue'
 import LoginDialog from '@/components/dialogs/LoginDialog'
 import AlertDialog from '@/components/dialogs/AlertDialog'
 import Toast from '@/components/dialogs/Toast'
@@ -72,7 +84,7 @@ export default {
   mixins: [janusMixin],
 
   components: {
-    Textroom, Videoroom,
+    Textroom, Videoroom, Videocall,
     LoginDialog, AlertDialog, Toast
   },
 
@@ -100,6 +112,7 @@ export default {
       show_video_login: true,
       janusReady: false,
       showVroom: true,
+      callee:"",
     }
   },
 
@@ -119,6 +132,10 @@ export default {
       this.video_chat_open = true;
       this.show_video_login = false;
       setTimeout( () => {self.video_chat_open = false; }, 1000)
+    },
+    handleCall(callee) {
+      this.callee = callee + "@echoræume";
+      setTimeout( () => {this.callee = ""}, 700)
     }
   }
 

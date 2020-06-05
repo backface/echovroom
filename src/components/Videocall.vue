@@ -15,7 +15,9 @@
       </a>
     </div>
 
-    <div v-show="is_streaming && has_stream" class="videocalllocal" >
+    <!--<div class="bg" v-show="is_streaming && has_stream"></div >-->
+
+    <div v-show="is_streaming && has_stream" class="videocalllocal" :style="'transform: translate('+ (width/-2-80) + 'px, ' + (width/2+80) + 'px)'">
       <video ref="videolocal" id="videolocal" autoplay loop  muted></video>
       <div class="overlay name">ME</div>
       <div class="overlay meta">
@@ -100,6 +102,10 @@ export default {
     is_muted: {
       type: Boolean,
       default: false
+    },
+    videoResolution:  {
+      type: String,
+      default: "hires"
     },
   },
 
@@ -252,7 +258,7 @@ export default {
                       self.is_loading = true;
                       self.pluginHandle.createAnswer({
                         jsep: jsep,
-                        media: { data: true, video:true, audio:true },
+                        media: { data: true, video: self.videoResolution },
                         simulcast: self.doSimulcast,
                         success: function(jsep) {
                           Janus.debug("Got SDP!");
@@ -296,7 +302,7 @@ export default {
                   } else {
                     self.pluginHandle.createAnswer({
                       jsep: jsep,
-                      media: { data: true },	// Let's negotiate data channels as well
+                      media: { data: true, video: self.videoResolution },	// Let's negotiate data channels as well
                       success: function(jsep) {
                         Janus.debug("Got SDP!");
                         Janus.debug(jsep);
@@ -312,7 +318,10 @@ export default {
                 }
 
               } else if(event === 'hangup') {
-                if (result["username"] == self.display) {
+                if (result["reason"] == "User busy" ) {
+                  console.log("Callee is busy!");
+                  self.toast.open("Callee is busy");
+                } else if (result["username"] == self.display) {
                   console.log("hanging up..")
                   self.toast.open("hanging up..");
                 } else {
@@ -345,7 +354,7 @@ export default {
           self.is_streaming = true;
           self.pluginHandle.send( {
             "message":
-              { "request": "set", "bitrate": self.bitrates[2].value }
+              { "request": "set", "bitrate": self.bitrates[3].value }
           });
 				},
 
@@ -388,7 +397,7 @@ export default {
       let self = this
       console.log("creating offer");
       self.pluginHandle.createOffer({
-        media: { data: true},
+        media: { data: true, video: self.videoResolution },
         simulcast: self.doSimulcast,
         success: function(jsep) {
           console.log("Got SDP!");
@@ -511,7 +520,7 @@ export default {
 <style lang="css" scoped>
 .videocall .headers {display: none}
 
-video {
+.videocall video {
    object-fit: cover;
    width:100%;
    height:100%;
@@ -519,33 +528,34 @@ video {
    box-shadow: 10px 6px 12px rgba(0,0,0,0.35);
    background: black;
    color:white;
-  }
-.videocalllocal { position: absolute; bottom:10px; left:10px; width:256px; height:256px;z-index:100}
-.videocallremote { position: absolute; top:50%; left:50%;transform: translate(-50%,-50%);z-index:100; }
+}
+.videocall .bg { position: absolute; top:0px; left:0px; width:100%; height:100%; background: rgba(0,0,0,0.7);z-index:99 }
+.videocall .videocalllocal { position: absolute; bottom:50%; left:50%; width:256px; height:256px;z-index:99; opacity: 0.8}
+.videocall .videocallremote { position: absolute; top:50%; left:50%;transform: translate(-50%,-50%);z-index:100; }
 
-.overlay .icons {   opacity: 0.7 }
-.overlay .linked{  background:none }
-.overlay .linked:hover { opacity: 1; color:white }
-.name {
+.videocall .overlay .icons {   opacity: 0.7 }
+.videocall .overlay .linked{  background:none }
+.videocall .overlay .linked:hover { opacity: 1; color:white }
+.videocall .name {
   position: absolute; top:2px; left: 50%; transform:translate(-50%,0);
   background:rgba(0,0,0, 0.2); color:white;padding:0.01rem 0.5rem;
   opacity: 0.7
 }
-.loading {
+.videocall .loading {
     position: absolute;
     left: 50%; top:50%;transform:translate(-50%,-50%);
     /*bottom:5px; left: 5px;*/
     /*background:white; color:#333;padding:0.3em;*/
     background:rgba(0,0,0, 0.2); color:white;padding:0.1rem 0.5rem;
 }
-.meta {
+.videocall .meta {
     position: absolute; opacity: 0.7;
     left: 50%; bottom:2px;transform:translate(-50%,0);
     /*bottom:5px; left: 5px;*/
     /*background:white; color:#333;padding:0.3em;*/
     background:rgba(0,0,0, 0.2); color:white;padding:0.1rem 0.5rem;
 }
-.options {
+.videocall .options {
     opacity: 0.7;  position: absolute;
     left: 50%; bottom:28px;  height:45px; transform:translate(-50%,0);
     /*bottom:5px; left: 5px;*/
