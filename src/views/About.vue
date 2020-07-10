@@ -1,12 +1,39 @@
 <template>
   <div class="about">
     <h1 class="title">Who needs Zoom? We Vroom!</h1>
-    <p>A preview?</p>
-    <p>Vroom is in progress. <br />Things might break. <br /> Don't complain.</p>
-    <p>
-      Anything else:<br />
-      <a :href="'mailto:' + email">{{email}}</a>
+
+    <p>Communication is at the core of society and digital communication is a central part of our everyday life.
+      It is especially critical in times of crisis and limited mobility.</p>
+    <p>Unfortunately, current digital communication platforms are:</p>
+    <p>1. dominated by a few big players, proprietary infrastructures, and business models based on data extraction and surveillance.</p>
+    <p>2. massively limited by a mono-culture of representation. Much like Powerpoint has limited the range of expressions by
+      forcing its users into the format of a business presentation, no matter what their actual context is,
+      so do the current video-communication platform force everyone into the setting of a business meeting.
+      On that level, there is relatively little difference between proprietary and open source software.
+      Matthew Fuller's verdict on OpenOffice <i>"It's free software but not free  thinking"</i> applies here too.</p>
+    <p>Developing open source tools and solutions are important, but not enough.
+      This addresses only the first, but not the second problem.</p>
+    <p>It speaks volumes that we even lack a proper verb for digital audio-visual communication and the names of the most popular companies
+      of a given time are used to describe what was essentially developed for business-oriented video conferences.
+      "Zoom fatigue" is real and caused not only by too much screen time but by too much monoculture: always the same grid of video
+      images and audio settings that filter and cut off everything that is not recognized as a 'speaker'.
+      This is useful in the context of structured meetings and conferences, but for many other kinds of social gatherings --
+      cultural events, meet-ups switching between various one-to-one or small group conversations, artists or musicians performing together remotely for a remote audience including feedback and interaction -- this is hugely limiting.
+      There is a lot of ground uncovered.
     </p>
+    <p>To explore some of this ground, I created this first prototype. Contemporary base technologies such as a browser and <a href="https://en.wikipedia.org/wiki/WebRTC">WebRTC</a>
+      would allow us to create more diverse technologies of video communication</p>
+    <p>The tools we use shape us. Nowhere is this less apparent than in artistic creation and thinking</p>
+
+    <p>
+      Questions? Offers? <br>
+       <a :href="'mailto:' + email">{{email}}</a>
+    </p>
+
+    <br>
+    <br>
+    <br>
+    <br>
 
   </div>
 </template>
@@ -39,4 +66,5 @@ export default {
 <style>
 .about a { text-decoration: underline; color:black !important}
 .about h1.title { margin-bottom: 3rem}
+.about { text-align: left}
 </style>
