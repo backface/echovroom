@@ -48,11 +48,11 @@ export default {
   padding: 5px
 }
 .home input::placeholder { opacity: 0.2}
-.logo { width:480px; height:480px; position: fixed; bottom:-160px; left: 80%; transform: translate(-50%,0); overflow:hidden}
+.logo { z-index:2000;width:480px; height:480px; position: fixed; bottom:-180px; left: 80%; transform: translate(-50%,0); overflow:hidden}
 
 
 @media (max-width:461px) {
-  .logo { width:320px; height:320px; position: fixed; bottom:-100px; left: 50%; transform: translate(-50%,0); overflow:hidden}
+  .logo { z-index:2000;width:320px; height:320px; position: fixed; bottom:-100px; left: 50%; transform: translate(-50%,0); overflow:hidden}
 
 }
 </style>

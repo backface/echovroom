@@ -78,7 +78,7 @@
 
     <footer>
       <div class="has-text-centered">
-          &copy; 2020 ./<a href="https://www.foovixz.xyz">FOOVIZ.XYZ</a> ./<a href="https://m.ash.to">m.ash.to</a> -
+          &copy; 2020 ./<a href="https://www.fooviz.xyz">FOOVIZ.XYZ</a> ./<a href="https://m.ash.to">m.ash.to</a> -
       </div>
     </footer>
 
