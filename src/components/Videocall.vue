@@ -533,6 +533,11 @@ export default {
 .videocall .videocalllocal { position: absolute; bottom:50%; left:50%; width:256px; height:256px;z-index:99; opacity: 0.8}
 .videocall .videocallremote { position: absolute; top:50%; left:50%;transform: translate(-50%,-50%);z-index:100; }
 
+.videoroom .videocalllocal {
+  -webkit-transform: scaleX(-1);
+  transform: scaleX(-1);
+}
+
 .videocall .overlay .icons {   opacity: 0.7 }
 .videocall .overlay .linked{  background:none }
 .videocall .overlay .linked:hover { opacity: 1; color:white }

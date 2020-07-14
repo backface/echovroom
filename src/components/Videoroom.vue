@@ -1477,6 +1477,10 @@ export default {
   z-index:151;
   position: fixed;
 }
+.videoroom .videolocal {
+  -webkit-transform: scaleX(-1);
+  transform: scaleX(-1);
+}
 
 .videoroom .stage {
   position: relative;
