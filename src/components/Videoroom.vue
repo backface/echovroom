@@ -45,17 +45,28 @@
         <a v-if="allowScreenshare && is_streaming" v-show="is_open" @click="toggleScreenShare" title="share screen">
           <monitor-icon size="1x" class="icons linked {}" :style="{ color: screenshare ? 'var(--color-alert)' : '' }"></monitor-icon>
         </a>
+
         <a v-if="allowStageSends && is_streaming && !vr" v-show="is_open" @click="sendMeToStage(username !=onstage)" title="Send me to stage">
           <airplay-icon size="1x" class="icons linked"
             :style="{ color: username == onstage && onstage != null ? 'var(--color-alert)' : '' }"
           ></airplay-icon>
         </a>
 
-
-        <a v-if="allowRTPforward && is_streaming" title="configure RTP Forward" @click="toggleRTPForward">
+        <a v-if="beta && allowRTPforward && is_streaming" title="configure RTP Forward" @click="toggleRTPForward">
           <arrow-right-icon size="1x" class="icons linked"
               :style="{ color: isRTPforwarding ? 'var(--color-alert)' : '' }"
             ></arrow-right-icon>
+        </a>
+
+        <a v-if="beta && is_streaming && !is_recording" title="start recording" @click="startRecording">
+          <circle-icon size="1x" class="icons linked"
+              :style="{ color: isRTPforwarding ? 'var(--color-alert)' : '' }"
+            ></circle-icon>
+        </a>
+        <a v-if="beta && is_streaming && is_recording" title="stop recording" @click="stopRecording">
+          <stop-circle-icon size="1x" class="icons linked"
+              :style="{ color: 'var(--color-alert)' }"
+            ></stop-circle-icon>
         </a>
 
 
@@ -306,7 +317,7 @@ import { Maximize2Icon } from 'vue-feather-icons'
 import { MessageCircleIcon } from 'vue-feather-icons'
 import { SettingsIcon } from 'vue-feather-icons'
 import { MonitorIcon, AirplayIcon } from 'vue-feather-icons'
-import { CompassIcon } from 'vue-feather-icons'
+import { CompassIcon, CircleIcon, StopCircleIcon } from 'vue-feather-icons'
 import { EyeOffIcon, EyeIcon } from 'vue-feather-icons'
 import { Volume2Icon, VolumeXIcon, ArrowRightIcon } from 'vue-feather-icons'
 import LoginDialog from '@/components/dialogs/LoginDialog'
@@ -336,7 +347,7 @@ export default {
     Maximize2Icon, CompassIcon, //Minimize2Icon,
     MonitorIcon, AirplayIcon, EyeOffIcon, EyeIcon,
     LoginDialog, Toast, AlertDialog, RtpDialog,
-    Volume2Icon, VolumeXIcon
+    Volume2Icon, VolumeXIcon, CircleIcon, StopCircleIcon
   },
 
   props: {
@@ -381,6 +392,10 @@ export default {
       default: false
     },
     doMute: {
+      type: Boolean,
+      default: false
+    },
+    beta: {
       type: Boolean,
       default: false
     },
@@ -436,6 +451,7 @@ export default {
       rtp_dialog:null,
       isRTPforwarding:false,
       rtp_forward: null,
+      is_recording: false
     }
   },
 
@@ -1334,6 +1350,22 @@ export default {
         }, 2000);
     },
 
+    startRecording() {
+      this.pluginHandle.send( {
+        "message":
+          { "request": "configure", "record": true}
+      });
+      this.is_recording = true
+    },
+
+    stopRecording() {
+      this.pluginHandle.send( {
+        "message":
+          { "request": "configure", "record": false }
+      });
+      this.is_recording = false
+    },
+
     sendMeToStage(goUp=true) {
       let self = this;
       console.log("send me on stage");
@@ -1362,6 +1394,7 @@ export default {
           }
         });
     },
+
 
     sendToStage(id) {
       let self = this;

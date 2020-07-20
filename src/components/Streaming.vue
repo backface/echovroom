@@ -71,7 +71,7 @@ export default {
         success: function(pluginHandle) {
           self.pluginHandle = pluginHandle;
           Janus.log(self.opaqueId, "Plugin attached! (" + self.pluginHandle.getPlugin() + ", id=" + self.pluginHandle.getId() + ")");
-          let body = { 'request': 'watch', id: self.room }
+          let body = { 'request': 'watch', id: '' + self.room }
           console.log(self.opaqueId, "sending watch request for", self.room)
           pluginHandle.send({ 'message': body })
         },
