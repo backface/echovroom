@@ -17,14 +17,14 @@
           <video-icon  v-if="is_streaming" size="1x" class="icons"></video-icon>
         </template>
 
-        <span v-if="vr">VR/</span> vroom
+        <span v-if="vr">VR/</span>&nbsp; Vroom
         <span v-if="room_info.description && showRoomInfo"> - {{ room_info.description }}</span>
         <span v-if="count > 0"> ({{ count }}) </span>
 
-        <a title="mute me"  v-if="muted" @click="muteMe(false)" >
+        <a title="unmute me"  v-if="muted" @click="muteMe(false)" >
           <mic-off-icon size="1x" class="icons linked warn_is_on"></mic-off-icon>
         </a>
-        <a v-if="!muted" @click="muteMe(true)" title="unmute me">
+        <a v-if="!muted" @click="muteMe(true)" title="mute me">
           <mic-icon size="1x" class="icons  linked" ></mic-icon>
         </a>
 
@@ -35,10 +35,10 @@
           <volume-x-icon size="1x" class="icons linked warn_is_on"></volume-x-icon>
         </a>
 
-        <a v-if="allowFacetime && !facetime && is_streaming" title="facetime is off" @click="toggleFacetime">
+        <a v-if="betaOptions && allowFacetime && !facetime && is_streaming" title="facetime is off" @click="toggleFacetime">
           <eye-off-icon size="1x" class="icons linked"></eye-off-icon>
         </a>
-        <a v-if="allowFacetime && facetime && is_streaming" title="facetime is on" @click="toggleFacetime">
+        <a v-if="betaOptions && allowFacetime && facetime && is_streaming" title="facetime is on" @click="toggleFacetime">
           <eye-icon size="1x" class="icons linked"></eye-icon>
         </a>
 
@@ -46,24 +46,24 @@
           <monitor-icon size="1x" class="icons linked {}" :style="{ color: screenshare ? 'var(--color-alert)' : '' }"></monitor-icon>
         </a>
 
-        <a v-if="allowStageSends && is_streaming && !vr" v-show="is_open" @click="sendMeToStage(username !=onstage)" title="Send me to stage">
+        <a v-if="advancedOptions && allowStageSends && is_streaming && !vr" v-show="is_open" @click="sendMeToStage(username !=onstage)" title="Send me to stage">
           <airplay-icon size="1x" class="icons linked"
             :style="{ color: username == onstage && onstage != null ? 'var(--color-alert)' : '' }"
           ></airplay-icon>
         </a>
 
-        <a v-if="beta && allowRTPforward && is_streaming" title="configure RTP Forward" @click="toggleRTPForward">
+        <a v-if="advancedOptions && allowRTPforward && is_streaming" title="configure RTP Forward" @click="toggleRTPForward">
           <arrow-right-icon size="1x" class="icons linked"
               :style="{ color: isRTPforwarding ? 'var(--color-alert)' : '' }"
             ></arrow-right-icon>
         </a>
 
-        <a v-if="beta && is_streaming && !is_recording" title="start recording" @click="startRecording">
+        <a v-if="advancedOptions && is_streaming && !is_recording" title="start recording" @click="startRecording">
           <circle-icon size="1x" class="icons linked"
               :style="{ color: isRTPforwarding ? 'var(--color-alert)' : '' }"
             ></circle-icon>
         </a>
-        <a v-if="beta && is_streaming && is_recording" title="stop recording" @click="stopRecording">
+        <a v-if="advancedOptions && is_streaming && is_recording" title="stop recording" @click="stopRecording">
           <stop-circle-icon size="1x" class="icons linked"
               :style="{ color: 'var(--color-alert)' }"
             ></stop-circle-icon>
@@ -148,7 +148,8 @@
               v-hammer:panstart="(event) => drag('start', my_pos, event)"
               v-hammer:panend="(event) => drag('stop', my_pos, event)"
             >
-              <video  ref="videolocal" class="videolocal" id="videolocal" autoplay playsinline muted="muted" />
+              <video  ref="videolocal" class="videolocal" id="videolocal" autoplay playsinline muted="muted"
+                :class="screenshare && is_streaming? '' : 'flip'" />
 
               <div class="overlay name">ME</div>
               <div class="overlay meta">
@@ -179,7 +180,8 @@
               @mouseup="drag('stop',my_pos, $event)"
               @mouseout="drag('stop',my_pos, $event)"
             >
-              <video ref="videolocal" class="videolocal" id="videolocal" autoplay playsinline muted="muted" />
+              <video ref="videolocal" class="videolocal" id="videolocal" autoplay playsinline muted="muted"
+              :class="screenshare && is_streaming? '' : 'flip'" />/>
 
               <div class="overlay name">ME</div>
               <div class="overlay meta">
@@ -395,7 +397,11 @@ export default {
       type: Boolean,
       default: false
     },
-    beta: {
+    betaOptions: {
+      type: Boolean,
+      default: false
+    },
+    advancedOptions: {
       type: Boolean,
       default: false
     },
@@ -499,7 +505,7 @@ export default {
 
   methods: {
 
-    resetForces() {
+    restartForces() {
       console.log("reseting forces");
       let self = this;
 
@@ -804,7 +810,7 @@ export default {
                   self.$forceUpdate()
                   self.$emit('leftRoom')
                   self.force_positions = []
-                  self.resetForces()
+                  self.restartForces()
 
                   if (self.vr) {
                     self.updateVRpositions()
@@ -820,7 +826,7 @@ export default {
                 }
                 if (self.use_force) {
                   self.force_positions = self.force_positions.filter( d => d.id !== msg['leaving'] );
-                  self.resetForces()
+                  self.restartForces()
                 }
 
                 if (self.vr) {
@@ -893,12 +899,7 @@ export default {
 
 
           Janus.attachMediaStream(self.$refs.videolocal, stream);
-          self.my_pos = self.getNewPosition()
-          self.force_positions.push({
-            x: self.my_pos.x,
-            y: self.my_pos.y,
-            id: 0,
-          })
+
           if (self.use_force) {
             self.resetForces()
           }
@@ -910,6 +911,10 @@ export default {
 
           self.is_streaming = true;
           self.muteMe(self.muted)
+          if (self.muted)
+            self.toast.open("Be aware you are muted! (Click on the microphon icon to unmute yourself!)",
+              {timeout: 5000 }
+            );
           // We're not going to attach the local audio stream!
 				},
 
@@ -1075,7 +1080,7 @@ export default {
                     y: newfeed.y,
                     id: newfeed.publisher,
                   })
-                  self.resetForces()
+                  self.restartForces()
                 }
                 if (self.vr) {
                   self.updateVRpositions()
@@ -1311,8 +1316,8 @@ export default {
       let self = this;
       self.screenshare = !self.screenshare;
       var body = { "audio": true, "video": true };
-      Janus.debug("Sending message (" + JSON.stringify(body) + ")");
-      self.pluginHandle.send({"message": body});
+      self.is_streaming = false;
+
       Janus.debug("Trying a createOffer too (audio/video sendrecv)");
       // media: { video: capture, captureDesktopAudio: useAudio, audioRecv: true, videoRecv: false, data: true },
       self.pluginHandle.createOffer({
@@ -1328,10 +1333,12 @@ export default {
           Janus.debug("Got SDP!");
           Janus.debug(jsep);"screen"
           self.pluginHandle.send({"message": body, "jsep": jsep});
+          this.resetForces()
         },
         error: function(error) {
           Janus.error("WebRTC error:", error);
           self.alert.open("ERROR" + error);
+          self.toggleScreenShare()
         }
       });
     },
@@ -1399,6 +1406,14 @@ export default {
     sendToStage(id) {
       let self = this;
       console.log("send on stage", id);
+
+      // just hack it in so it can be used locally but it needs datachannel
+      if (self.onstage === id) {
+        self.onstage = null
+      } else {
+        self.onstage = id
+      }
+
       this.pluginHandle.data({
         text: JSON.stringify({
           request: "onstage",
@@ -1426,22 +1441,27 @@ export default {
       if (!this.use_force) {
         this.force.stop()
       } else {
-        this.force_positions = []
-        this.force_positions.push( {
-          x: this.my_pos.x,
-          y: this.my_pos.y,
-          id: 0
-        })
-        for (let k of  Object.keys(this.feeds)) {
-          if (this.feeds[k])
-            this.force_positions.push( {
-              x: this.feeds[k].x,
-              y: this.feeds[k].y,
-              id: this.feeds[k].publisher
-            })
-        }
-        this.resetForces()
+        this.resetForces();
       }
+    },
+
+    resetForces() {
+      this.force.stop()
+      this.force_positions = []
+      this.force_positions.push( {
+        x: this.my_pos.x,
+        y: this.my_pos.y,
+        id: 0
+      })
+      for (let k of  Object.keys(this.feeds)) {
+        if (this.feeds[k])
+          this.force_positions.push( {
+            x: this.feeds[k].x,
+            y: this.feeds[k].y,
+            id: this.feeds[k].publisher
+          })
+      }
+      this.restartForces()
     },
 
     makeVideoFullscreen(e) {
@@ -1483,6 +1503,7 @@ export default {
 
 }
 .videoroom .screen { margin: 0 auto; padding:0}
+.videoroom .overlay {display:none}
 .videoroom .overlay .icons {   opacity: 0.7 }
 .videoroom .overlay .linked{  background:none }
 .videoroom .overlay .linked:hover { opacity: 1; color:white }
@@ -1508,9 +1529,13 @@ export default {
 
 .videoroom .video {
   z-index:151;
-  position: fixed;
+  position: absolute;
 }
 .videoroom .videolocal {
+
+}
+
+.flip {
   -webkit-transform: scaleX(-1);
   transform: scaleX(-1);
 }
@@ -1543,6 +1568,8 @@ export default {
   height:100%;
   border-radius: 0%;
 }
+
+.video:hover .overlay { display:block }
 
 .videoroom .vrscreen {
   position: relative;

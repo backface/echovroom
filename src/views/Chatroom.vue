@@ -23,7 +23,8 @@
         :login_password="password"
         :open="video_chat_open"
         :facetime="facetime"
-        :beta="beta"
+        :betaOptions="beta"
+        :advancedOptions="advanced"
         @leavingRoom="recreateVRoom"
         :vr="vr"
       />
@@ -116,6 +117,9 @@ export default {
     if (typeof this.$route.query.beta !=  undefined) {
       this.beta = this.$route.query.beta === 'true';
     }
+    if (typeof this.$route.query.adv !=  undefined) {
+      this.advanced = this.$route.query.adv === 'true';
+    }
     if (typeof this.$route.query.vr !=  undefined) {
       this.vr = this.$route.query.vr === 'true';
     }
@@ -134,6 +138,7 @@ export default {
       vr:false,
       callee: "",
       beta:false,
+      advanced:false,
     }
   },
 
@@ -161,5 +166,6 @@ export default {
 </script>
 
 <style scoped>
-
+.main {}
+.main { margin-bottom:100px }
 </style>

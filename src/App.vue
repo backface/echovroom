@@ -19,27 +19,26 @@
       </div>
 
       <div class="navbar-menu" :class="{'is-active':menuOpen}">
+        <router-link to="/about" v-slot="{ href, route, isActive }">
+          <div class="navbar-item" :active="isActive"  :class="{'is-active':isActive}">
+            <a :href="href" >?</a>
+          </div>
+        </router-link>
 
-        <div class="navbar-start">
+        <div class="navbar-start shortcuts">
 
-          <router-link to="/about" v-slot="{ href, route, isActive }">
-            <div class="navbar-item" :active="isActive"  :class="{'is-active':isActive}">
-              <a :href="href" >?</a>
-            </div>
-          </router-link>
+            <router-link to="/demoroom" v-slot="{ href, route, isActive }">
+              <div class="navbar-item" :active="isActive"  :class="{'is-active':isActive}">
+                <a :href="href" >#{{ route.name }}</a>
+              </div>
+            </router-link>
 
+            <router-link to="/echoraeume" v-slot="{ href, route, isActive }">
+              <div class="navbar-item" :active="isActive" :class="{'is-active':isActive}">
+                <a :href="href" >#{{ route.name }}</a>
+              </div>
+            </router-link>
 
-          <router-link to="/demoroom" v-slot="{ href, route, isActive }">
-            <div class="navbar-item" :active="isActive"  :class="{'is-active':isActive}">
-              <a :href="href" >#{{ route.name }}</a>
-            </div>
-          </router-link>
-
-          <router-link to="/echoraeume" v-slot="{ href, route, isActive }">
-            <div class="navbar-item" :active="isActive" :class="{'is-active':isActive}">
-              <a :href="href" >#{{ route.name }}</a>
-            </div>
-          </router-link>
 
         </div>
 
@@ -78,7 +77,7 @@
 
     <footer>
       <div class="has-text-centered">
-          &copy; 2020 ./<a href="https://www.fooviz.xyz">FOOVIZ.XYZ</a> ./<a href="https://m.ash.to">m.ash.to</a> -
+          &copy; 2020 ./<a href="https://vroom.fooviz.xyz">echoVrooms</a> by ./<a href="https://m.ash.to">m.ash.to</a> -
       </div>
     </footer>
 
@@ -160,7 +159,7 @@ export default {
   color: #000;
 }
 .navbar .navbar-item.is-active a { font-weight:500; text-decoration: none; color:#333}
-.navbar { margin-bottom:60px}
+.navbar { margin-bottom:0px}
 
 
 /* main set */
@@ -173,8 +172,8 @@ export default {
 
 /* compoonent pparts */
 
-.max-width { width: 640px; margin: 0 auto; max-width: 100%; }
-.textroom { height: 300px}
+.max-width { width: 640px; margin: auto auto; max-width: 100%;}
+.textroom .chatroom { min-height: 156px}
 
 .header { flex: 0 0 auto}
 .headers { background: none; border-bottom: 1px solid var(--color-fg); padding:5px 5px; margin-bottom: 0.7rem !important}
@@ -237,10 +236,12 @@ footer a {color:#333 !important; text-decoration:underline}
 
 .textroom { max-height:300px !important}
 
+body {vertical-align: middle}
+
 @media (max-width:461px) {
   .navbar { margin-bottom:10px}
   .echorooms { padding: 0 15px 0 10px;}
   .stage { padding: 0 5px 0 5px;}
 }
-
+.shortcuts { display: none !important }
 </style>

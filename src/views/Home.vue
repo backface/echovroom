@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <p></p>
+
     <input ref="room_input"
       class="in"
       type="text"
@@ -8,6 +8,7 @@
       v-on:keyup.enter.exact="enterRoom"
       placeholder="Enter or create a Room"
     />
+
     <img class="logo" src="../assets/vroom.jpg">
   </div>
 
@@ -42,10 +43,10 @@ export default {
 </script>
 
 <style scoped>
-.home {  margin-top:15%; }
+.home {  }
 .home input {
   border:0px; border-bottom: 1px solid black; background:none; font-size:1.5rem; text-align:center;
-  padding: 5px
+  padding: 5px;
 }
 .home input::placeholder { opacity: 0.2}
 .logo { z-index:2000;width:480px; height:480px; position: fixed; bottom:-180px; left: 80%; transform: translate(-50%,0); overflow:hidden}

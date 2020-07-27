@@ -5,7 +5,7 @@
       <div class="columns is-mobile is-narrow headers is-gapless">
         <div class="column has-text-left is-10">
           <message-square-icon size="1x" class="icons linked"></message-square-icon>
-            text
+            Chat
            <span v-if="room_info.description && showRoomInfo"> - {{ room_info.description }} </span>
            <span v-if="count > 0"> ({{ count }})</span>
         </div>

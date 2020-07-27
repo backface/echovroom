@@ -33,7 +33,7 @@ export const janusMixin = {
     },
     showRoomInfo: {
       type: Boolean,
-      default: true
+      default: false
     },
     allowSettings: {
       type: Boolean,

@@ -25,6 +25,12 @@
       would allow us to create more diverse technologies of video communication</p>
     <p>The tools we use shape us. Nowhere is this less apparent than in artistic creation and thinking</p>
 
+
+    <p>
+        Brought to you by
+      <a href="https://m.ash.to">m.ash.to</a>, <a href="https://www.fooviz.xyz">FOOVIZ.XYZ</a> in collaboration with <a href="https://echoraeume.klingt.org/" style="color:black;text-decoration:underline">echoraeume</a><br>
+    </p>
+
     <p>
       Questions? Offers? <br>
        <a :href="'mailto:' + email">{{email}}</a>

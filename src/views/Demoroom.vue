@@ -21,7 +21,6 @@
         v-if="login_name"
         roombyName="demoroom"
         :nick="login_name"
-        :myJanus="janus"
       />
 
       <Videocall

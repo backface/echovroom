@@ -1,7 +1,32 @@
 <template>
 <div class="stage">
   <img src="../assets/testbild.jpg" v-show="!is_streaming">
-  <video ref="stream" playsinline autoplay controls v-show="is_streaming" poster="/img/testbild.jpg"></video>
+
+  <div class="player">
+      <video ref="stream" playsinline autoplay v-show="is_streaming" poster="/img/testbild.jpg"></video>
+
+      <div class="overlay meta">
+        <a v-if="muted" @click="muteMe(false)"  title="unmute me">
+          <volume-x-icon size="1x" class="icons linked" ></volume-x-icon>
+        </a>
+        <a v-if="!muted" @click="muteMe(true)" title="mute me">
+          <volume2-icon size="1x" class="icons linked"></volume2-icon>
+        </a>
+        <a @click="makeVideoFullscreen()" title="fullscreen">
+          <maximize-2-icon size="1x" class="icons linked" ></maximize-2-icon>
+        </a>
+      <!--  <a v-if="allowSettings" @click="showBitrateOptions=!showBitrateOptions"  title="show settings">
+          <settings-icon size="1x" class="icons linked"></settings-icon>
+        </a>
+        <a @click="makeVideoFullscreen" title="fullscreen">
+          <maximize-2-icon size="1x" class="icons linked" ></maximize-2-icon>
+        </a>
+      </div>
+      <div class="overlay options" v-show="showBitrateOptions">
+        <v-select dark label="Cap Bitrate" dense v-model="bitrate" :items="bitrates" @change="updateBitrateCap"></v-select>
+      </div>-->
+    </div>
+  </div>
 
   <toast ref="toast"></toast>
   <login-dialog ref="login"></login-dialog>
@@ -16,6 +41,7 @@ import Janus from '../janus'
 import LoginDialog from '@/components/dialogs/LoginDialog'
 import AlertDialog from '@/components/dialogs/AlertDialog'
 import Toast from '@/components/dialogs/Toast'
+import { Volume2Icon, VolumeXIcon, Maximize2Icon } from 'vue-feather-icons'
 
 
 export default {
@@ -25,6 +51,7 @@ export default {
 
   components: {
     LoginDialog, Toast, AlertDialog,
+    Volume2Icon, VolumeXIcon, Maximize2Icon
   },
 
   props: {
@@ -37,6 +64,7 @@ export default {
       pluginHandle: null,
       pluginName: "streaming",
       is_streaming: false,
+      muted: false
     }
   },
 
@@ -44,7 +72,22 @@ export default {
     console.log(this.$options._componentTag + " mounted");
     this.muted = this.is_muted === "true"
     if (this.myJanus == null) {
-      this.loadConfig()
+      fetch('vroom/streamin_config.json')
+        .then(r => r.json())
+        .then(json => {
+          if (!this.server) this.server = json.server;
+          if (!this.iceServers) this.iceServers = json.iceServers;
+          if (this.room === 0) {
+            if (typeof json.room === "string") {
+              this.room = this.hashCode(json.room)
+              this.room_name = json.room
+            } else {
+              this.room = json.room
+            }
+          }
+          this.initJanus()
+      })
+
     } else {
       this.janus = this.myJanus
       this.attachPlugin()
@@ -131,7 +174,27 @@ export default {
         }
       });
     },
-  }
+
+    muteMe(muted) {
+      this.muted = muted;
+      this.$refs.stream.muted= this.muted;
+    },
+
+    makeVideoFullscreen() {
+      if (this.$refs.stream.requestFullscreen) {
+        this.$refs.stream.requestFullscreen();
+      } else if (this.$refs.stream.mozRequestFullScreen) { /* Firefox */
+        this.$refs.stream.mozRequestFullScreen();
+      } else if (this.$refs.stream.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
+        this.$refs.stream.webkitRequestFullscreen();
+      } else if (this.$refs.stream.msRequestFullscreen) { /* IE/Edge */
+        this.$refs.stream.msRequestFullscreen();
+      }
+    }
+
+  },
+
+
 }
 
 </script>
@@ -144,5 +207,24 @@ export default {
     */
     background:none;
   }
+
+  .player { position: relative; }
+  .overlay .icons {   opacity: 0.7 }
+  .overlay .linked{  background:none }
+  .overlay .linked:hover { opacity: 1; color:white }
+
+  .meta {
+      display: none;
+      position: relative; opacity: 0.9;
+      left: 50%; top:-36px;transform:translate(-50%,0);
+      width:auto;
+      /*bottom:5px; left: 5px;*/
+      /*background:white; color:#333;padding:0.3em;*/
+      background:rgba(0,0,0, 0.7); color:white;padding:0.1rem 0.5rem;
+  }
+
+  .player:hover .meta {display:block}
+
+
 
 </style>
