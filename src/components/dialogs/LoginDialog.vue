@@ -5,6 +5,7 @@
       <v-card-text>
         <v-form ref="signUpForm" v-model="valid" :lazy-validation="lazy" @submit.prevent="">
           <v-text-field
+            id="username"
             placeholder="Petra Pan"
             v-model="username"
             :rules="nameRules.concat(userExistsRule)"
@@ -14,6 +15,7 @@
           >
           </v-text-field>
           <v-text-field
+            id="password"
             label="Password"
             type="password"
             v-model="password"
@@ -27,7 +29,7 @@
       </v-card-text>
       <v-card-actions class="pt-0">
         <v-spacer></v-spacer>
-        <v-btn type="submit" color="primary darken-1" text @click.native="login"
+        <v-btn id="login" type="submit" color="primary darken-1" text @click.native="login"
         :disabled="!valid"
          >Enter</v-btn>
       </v-card-actions>

@@ -213,6 +213,7 @@
                   v-hammer:pan="(event) => drag('drag', feed, event)"
                   v-hammer:panstart="(event) => drag('start', feed, event)"
                   v-hammer:panend="(event) => drag('stop', feed, event)"
+                  class="publisher"
                 >
                 <video :id="'v'+feed.id" :ref="'v' + feed.id" autoplay playsinline
                  :class="{ talking: participants[feed.publisher].talking }"
@@ -451,7 +452,7 @@ export default {
       use_force: true,
       force_positions: [],
       vr_positions: [],
-      force_max_area_perc: 65,
+      force_max_area_perc: 45,
       force_used_area_perc: 0,
       top: 0,
       rtp_dialog:null,
