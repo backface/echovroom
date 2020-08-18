@@ -1,0 +1,9 @@
+node_modules*
+docs*
+src*
+public*
+test*
+wc-dist*
+images*
+.git*
+docker*
