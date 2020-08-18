@@ -1,11 +1,11 @@
 {
   "server": [
-    "wss://janus.fooviz.xyz:8989",
-    "https://janus.fooviz.xyz:8089/janus"
+    "wss://chat.echovroom.live:8989",
+    "https://chat.echovroom.live:8089/janus"
   ],
   "iceServers": [
     {"urls": "stun:stun.l.google.com:19302"},
-    {"urls": "turn:turn.modular-t.org", "username": "turn", "credential": "hinterseer"}
+    {"urls": "turn:chat.echovroom.live", "username": "turn", "credential": "hinterseer"}
   ],
   "room": 777
 }

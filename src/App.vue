@@ -77,7 +77,7 @@
 
     <footer>
       <div class="has-text-centered">
-          &copy; 2020 ./<a href="https://vroom.fooviz.xyz">echoVrooms</a> by ./<a href="https://m.ash.to">m.ash.to</a> -
+          &copy; 2020 ./<a href="/">echoVrooms</a> by ./<a href="https://m.ash.to">m.ash.to</a> -
       </div>
     </footer>
 
