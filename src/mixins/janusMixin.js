@@ -389,14 +389,18 @@ export const janusMixin = {
       if(string == "demoroom")
         return 1234
 
-      var hash = 0, i = 0, len = string.length;
-      while ( i < len ) {
-          hash  = ((hash << 5) - hash + string.charCodeAt(i++)) << 0;
-      }
-      return (hash + 2147483647) + 1
+      return this.getHash(string)
 
     },
 
+    getHash(input){
+      var hash = 0, len = input.length;
+      for (var i = 0; i < len; i++) {
+        hash  = ((hash << 5) - hash) + input.charCodeAt(i);
+        hash |= 0; // to 32bit integer
+      }
+      return hash;
+    }
 
 
   }

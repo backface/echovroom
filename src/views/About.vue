@@ -11,8 +11,6 @@
       so do the current video-communication platform force everyone into the setting of a business meeting.
       On that level, there is relatively little difference between proprietary and open source software.
       Matthew Fuller's verdict on OpenOffice <i>"It's free software but not free  thinking"</i> applies here too.</p>
-    <p>Developing open source tools and solutions are important, but not enough.
-      This addresses only the first, but not the second problem.</p>
     <p>It speaks volumes that we even lack a proper verb for digital audio-visual communication and the names of the most popular companies
       of a given time are used to describe what was essentially developed for business-oriented video conferences.
       "Zoom fatigue" is real and caused not only by too much screen time but by too much monoculture: always the same grid of video

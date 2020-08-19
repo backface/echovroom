@@ -1,7 +1,7 @@
-FROM nginx:1.19 AS BASE
+FROM nginx:1.19-alpine AS BASE
 
-COPY dist /var/www/html
+WORKDIR /usr/share/nginx/html
+# change working directory to root of nginx webhost
+# using WORKDIR is preferred to using 'RUN cd /some/path'
 
-EXPOSE 80
-
-CMD ["nginx", "-g", "daemon off;"]
+COPY dist /usr/share/nginx/html
