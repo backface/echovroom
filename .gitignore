@@ -1,9 +1,13 @@
 .DS_Store
+
+# development files
 node_modules
+package-lock.json
 /dist
 
 # local env files
 .npmrc
+.env*
 .env.local
 .env.*.local
 

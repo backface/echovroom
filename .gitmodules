@@ -1,0 +1,3 @@
+[submodule "docker-janus"]
+	path = docker/janus
+	url = git://github.com/backface/docker-janus
