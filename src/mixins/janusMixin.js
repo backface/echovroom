@@ -407,6 +407,24 @@ export const janusMixin = {
       })
     },
 
+    kick(id) {
+      let request = {
+        "request": "kick",
+        "room": this.room,
+        "id": id
+      }
+      self.pluginHandle.send({
+        "message": request,
+        success: function(response) {
+          console.log(response);
+        },
+        error: function(reason) {
+          console.log(reason);
+        }
+      });
+      this.$emit('kick', id)
+    },
+
     hashCode(string) {
       if(string == "echoraeume")
         return 777;

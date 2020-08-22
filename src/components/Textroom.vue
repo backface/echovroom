@@ -61,6 +61,9 @@
                   <v-list-item v-if="emitCallEvents" @click="$emit('call', user.display)">
                     <v-list-item-title>Videocall</v-list-item-title>
                   </v-list-item>
+                  <v-list-item @click="kick(user.username)">
+                    <v-list-item-title>Kick</v-list-item-title>
+                  </v-list-item>
                 </v-list>
               </v-menu>
              <!--  <span v-if="user.username == username" style="color: #aaa" >(

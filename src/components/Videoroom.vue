@@ -225,6 +225,9 @@
                   <a @click="sendToStage(feed.publisher)" title="send to stage">
                     <airplay-icon v-if="allowStageSends" size="1x" class="icons linked"></airplay-icon>
                   </a>
+                  <a @click="kick(feed.publisher)" title="kick">
+                    <delete-icon size="1x" class="icons linked"></delete-icon>
+                  </a>
                 </div>
 
                 <div class="overlay options" v-show="feed.showOptions">
@@ -303,7 +306,7 @@ import screenfull from 'screenfull'
 import { MinusIcon, PlusIcon } from 'vue-feather-icons'
 import { MicIcon, MicOffIcon, LoaderIcon } from 'vue-feather-icons'
 import { VideoIcon, VideoOffIcon } from 'vue-feather-icons'
-import { Maximize2Icon } from 'vue-feather-icons'
+import { Maximize2Icon, DeleteIcon } from 'vue-feather-icons'
 import { MessageCircleIcon } from 'vue-feather-icons'
 import { SettingsIcon } from 'vue-feather-icons'
 import { MonitorIcon, AirplayIcon } from 'vue-feather-icons'
@@ -334,7 +337,7 @@ export default {
     MicIcon, MicOffIcon, LoaderIcon,
     VideoIcon, VideoOffIcon, MessageCircleIcon,
     MinusIcon, PlusIcon, SettingsIcon, ArrowRightIcon,
-    Maximize2Icon, CompassIcon, //Minimize2Icon,
+    Maximize2Icon, CompassIcon, DeleteIcon, //Minimize2Icon,
     MonitorIcon, AirplayIcon, EyeOffIcon, EyeIcon,
     LoginDialog, Toast, AlertDialog, RtpDialog,
     Volume2Icon, VolumeXIcon, CircleIcon, StopCircleIcon
