@@ -412,10 +412,14 @@ export const janusMixin = {
     },
 
     kick(id) {
+      let self = this;
       let request = {
         "request": "kick",
         "room": this.room,
         "id": id
+      }
+      if (this.pluginName === "textroom") {
+        request.username = id
       }
       self.pluginHandle.send({
         "message": request,

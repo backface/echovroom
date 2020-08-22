@@ -46,7 +46,7 @@
         <Textroom
           v-if="janusReady"
           v-show="chat_open"
-          :open="true"
+          :open="chat_open"
           :myJanus="janus"
           :roombyName="roombyName"
           :nick="login_name"
@@ -159,6 +159,7 @@ export default {
         .then(json => {
           console.log("loading vroom configs");
           this.chat_open = json.autologin;
+          this.video_chat_open = json.autologin;
         }).catch( () => {
           console.log("no valid room config found");
 
@@ -188,12 +189,11 @@ export default {
       let self =this;
       self.$refs.prelogin.open("Enter Chat system!", {
       } ).then((r) => {
-        self.login_name = r.nick;
-        if (r.pin)
-          self.password = r.pin;
-        self.video_chat_open = r.login_videochat;
-        self.video_chat_muted = r.login_muted;
-        self.chat_open= true;
+        if (r) {
+          self.video_chat_open = r.login_videochat;
+          self.video_chat_muted = r.login_muted;
+          self.chat_open= true;
+        }
       })
 
     }

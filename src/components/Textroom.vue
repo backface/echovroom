@@ -360,9 +360,10 @@ export default {
           } else if(what === "kicked") {
 
             if(username === self.username) {
-              self.alert.open('You got kicked out!' + self.room);
+              self.alert.open('You got; kicked out!');
+              self.is_open = false
             } else {
-              self.toast.open(self.participants[username].display + " got kicked out from " + self.room_info.description)
+              self.toast.open(self.participants[username].display + " got kicked out")
             }
             self.removeUserFromList(username);
 
@@ -590,6 +591,7 @@ export default {
       self.$emit('participantNumberChanged', self.count)
 
     },
+
 
     removeUserFromList(username) {
       let self = this;

@@ -807,6 +807,8 @@ export default {
                   self.webRTCUp = false;
                   self.is_open = false;
                   self.pluginHandle.hangup();
+                  self.$emit('leavingRoom')
+                  setTimeout(self.updateParticipantsInfo, 10000)
                   self.$forceUpdate()
                   self.$emit('leftRoom')
                   self.force_positions = []
@@ -1212,6 +1214,15 @@ export default {
 
         oncleanup: function() {
           Janus.log(" ::: Got a cleanup notification (remote feed " + id + " / "  +  remoteFeed.id +") :::");
+          if(self.feeds[remoteFeed.publisher]) {
+            self.$delete(self.feeds,remoteFeed.publisher)
+          }
+
+          if (self.vr) {
+            self.updateVRpositions()
+          }
+
+          self.$forceUpdate()
         }
       });
     },
