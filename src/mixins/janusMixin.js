@@ -43,6 +43,10 @@ export const janusMixin = {
       type: String,
       default: null
     },
+    emitCallEvents: {
+      type: Boolean,
+      default: false
+    }
   },
 
   data () {

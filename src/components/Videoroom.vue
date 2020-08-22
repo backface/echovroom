@@ -228,6 +228,9 @@
                   <a @click="kick(feed.publisher)" title="kick">
                     <delete-icon size="1x" class="icons linked"></delete-icon>
                   </a>
+                  <a v-if="emitCallEvents" @click="$emit('call', user.display)" title="call">
+                    <phone-call-icon size="1x" class="icons linked"></phone-call-icon>
+                  </a>
                 </div>
 
                 <div class="overlay options" v-show="feed.showOptions">
@@ -269,6 +272,12 @@
                     <a @click="sendToStage(feed.publisher)" title="send to stage">
                       <airplay-icon v-if="allowStageSends" size="1x" class="icons linked"></airplay-icon>
                     </a>
+                    <a @click="kick(feed.publisher)" title="kick">
+                      <delete-icon size="1x" class="icons linked"></delete-icon>
+                    </a>
+                    <a v-if="emitCallEvents" @click="$emit('call', user.display)" title="call">
+                      <phone-call-icon size="1x" class="icons linked"></phone-call-icon>
+                    </a>
                   </div>
 
                   <div class="overlay options" v-show="feed.showOptions">
@@ -307,7 +316,7 @@ import { MinusIcon, PlusIcon } from 'vue-feather-icons'
 import { MicIcon, MicOffIcon, LoaderIcon } from 'vue-feather-icons'
 import { VideoIcon, VideoOffIcon } from 'vue-feather-icons'
 import { Maximize2Icon, DeleteIcon } from 'vue-feather-icons'
-import { MessageCircleIcon } from 'vue-feather-icons'
+import { MessageCircleIcon, PhoneCallIcon } from 'vue-feather-icons'
 import { SettingsIcon } from 'vue-feather-icons'
 import { MonitorIcon, AirplayIcon } from 'vue-feather-icons'
 import { CompassIcon, CircleIcon, StopCircleIcon } from 'vue-feather-icons'
@@ -338,7 +347,7 @@ export default {
     VideoIcon, VideoOffIcon, MessageCircleIcon,
     MinusIcon, PlusIcon, SettingsIcon, ArrowRightIcon,
     Maximize2Icon, CompassIcon, DeleteIcon, //Minimize2Icon,
-    MonitorIcon, AirplayIcon, EyeOffIcon, EyeIcon,
+    MonitorIcon, AirplayIcon, EyeOffIcon, EyeIcon, PhoneCallIcon,
     LoginDialog, Toast, AlertDialog, RtpDialog,
     Volume2Icon, VolumeXIcon, CircleIcon, StopCircleIcon
   },

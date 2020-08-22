@@ -28,6 +28,8 @@
         :betaOptions="beta"
         :advancedOptions="advanced"
         @leavingRoom="recreateVRoom"
+        :emitCallEvents="true"
+        @call="handleCall"
         :vr="vr"
       />
 
@@ -55,7 +57,6 @@
           @hasJanus="janus = $event"
           :emitCallEvents="true"
           @call="handleCall"
-
         />
       </transition>
 
@@ -86,9 +87,7 @@ export default {
 
   components: {
     Stage,
-    Textroom,
-    Videoroom,
-    Videocall,
+    Textroom, Videoroom, Videocall,
     Streaming,
     LoginDialog, PreLoginDialog, Toast
   },

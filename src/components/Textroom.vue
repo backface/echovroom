@@ -199,10 +199,6 @@ export default {
       type: Boolean,
       default: false
     },
-    emitCallEvents: {
-      type: Boolean,
-      default: false
-    }
   },
 
   data() {
