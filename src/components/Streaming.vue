@@ -72,22 +72,22 @@ export default {
     console.log(this.$options._componentTag + " mounted");
     this.muted = this.is_muted === "true"
     if (this.myJanus == null) {
-      fetch('vroom/streamin_config.json')
+      fetch('vroom/streaming_config.json')
         .then(r => r.json())
         .then(json => {
-          if (!this.server) this.server = json.server;
-          if (!this.iceServers) this.iceServers = json.iceServers;
-          if (this.room === 0) {
-            if (typeof json.room === "string") {
-              this.room = this.hashCode(json.room)
-              this.room_name = json.room
-            } else {
-              this.room = json.room
-            }
+          if (json.server) {
+            console.log("streaming server set from json");
+            this.server = json.server;
           }
-          this.initJanus()
-      })
-
+          if (json.iceServers)  {
+            console.log("streaming stun/turn set from json");
+            this.iceServers = json.iceServers;
+          }
+          this.initJanus();
+        }).catch( () => {
+          console.log("no valid streaming_config.json found");
+          this.initJanus();
+        })
     } else {
       this.janus = this.myJanus
       this.attachPlugin()

@@ -89,7 +89,18 @@ export const janusMixin = {
     if(this.host) {
       console.log("has host");
       this.server = this.host
+    } else {
+      this.server = [
+        //"wss://" +  window.location.hostname + "/ws/janus",
+        // window.location.protocol + "//" +  window.location.hostname + "/janus",
+         "wss://" +  window.location.hostname + ":8989/janus",
+          window.location.protocol + "//" +  window.location.hostname + ":8089/janus",
+       ];
     }
+    this.iceServers =[
+      {"urls": "stun:" + window.location.hostname },
+      {"urls": "turn:" + window.location.hostname, "username": "turn", "credential": "hinterseer"}
+    ];
 
   },
 
@@ -119,11 +130,21 @@ export const janusMixin = {
 
     loadConfig() {
       console.log(this.isMobile ? "is mobile" : "is desktop");
+      console.log("loading config");
       fetch('vroom/config.json')
-        .then(r => r.json())
+        .then(r => {
+            return r.json()
+        })
         .then(json => {
-          if (!this.server) this.server = json.server;
-          if (!this.iceServers) this.iceServers = json.iceServers;
+          // load servers from config file
+          if (json.server) {
+            console.log("janus server set from json");
+            this.server = json.server;
+          }
+          if (json.iceServers)  {
+            console.log("stun/turn set from json");
+            this.iceServers = json.iceServers;
+          }
           if (this.room === 0) {
             if (typeof json.room === "string") {
               this.room = this.hashCode(json.room)
@@ -133,7 +154,10 @@ export const janusMixin = {
             }
           }
           this.initJanus()
-      })
+        }).catch( () => {
+          console.log("no valid config.json found");
+          this.initJanus()
+        })
     },
 
     initJanus () {
