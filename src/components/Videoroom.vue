@@ -228,7 +228,7 @@
                   <a @click="kick(feed.publisher)" title="kick">
                     <delete-icon size="1x" class="icons linked"></delete-icon>
                   </a>
-                  <a v-if="emitCallEvents" @click="$emit('call', user.display)" title="call">
+                  <a v-if="emitCallEvents" @click="$emit('call', participants[feed.publisher].display)" title="call">
                     <phone-call-icon size="1x" class="icons linked"></phone-call-icon>
                   </a>
                 </div>

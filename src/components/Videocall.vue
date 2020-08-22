@@ -530,7 +530,7 @@ export default {
    color:white;
 }
 .videocall .bg { position: absolute; top:0px; left:0px; width:100%; height:100%; background: rgba(0,0,0,0.7);z-index:99 }
-.videocall .videocalllocal { position: absolute; bottom:50%; left:50%; width:128px; height:128px;z-index:99; opacity: 0.8}
+.videocall .videocalllocal { display:none;position: absolute; bottom:50%; left:50%; width:256px; height:256px;z-index:99; opacity: 0.8}
 .videocall .videocallremote { position: absolute; top:50%; left:50%;transform: translate(-50%,-50%);z-index:100; }
 
 .videoroom .videocalllocal {
