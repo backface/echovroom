@@ -15,11 +15,13 @@
 
     <div class="echorooms">
 
+      <v-btn @click="preLogin" v-if="!chat_open" class="enter">Enter Chat System</v-btn>
+
       <Videoroom
         :roombyName="roombyName"
         v-if="login_name  && showVroom"
         :nick="login_name"
-        :is_muted="true"
+        :is_muted="video_chat_muted"
         :login_password="password"
         :open="video_chat_open"
         :facetime="facetime"
@@ -61,6 +63,7 @@
 
     <toast ref="toast"></toast>
     <login-dialog ref="login"></login-dialog>
+    <pre-login-dialog ref="prelogin"></pre-login-dialog>
   </div>
 </template>
 
@@ -71,6 +74,8 @@ import Videoroom from '@/components/Videoroom.vue'
 import Videocall from '@/components/Videocall.vue'
 import Streaming from '@/components/Streaming.vue'
 import LoginDialog from '@/components/dialogs/LoginDialog'
+import PreLoginDialog from '@/components/dialogs/PreLoginDialog'
+
 import Toast from '@/components/dialogs/Toast'
 import { janusMixin } from "@/mixins/janusMixin";
 
@@ -85,7 +90,7 @@ export default {
     Videoroom,
     Videocall,
     Streaming,
-    LoginDialog, Toast
+    LoginDialog, PreLoginDialog, Toast
   },
 
   props: {
@@ -123,14 +128,18 @@ export default {
     if (typeof this.$route.query.vr !=  undefined) {
       this.vr = this.$route.query.vr === 'true';
     }
-    if (this.enterVR) this.vr = this.enterVR;
+    if (this.enterVR)
+      this.vr = this.enterVR;
+
     this.loadConfig()
+    this.loadRoomConfig()
   },
 
   data() {
     return {
       chat_open: true,
       video_chat_open: true,
+      video_chat_muted: true,
       janusReady: false,
       login_name: null,
       password: null,
@@ -143,10 +152,25 @@ export default {
   },
 
   methods: {
+
+    loadRoomConfig() {
+      console.log("loading room config");
+      fetch('vroom/' + this.roombyName + '.json')
+        .then(r => r.json())
+        .then(json => {
+          console.log("loading vroom configs");
+          this.chat_open = json.autologin;
+        }).catch( () => {
+          console.log("no valid room config found");
+
+        })
+    },
+
     attachPlugin() {
       console.log("janus is ready");
       this.janusReady = true
     },
+
     recreateVRoom() {
       // this is a hack but we completely remove the component to fore recreating a new janus sesssion
       let self = this
@@ -154,12 +178,26 @@ export default {
       this.video_chat_open = false;
       setTimeout( () => {self.showVroom = true}, 700)
     },
+
     handleCall(callee) {
       console.log(callee);
       this.callee = callee + "@" + this.roombyName;
       setTimeout( () => {this.callee = ""}, 700)
-    }
+    },
 
+    preLogin() {
+      let self =this;
+      self.$refs.prelogin.open("Enter Chat system!", {
+      } ).then((r) => {
+        self.login_name = r.nick;
+        if (r.pin)
+          self.password = r.pin;
+        self.video_chat_open = r.login_videochat;
+        self.video_chat_muted = r.login_muted;
+        self.chat_open= true;
+      })
+
+    }
   }
 
 }

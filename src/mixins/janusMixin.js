@@ -130,7 +130,7 @@ export const janusMixin = {
 
     loadConfig() {
       console.log(this.isMobile ? "is mobile" : "is desktop");
-      console.log("loading config");
+      console.log("loading chat config");
       fetch('vroom/config.json')
         .then(r => {
             return r.json()

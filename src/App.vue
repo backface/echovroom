@@ -27,18 +27,11 @@
 
         <div class="navbar-start shortcuts">
 
-            <router-link to="/demoroom" v-slot="{ href, route, isActive }">
-              <div class="navbar-item" :active="isActive"  :class="{'is-active':isActive}">
-                <a :href="href" >#{{ route.name }}</a>
-              </div>
-            </router-link>
-
-            <router-link to="/echoraeume" v-slot="{ href, route, isActive }">
-              <div class="navbar-item" :active="isActive" :class="{'is-active':isActive}">
-                <a :href="href" >#{{ route.name }}</a>
-              </div>
-            </router-link>
-
+          <router-link v-for="f in shortcuts" :key="f" :to="'/'+f" v-slot="{ href, route, isActive }">
+            <div class="navbar-item" :active="isActive"  :class="{'is-active':isActive}">
+              <a :href="href" >#{{ f}}</a>
+            </div>
+          </router-link>
 
         </div>
 
@@ -103,6 +96,8 @@ export default {
       menuOpen: false,
       embed: false,
       url: "",
+      default_favorites: ['echoraeume','demoroom'],
+      shortcuts: [],
     }
   },
 
@@ -111,6 +106,7 @@ export default {
     if (this.$route.name == "embed")
       this.embed = true;
     this.url = document.location.href;
+    this.loadSiteConfig();
   },
 
   destroyed () {
@@ -120,7 +116,18 @@ export default {
     copyURL() {
       window.getSelection().selectAllChildren(this.$refs.url)
       document.execCommand('copy');
-    }
+    },
+    loadSiteConfig() {
+      console.log("loading site config");
+      fetch('vroom/site.json')
+        .then(r => r.json())
+        .then(json => {
+          this.shortcuts = json.favorites;
+        }).catch( () => {
+          this.shortcuts = this.default_favorites;
+          console.log("no valid site config found");
+        })
+    },
   }
 
 }
@@ -243,5 +250,5 @@ body {vertical-align: middle}
   .echorooms { padding: 0 15px 0 10px;}
   .stage { padding: 0 5px 0 5px;}
 }
-.shortcuts { display: none !important }
+/* .shortcuts { display: none !important } */
 </style>
