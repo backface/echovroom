@@ -6,12 +6,14 @@ import About from './views/About.vue'
 import NotFound from './views/NotFound.vue'
 import Echoroom from './views/Echoroom.vue'
 import Demoroom from './views/Demoroom.vue'
+/*
 import Testroom from './views/Testroom.vue'
 import Eventroom from './views/Eventroom.vue'
 import VideoTest from './components/VideoTest.vue'
 import VideoTest2 from './components/VideoTest2.vue'
 import VideoTest3 from './components/VideoTest3.vue'
 import D3test from './components/D3test.vue'
+*/
 
 Vue.use(Router)
 
@@ -39,15 +41,7 @@ export default new Router({
       component: Demoroom,
       props: { roombyId: 1234}
     },
-    {
-      path: '/embed/:roombyName',
-      name: 'embed',
-      component: Chatroom,
-      props: (route) => ({
-          roombyName: route.params.roombyName,
-          embed:true,
-      }),
-    },
+
     {
       path: '/facetime/:roombyName',
       name: 'facetime',
@@ -66,6 +60,30 @@ export default new Router({
           enterVR:true
       }),
     },
+
+    // main chat
+    {
+      path: '/:roombyName',
+      name: 'chat',
+      component: Chatroom,
+      props:true,
+      //meta: { transitionName: 'zoom' },
+    },
+
+    { path: '*', component: NotFound}
+
+
+    /*
+    // various testing stuff
+    {
+      path: '/embed/:roombyName',
+      name: 'embed',
+      component: Chatroom,
+      props: (route) => ({
+          roombyName: route.params.roombyName,
+          embed:true,
+      }),
+    },
     {
       path: '/testing/:roombyName',
       name: 'vr',
@@ -74,8 +92,6 @@ export default new Router({
           roombyName: route.params.roombyName,
       }),
     },
-
-    // testing toom
     {
       path: '/videotest',
       name: 'videotest',
@@ -97,23 +113,8 @@ export default new Router({
       component: D3test,
     },
 
-    // main chat
-    {
-      path: '/:roombyName',
-      name: 'chat',
-      component: Chatroom,
-      props:true,
-      //meta: { transitionName: 'zoom' },
-    },
-
-    // wtf is eventroom?
-    {
-      path: '/event',
-      name: 'even',
-      component: Eventroom,
-    },
+    */
 
 
-    { path: '*', component: NotFound}
   ],
 })
