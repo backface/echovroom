@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import Home from './views/Home.vue'
 import Chatroom from './views/Chatroom.vue'
 import About from './views/About.vue'
+import Monitor from './views/Monitor.vue'
 import NotFound from './views/NotFound.vue'
 import Echoroom from './views/Echoroom.vue'
 import Demoroom from './views/Demoroom.vue'
@@ -28,6 +29,11 @@ export default new Router({
       path: '/about',
       name: 'about',
       component: About
+    },
+    {
+      path: '/monitor',
+      name: 'monitor',
+      component: Monitor
     },
     {
       path: '/echoraeume',

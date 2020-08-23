@@ -12,6 +12,7 @@
             @keyup.enter.exact="login"
             required
             ref="username"
+            v-if="options.with_name"
           >
           </v-text-field>
           <v-text-field
@@ -19,6 +20,8 @@
             label="Password"
             type="password"
             v-model="password"
+            ref="password"
+            @keyup.enter.exact="login"
             v-if="options.with_password"
             >
           </v-text-field>
@@ -65,7 +68,8 @@ export default {
       width: 290,
       zIndex: 2000,
       participants: [],
-      with_password: false
+      with_password: false,
+      with_name: true
     }
   }),
 
@@ -73,8 +77,13 @@ export default {
     open(title="", options) {
       this.dialog = true
       this.title = title
-      setTimeout(() => this.$refs.username.focus())
       this.options = Object.assign(this.options, options)
+
+      if (this.options.with_name)
+        setTimeout(() => this.$refs.username.focus())
+      else if(this.options.with_password)
+        setTimeout(() => this.$refs.password.focus())
+
       return new Promise((resolve, reject) => {
         this.resolve = resolve
         this.reject = reject
