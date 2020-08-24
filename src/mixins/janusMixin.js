@@ -28,8 +28,8 @@ export const janusMixin = {
       default: ""
     },
     host: {
-      type: String,
-      default: ""
+      type: Array,
+      default: null
     },
     ice_servers: {
       type: Array,
@@ -55,8 +55,16 @@ export const janusMixin = {
 
   data () {
     return {
-      server: null,
-      iceServer: null,
+      server: [
+        //"wss://" +  window.location.hostname + "/ws/janus",
+        // window.location.protocol + "//" +  window.location.hostname + "/janus",
+         "wss://" +  window.location.hostname + ":8989/janus",
+          window.location.protocol + "//" +  window.location.hostname + ":8089/janus",
+       ],
+      iceServer: [
+        {"urls": "stun:" + window.location.hostname },
+        {"urls": "turn:" + window.location.hostname, "username": "turn", "credential": "hinterseer"}
+      ],
       janus: null,
       transactions: {},
       username: null,
@@ -96,24 +104,8 @@ export const janusMixin = {
 
     if(this.host) {
       console.log("has host");
-      this.server = this.host
-
-    if(!this.server)
-      this.server = [
-        //"wss://" +  window.location.hostname + "/ws/janus",
-        // window.location.protocol + "//" +  window.location.hostname + "/janus",
-         "wss://" +  window.location.hostname + ":8989/janus",
-          window.location.protocol + "//" +  window.location.hostname + ":8089/janus",
-       ];
+      this.server = this.host;
     }
-
-    if(!this.iceServers) {
-      this.iceServers =[
-        {"urls": "stun:" + window.location.hostname },
-        {"urls": "turn:" + window.location.hostname, "username": "turn", "credential": "hinterseer"}
-      ];
-    }
-
   },
 
   watch: {
@@ -175,14 +167,12 @@ export const janusMixin = {
     initJanus () {
       let self = this;
       this.loading = true
-
       console.log(this.opaqueId, 'calling Janus init')
-
+      
       Janus.init({
-
         debug: 'all',
         callback: () => {
-          this.janus = new Janus(
+          self.janus = new Janus(
             {
               server: self.server,
               iceServers: self.iceServers,
@@ -196,7 +186,6 @@ export const janusMixin = {
                 this.attachPlugin()
               },
               error: (cause) => {
-                console.log(self.server);
                 console.log(cause)
               },
               destroyed: () => {

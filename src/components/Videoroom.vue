@@ -899,7 +899,6 @@ export default {
           Janus.debug(self.opaqueId, " ::: Got a local stream :::");
           Janus.debug(self.opaqueId, stream);
 
-
           Janus.attachMediaStream(self.$refs.videolocal, stream);
 
           if (self.use_force) {
@@ -914,7 +913,7 @@ export default {
           self.is_streaming = true;
           self.muteMe(self.muted)
           if (self.muted)
-            self.toast.open("Be aware you are muted! (Click on the microphon icon to unmute yourself!)",
+            self.toast.open("Be aware you are muted (Click  microphone to unmute)",
               {timeout: 5000 }
             );
           // We're not going to attach the local audio stream!

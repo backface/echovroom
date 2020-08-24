@@ -157,11 +157,10 @@ export default {
 
     loadRoomConfig() {
       console.log("loading room config");
-      console.log(this.roombyId);
-      fetch('vroom/' + this.roombyId + '.json')
+      fetch('vroom/' + this.roombyName + '.json')
         .then(r => r.json())
         .then(json => {
-          console.log("loading vroom configs");
+          console.log("loading vroom configs: vroom/" + this.roombyName + ".json");
           this.chat_open = json.autologin;
           this.video_chat_open = json.autologin;
           if (json.server) this.server = json.server;
