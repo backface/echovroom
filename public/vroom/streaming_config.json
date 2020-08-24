@@ -6,5 +6,5 @@
   "iceServers": [
     {"urls": "stun:stream.echovroom.live"},
     {"urls": "turn:stream.echovroom.live", "username": "turn", "credential": "hinterseer"}
-  ],
+  ]
 }
