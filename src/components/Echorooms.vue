@@ -17,6 +17,7 @@
       :showBitrates="false"
       videoResolution="videoResolution"
       @leftRoom="recreateVRoom"
+      :myJanus="janus"
       @opened="video_chat_open = false; show_video_login = false"
     />
 
@@ -33,6 +34,7 @@
       :nick="nick + '@echoræume'"
       :is_muted="true"
       :callee="callee"
+      :myJanus="janus"
       @takingCall="recreateVRoom"
     />
 
@@ -101,7 +103,9 @@ export default {
   },
 
   mounted() {
+    this.loadRoomConfig()
     this.loadConfig()
+
   },
 
   data() {
@@ -117,6 +121,23 @@ export default {
   },
 
   methods: {
+    loadRoomConfig() {
+      console.log("loading room config");
+      console.log('vroom/' + this.roombyId + '.json')
+      fetch('vroom/' + this.roombyId + '.json')
+        .then(r => r.json())
+        .then(json => {
+          console.log("loading vroom configs");
+          this.chat_open = json.autologin;
+          this.video_chat_open = json.autologin;
+          if (json.server) this.server = json.server;
+          if (json.iceServers) this.iceServers = json.iceServers;
+          console.log("asdfasdfadsfadsfadsf");
+        }).catch( () => {
+          console.log("no valid room config found");
+        })
+    },
+
     attachPlugin() {
       console.log("janus is ready");
       this.janusReady = true

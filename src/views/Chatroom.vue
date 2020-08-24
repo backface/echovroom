@@ -24,6 +24,7 @@
         :is_muted="video_chat_muted"
         :login_password="password"
         :open="video_chat_open"
+        :host="server"
         :facetime="facetime"
         :betaOptions="beta"
         :advancedOptions="advanced"
@@ -49,6 +50,7 @@
           :open="chat_open"
           :myJanus="janus"
           :roombyName="roombyName"
+          :host="server"
           :nick="login_name"
           :login_password="password"
           @hasNick="login_name = $event;"
@@ -130,8 +132,9 @@ export default {
     if (this.enterVR)
       this.vr = this.enterVR;
 
-    this.loadConfig()
     this.loadRoomConfig()
+    this.loadConfig()
+
   },
 
   data() {
@@ -154,15 +157,17 @@ export default {
 
     loadRoomConfig() {
       console.log("loading room config");
-      fetch('vroom/' + this.roombyName + '.json')
+      console.log(this.roombyId);
+      fetch('vroom/' + this.roombyId + '.json')
         .then(r => r.json())
         .then(json => {
           console.log("loading vroom configs");
           this.chat_open = json.autologin;
           this.video_chat_open = json.autologin;
+          if (json.server) this.server = json.server;
+          if (json.iceServers) this.iceServers = json.iceServers;
         }).catch( () => {
           console.log("no valid room config found");
-
         })
     },
 

@@ -31,6 +31,10 @@ export const janusMixin = {
       type: String,
       default: ""
     },
+    ice_servers: {
+      type: Array,
+      default: null
+    },
     showRoomInfo: {
       type: Boolean,
       default: false
@@ -93,7 +97,8 @@ export const janusMixin = {
     if(this.host) {
       console.log("has host");
       this.server = this.host
-    } else {
+
+    if(!this.server)
       this.server = [
         //"wss://" +  window.location.hostname + "/ws/janus",
         // window.location.protocol + "//" +  window.location.hostname + "/janus",
@@ -101,10 +106,13 @@ export const janusMixin = {
           window.location.protocol + "//" +  window.location.hostname + ":8089/janus",
        ];
     }
-    this.iceServers =[
-      {"urls": "stun:" + window.location.hostname },
-      {"urls": "turn:" + window.location.hostname, "username": "turn", "credential": "hinterseer"}
-    ];
+
+    if(!this.iceServers) {
+      this.iceServers =[
+        {"urls": "stun:" + window.location.hostname },
+        {"urls": "turn:" + window.location.hostname, "username": "turn", "credential": "hinterseer"}
+      ];
+    }
 
   },
 
@@ -165,27 +173,30 @@ export const janusMixin = {
     },
 
     initJanus () {
+      let self = this;
       this.loading = true
 
       console.log(this.opaqueId, 'calling Janus init')
 
       Janus.init({
+
         debug: 'all',
         callback: () => {
           this.janus = new Janus(
             {
-              server: this.server,
-              iceServers: this.iceServers,
+              server: self.server,
+              iceServers: self.iceServers,
               success: () => {
                 console.log("janus initialized");
               //  Janus.listDevices( (d) => {
               //    console.log("available devices: ");
               //    d.forEach( d => console.log(d))
               //  })
-                this.$emit("hasJanus", this.janus)
+                this.$emit("hasJanus", self.janus)
                 this.attachPlugin()
               },
               error: (cause) => {
+                console.log(self.server);
                 console.log(cause)
               },
               destroyed: () => {
@@ -439,7 +450,11 @@ export const janusMixin = {
       if(string == "demoroom")
         return 1234
 
-      return this.getHash(string)
+        var hash = 0, i = 0, len = string.length;
+        while ( i < len ) {
+            hash  = ((hash << 5) - hash + string.charCodeAt(i++)) << 0;
+        }
+        return (hash + 2147483647) + 1
 
     },
 
