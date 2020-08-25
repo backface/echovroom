@@ -53,7 +53,7 @@ export default {
 
 
 @media (max-width:461px) {
-  .logo { z-index:2000;width:256px; height:256px; position: fixed; bottom:-100px; left: 50%; transform: translate(-50%,0); overflow:hidden}
+  .logo { z-index:20;width:256px; height:256px; position: fixed; bottom:-80px; left: 50%; transform: translate(-50%,0); overflow:hidden}
 
 }
 </style>
