@@ -21,7 +21,7 @@
       <div class="navbar-menu" :class="{'is-active':menuOpen}">
         <router-link to="/about" v-slot="{ href, route, isActive }">
           <div class="navbar-item" :active="isActive"  :class="{'is-active':isActive}">
-            <a :href="href" >?</a>
+            <a :href="href" @click="menuOpen=false">?</a>
           </div>
         </router-link>
 
@@ -29,7 +29,7 @@
 
           <router-link v-for="f in shortcuts" :key="f" :to="'/'+f" v-slot="{ href, route, isActive }">
             <div class="navbar-item" :active="isActive"  :class="{'is-active':isActive}">
-              <a :href="href" >#{{ f}}</a>
+              <a :href="href"  @click="menuOpen=false">#{{ f}}</a>
             </div>
           </router-link>
 
