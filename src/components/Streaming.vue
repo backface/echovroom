@@ -15,6 +15,8 @@
         <a @click="makeVideoFullscreen()" title="fullscreen">
           <maximize-2-icon size="1x" class="icons linked" ></maximize-2-icon>
         </a>
+
+
       <!--  <a v-if="allowSettings" @click="showBitrateOptions=!showBitrateOptions"  title="show settings">
           <settings-icon size="1x" class="icons linked"></settings-icon>
         </a>
@@ -25,7 +27,9 @@
       <div class="overlay options" v-show="showBitrateOptions">
         <v-select dark label="Cap Bitrate" dense v-model="bitrate" :items="bitrates" @change="updateBitrateCap"></v-select>
       </div>-->
+
     </div>
+
   </div>
 
   <toast ref="toast"></toast>
@@ -42,7 +46,7 @@ import LoginDialog from '@/components/dialogs/LoginDialog'
 import AlertDialog from '@/components/dialogs/AlertDialog'
 import Toast from '@/components/dialogs/Toast'
 import { Volume2Icon, VolumeXIcon, Maximize2Icon } from 'vue-feather-icons'
-
+//import {VSelect} from 'vuetify/lib'
 
 export default {
   name: 'Streaming',
@@ -51,7 +55,8 @@ export default {
 
   components: {
     LoginDialog, Toast, AlertDialog,
-    Volume2Icon, VolumeXIcon, Maximize2Icon
+    Volume2Icon, VolumeXIcon, Maximize2Icon,
+  //  VSelect
   },
 
   props: {
@@ -64,7 +69,15 @@ export default {
       pluginHandle: null,
       pluginName: "streaming",
       is_streaming: false,
-      muted: false
+      muted: false,
+      substream: 0,
+      temporal: 0,
+      simulcastStarted: false,
+      qualities:  [
+        { text: "Low", value: 0},
+        { text: "Medium", value: 1} ,
+        { text: "High", value: 2},
+      ],
     }
   },
 
@@ -134,8 +147,32 @@ export default {
           Janus.debug(msg);
           var event = msg[self.pluginName];
 					Janus.debug("Event: " + event);
-
           console.log(self.opaqueId, msg, event);
+
+          var result = msg["result"];
+					if(result !== null && result !== undefined) {
+            if(result["status"] !== undefined && result["status"] !== null) {
+              console.log(self.pluginName, "status:  " + result["status"]);
+						} else if(msg["streaming"] === "event") {
+              var substream = msg["substream"];
+              var temporal = msg["temporal"];
+              if((substream !== null && substream !== undefined) || (temporal !== null && temporal !== undefined)) {
+                if(!self.simulcastStarted) {
+                  self.simulcastStarted = true;
+                  self.substream = substream
+                  self.temporal = temporal
+                  console.log("started simulcast", substream, temporal)
+                } else {
+                  self.substream = substream
+                  self.temporal = temporal
+                  console.log("update simulcast", substream, temporal)
+                }
+              }
+            }
+          } else if(msg["error"] !== undefined && msg["error"] !== null) {
+            console.log(self.pluginName, msg["error"]);
+            self.$alert.open(msg["error"]);
+          }
 
           if(jsep !== undefined && jsep !== null) {
             Janus.debug(self.opaqueId, "Handling SDP as well...");
@@ -190,6 +227,10 @@ export default {
       } else if (this.$refs.stream.msRequestFullscreen) { /* IE/Edge */
         this.$refs.stream.msRequestFullscreen();
       }
+    },
+
+    selectSubstream(num) {
+      this.pluginHandle.send({message: { request: "configure", substream: num }});
     }
 
   },
@@ -223,6 +264,14 @@ export default {
       background:rgba(0,0,0, 0.7); color:white;padding:0.1rem 0.5rem;
   }
 
+
+  .options {
+      opacity: 0.7;  position: absolute;
+      left: 100%; bottom:38px;  transform:translate(-10%,0);
+      /*bottom:5px; left: 5px;*/
+      /*background:white; color:#333;padding:0.3em;*/
+       background:rgba(0,0,0, 0.2); color:white;padding:0.15rem 0.5rem;
+  }
   .player:hover .meta {display:block}
 
 
