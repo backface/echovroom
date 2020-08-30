@@ -6,7 +6,7 @@
         <v-form ref="signUpForm" v-model="valid" :lazy-validation="lazy" @submit.prevent="">
 
           <v-card-actions>
-            <v-checkbox v-model="login_videochat" class="" label="videochat"></v-checkbox>
+            <v-checkbox v-model="login_videochat" class="" label="video"></v-checkbox>
             <v-spacer></v-spacer>
             <v-checkbox v-model="login_muted" class="mx-2" :disabled="!login_videochat" label="mute on start"></v-checkbox>
           </v-card-actions>

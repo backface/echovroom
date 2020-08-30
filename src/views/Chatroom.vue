@@ -15,7 +15,7 @@
 
     <div class="echorooms">
 
-      <v-btn @click="preLogin" v-if="!chat_open" class="enter">Enter Chat System</v-btn>
+      <v-btn @click="preLogin" v-if="!chat_open" class="enter">Join the Conversation</v-btn>
 
       <Videoroom
         :roombyName="roombyName"
@@ -191,7 +191,7 @@ export default {
 
     preLogin() {
       let self =this;
-      self.$refs.prelogin.open("Enter Chat system!", {
+      self.$refs.prelogin.open("Join the chat system!", {
       } ).then((r) => {
         if (r) {
           self.video_chat_open = r.login_videochat;

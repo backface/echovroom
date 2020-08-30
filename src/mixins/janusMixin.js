@@ -168,7 +168,7 @@ export const janusMixin = {
       let self = this;
       this.loading = true
       console.log(this.opaqueId, 'calling Janus init')
-      
+
       Janus.init({
         debug: 'all',
         callback: () => {
@@ -438,6 +438,8 @@ export const janusMixin = {
         return 777;
       if(string == "demoroom")
         return 1234
+      if(string == "STWST48x6")
+        string = string.toLowerCase()
 
         var hash = 0, i = 0, len = string.length;
         while ( i < len ) {
