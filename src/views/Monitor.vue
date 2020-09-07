@@ -123,30 +123,36 @@ export default {
        }
       )
 
-      await self.asyncForEach(d.sessions, async (session) => {
-        let request = { "janus": "list_handles", "transaction": Janus.randomString(12), "admin_secret": self.password };
-        let d = await d3.json(self.url  + "/" + session,
-          {
-            method: 'POST', headers: { "Content-type": "application/json; charset=UTF-8" },
-            body: JSON.stringify(request)
-          }
-        );
-        await self.asyncForEach(d.handles, async (handle) => {
-          let request = { "janus": "handle_info", "transaction": Janus.randomString(12), "admin_secret": self.password };
-          let d = await d3.json(self.url  + "/" + session + "/" + handle  ,
+      if (d.sessions) {
+        await self.asyncForEach(d.sessions, async (session) => {
+          let request = { "janus": "list_handles", "transaction": Janus.randomString(12), "admin_secret": self.password };
+          let d = await d3.json(self.url  + "/" + session,
             {
               method: 'POST', headers: { "Content-type": "application/json; charset=UTF-8" },
               body: JSON.stringify(request)
             }
           );
-          new_infos.push(d.info)
+          if (d.handles) {
+            await self.asyncForEach(d.handles, async (handle) => {
+              let request = { "janus": "handle_info", "transaction": Janus.randomString(12), "admin_secret": self.password };
+              let d = await d3.json(self.url  + "/" + session + "/" + handle  ,
+                {
+                  method: 'POST', headers: { "Content-type": "application/json; charset=UTF-8" },
+                  body: JSON.stringify(request)
+                }
+              );
+              new_infos.push(d.info)
+            });
+          }
         });
-      });
+      }
 
       self.infos = new_infos
-      self.nested_infos = d3.nest()
-        .key(function(d) { return d.plugin; })
-        .entries(new_infos);
+      if (new_infos.length > 0) {
+        self.nested_infos = d3.nest()
+          .key(function(d) { return d.plugin; })
+          .entries(new_infos);
+      }
       setTimeout(function () { self.update() }, 3000)
 
       self.nested_infos.forEach( (info) => {

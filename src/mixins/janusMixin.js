@@ -186,7 +186,9 @@ export const janusMixin = {
                 this.attachPlugin()
               },
               error: (cause) => {
+                console.log("janus got an error");
                 console.log(cause)
+                self.alert.open("ERROR: " + cause);
               },
               destroyed: () => {
                 console.log('janus destroyed')

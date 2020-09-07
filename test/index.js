@@ -11,7 +11,8 @@ let Template = (
            <h1>Running</h1>
            <pre>${url}</pre>
         </body>
-      </html>`;
+      </html>
+    `;
 }
 
  
@@ -51,13 +52,35 @@ exports.testsession = (req, res) => {
                   height: 768,
                   deviceScaleFactor: 1,
               });
+              
+              /*
               console.log("goto page")
-              await page.goto('https://vroom.fooviz.xyz/#/test');  
+              await page.goto('https://echovroom.live/#/' + arg);  
               console.log("wait for login")
               await page.waitFor('#username')
               await page.type('#username', 'user_' + shortid.generate())
               console.log("login")
               await page.click('#login');
+              */
+              
+              console.log("load page")
+              await page.goto('https://echovroom.live/#/' + arg); 
+              console.log("wait for login")
+              await page.click('.enter');
+              await page.click('#login');
+              await page.waitFor('#username')
+              await page.type('#username', shortid.generate() + String.fromCharCode(13))  
+              console.log("login")
+              
+              console.log("wait for publisher/s to appear")
+              await page.waitFor('.publisher')
+              
+              console.log('wait a bit');
+              await wait(1000 + Math.random() * 5000);  
+              await page.type('.msg_editor input', 'hello')
+              await page.click('a[title="send"]');
+              
+              
               await wait(50000);  
               console.log("close")
               await browser.close();

@@ -12,10 +12,12 @@ const shortid = require('shortid');
       deviceScaleFactor: 1,
   });
   console.log("load page")
-  await page.goto('http://localhost:8080/#/test');  
+  await page.goto('https://echovroom.live/#/stwst48x6');  
   console.log("wait for login")
+  await page.click('.enter');
+  await page.click('#login');
   await page.waitFor('#username')
-  await page.type('#username', shortid.generate())  
+  await page.type('#username', shortid.generate() + String.fromCharCode(13))  
   console.log("login")
   await page.click('#login');
   console.log("wait for publisher/s to appear")
