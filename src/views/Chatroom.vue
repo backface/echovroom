@@ -1,5 +1,8 @@
 <template>
   <div class="main">
+
+    <h1 class="title">#{{ roombyName }}</h1>
+
     <div class="stage" v-if="$route.name != 'embed'">
       <div class='embed-container'>
         <Streaming
@@ -39,6 +42,7 @@
         v-if="login_name"
         :nick="login_name + '@' + roombyName"
         :is_muted="true"
+        :host="server"
         :callee="callee"
         @takingCall="recreateVRoom"
       />
@@ -133,7 +137,7 @@ export default {
       this.vr = this.enterVR;
 
     this.loadRoomConfig()
-    this.loadConfig()
+
 
   },
 
@@ -156,6 +160,7 @@ export default {
   methods: {
 
     loadRoomConfig() {
+      let self = this;
       console.log("loading room config");
       fetch('vroom/' + this.roombyName + '.json')
         .then(r => r.json())
@@ -165,6 +170,7 @@ export default {
           this.video_chat_open = json.autologin;
           if (json.server) this.server = json.server;
           if (json.iceServers) this.iceServers = json.iceServers;
+          self.loadConfig()
         }).catch( () => {
           console.log("no valid room config found");
         })

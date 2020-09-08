@@ -174,12 +174,12 @@ export default {
 .embed-container iframe, .embed-container object, .embed-container embed, .embed-container div
   { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
 
-.stage { width: 640px; margin: 0 auto; max-width: 100%; margin-bottom:30px}
+.stage { width: 800px; margin: 0 auto; max-width: 100%; margin-bottom:30px}
 
 
 /* compoonent pparts */
 
-.max-width { width: 640px; margin: auto auto; max-width: 100%;}
+.max-width { width: 800px; margin: auto auto; max-width: 100%;}
 .textroom .chatroom { min-height: 156px}
 
 .header { flex: 0 0 auto}
@@ -244,6 +244,10 @@ footer a {color:#333 !important; text-decoration:underline}
 .textroom { max-height:300px !important}
 
 body {vertical-align: middle}
+
+@media (max-width:1440px) {
+  .max-width { width: 640px; }
+}
 
 @media (max-width:461px) {
   .navbar { margin-bottom:10px}

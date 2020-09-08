@@ -302,7 +302,7 @@ export const janusMixin = {
           }
         },
         error: function(reason) {
-          console.log(reason);
+          console.log("ERR" + reason);
         }
       });
     },
@@ -324,7 +324,7 @@ export const janusMixin = {
           self.count = self.initial_participants.length
         },
         error: function(reason) {
-          console.log(reason);
+          console.log("ERR" + reason);
         }
       });
     },
@@ -359,7 +359,7 @@ export const janusMixin = {
             }
           },
           error: function(reason) {
-            console.log(reason);
+            console.log("ERR" + reason);
             reject(reason);
           }
         })
@@ -406,7 +406,7 @@ export const janusMixin = {
             resolve(true);
           },
           error: function(reason) {
-            console.log(reason);
+            console.log("ERR" + reason);
             reject(reason);
           }
         });
@@ -429,7 +429,7 @@ export const janusMixin = {
           console.log(response);
         },
         error: function(reason) {
-          console.log(reason);
+          console.log("ERR" + reason);
         }
       });
       this.$emit('kick', id)

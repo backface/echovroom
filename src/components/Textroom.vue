@@ -378,7 +378,11 @@ export default {
 
             if(json["room"] !== self.room)
               return;
+          }  else if(what === "list") {
+
+            self.alert.open('Error: ' + json["error"])
           }
+
 
         },
         oncleanup: function() {
@@ -447,7 +451,7 @@ export default {
       self.pluginHandle.data({
         text: JSON.stringify(register),
         error: function(reason) {
-          console.log(reason);
+          console.log(":ERR" + reason);
         }
       });
 
