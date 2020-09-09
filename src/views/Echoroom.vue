@@ -7,8 +7,7 @@
     </div>
     <Echorooms :roombyId="room" />
     <p style="font-size:90%">
-      Componized version as seen in the virtual concert venue <br>
-      <a href="https://echoraeume.klingt.org/" style="color:black;text-decoration:underline">echoraeume</a><br>
+      Componized version as seen on <a href="https://echoraeume.klingt.org/" style="color:black;text-decoration:underline">echoraeume</a><br>
     </p>
   </div>
 </template>

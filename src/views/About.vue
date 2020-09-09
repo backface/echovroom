@@ -26,15 +26,9 @@
 
     <p>
         Brought to you by
-      <a href="https://m.ash.to">m.ash.to</a>, <a href="https://www.fooviz.xyz">FOOVIZ.XYZ</a> in collaboration with <a href="https://echoraeume.klingt.org/" style="color:black;text-decoration:underline">echoraeume</a><br>
+      <a href="https://m.ash.to">m.ash.to</a> in collaboration with <a href="https://echoraeume.klingt.org/" style="color:black;text-decoration:underline">echoraeume</a><br>
     </p>
 
-    <p>
-      Questions? Offers? <br>
-       <a :href="'mailto:' + email">{{email}}</a>
-    </p>
-
-    <br>
     <br>
     <br>
     <br>

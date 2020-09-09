@@ -1,7 +1,13 @@
 <template>
   <div class="main">
 
-    <h1 class="title">#{{ roombyName }}</h1>
+    <h1 v-if="title" class="title">{{ title}}</h1>
+    <h1 v-else class="title">#{ roombyName }}</h1>
+
+    <div class="room_details">
+      &raquo; <a target="_blank" :href="info_link" v-if="info_link">info</a>
+      &raquo; <a target="_blank" :href="schedule_link" v-if="schedule_link">schedule</a>
+    </div>
 
     <div class="stage" v-if="$route.name != 'embed'">
       <div class='embed-container'>
@@ -82,7 +88,6 @@ import Videocall from '@/components/Videocall.vue'
 import Streaming from '@/components/Streaming.vue'
 import LoginDialog from '@/components/dialogs/LoginDialog'
 import PreLoginDialog from '@/components/dialogs/PreLoginDialog'
-
 import Toast from '@/components/dialogs/Toast'
 import { janusMixin } from "@/mixins/janusMixin";
 
@@ -95,7 +100,7 @@ export default {
     Stage,
     Textroom, Videoroom, Videocall,
     Streaming,
-    LoginDialog, PreLoginDialog, Toast
+    LoginDialog, PreLoginDialog, Toast,
   },
 
   props: {
@@ -154,6 +159,9 @@ export default {
       callee: "",
       beta:false,
       advanced:false,
+      title:"",
+      info_link:"",
+      schedule_link:""
     }
   },
 
@@ -170,6 +178,10 @@ export default {
           this.video_chat_open = json.autologin;
           if (json.server) this.server = json.server;
           if (json.iceServers) this.iceServers = json.iceServers;
+          if (json.info_link) this.info_link = json.info_link;
+          if (json.schedule_link) this.schedule_link = json.schedule_link;
+          if (json.title) this.title = json.title;
+
           self.loadConfig()
         }).catch( () => {
           console.log("no valid room config found");
@@ -215,4 +227,7 @@ export default {
 <style scoped>
 .main {}
 .main { margin-bottom:100px }
+h1.title { padding-bottom:0; margin-bottom:0.2rem}
+.room_details {margin-bottom:1.2rem}
+.room_details a:not(:last-child) { margin-right:12px}
 </style>

@@ -5,7 +5,7 @@
 
       <div class="navbar-brand">
         <router-link :to="{ path: '/' }" v-slot="{ href }">
-          <a class="navbar-item" :href="href">
+          <a class="navbar-item" :href="href" title="home">
               <arrow-up-left-icon size="1.5x" class="custom-class"></arrow-up-left-icon>
           </a>
         </router-link>
@@ -21,7 +21,7 @@
       <div class="navbar-menu" :class="{'is-active':menuOpen}">
         <router-link to="/about" v-slot="{ href, route, isActive }">
           <div class="navbar-item" :active="isActive"  :class="{'is-active':isActive}">
-            <a :href="href" @click="menuOpen=false">?</a>
+            <a :href="href" @click="menuOpen=false" title="about">?</a>
           </div>
         </router-link>
 
@@ -31,6 +31,12 @@
             <div class="navbar-item" :active="isActive"  :class="{'is-active':isActive}">
               <a :href="href"  @click="menuOpen=false">#{{ f}}</a>
             </div>
+          </router-link>
+
+          <router-link :to="{ path: '/' }" v-slot="{ href }">
+            <a class="navbar-item" :href="href" title="create a room">
+                +
+            </a>
           </router-link>
 
         </div>
