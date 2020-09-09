@@ -5,7 +5,8 @@
     <h1 v-else class="title">#{ roombyName }}</h1>
 
     <div class="room_details">
-      &raquo; <a target="_blank" :href="info_link" v-if="info_link">info</a>
+      <span v-if="subtitle" class="room_subtitle">{{ subtitle }}</span>
+      &raquo; <a target="_blank" :href="info_link" v-if="info_link">read more ...</a>
       &raquo; <a target="_blank" :href="schedule_link" v-if="schedule_link">schedule</a>
     </div>
 
@@ -160,6 +161,7 @@ export default {
       beta:false,
       advanced:false,
       title:"",
+      subtitle:"",
       info_link:"",
       schedule_link:""
     }
@@ -181,6 +183,7 @@ export default {
           if (json.info_link) this.info_link = json.info_link;
           if (json.schedule_link) this.schedule_link = json.schedule_link;
           if (json.title) this.title = json.title;
+          if (json.subtitle) this.subtitle = json.subtitle;
 
           self.loadConfig()
         }).catch( () => {
@@ -230,4 +233,5 @@ export default {
 h1.title { padding-bottom:0; margin-bottom:0.2rem}
 .room_details {margin-bottom:1.2rem}
 .room_details a:not(:last-child) { margin-right:12px}
+.room_subtitle { margin-right:12px}
 </style>
