@@ -2,12 +2,12 @@
   <div class="main">
 
     <h1 v-if="title" class="title">{{ title}}</h1>
-    <h1 v-else class="title">#{ roombyName }}</h1>
+    <h1 v-else class="title">#{{ roombyName }}</h1>
 
     <div class="room_details">
       <span v-if="subtitle" class="room_subtitle">{{ subtitle }}</span>
-      &raquo; <a target="_blank" :href="info_link" v-if="info_link">read more ...</a>
-      &raquo; <a target="_blank" :href="schedule_link" v-if="schedule_link">schedule</a>
+      <a target="_blank" :href="info_link" v-if="info_link">&raquo;  read more ...</a>
+      <a target="_blank" :href="schedule_link" v-if="schedule_link">&raquo;  schedule</a>
     </div>
 
     <div class="stage" v-if="$route.name != 'embed'">
@@ -19,6 +19,7 @@
         <Stage
           v-else
           :roombyName="roombyName"
+          :src="stage"
         />
       </div>
     </div>
@@ -163,7 +164,8 @@ export default {
       title:"",
       subtitle:"",
       info_link:"",
-      schedule_link:""
+      schedule_link:"",
+      stage:"",
     }
   },
 
@@ -176,18 +178,26 @@ export default {
         .then(r => r.json())
         .then(json => {
           console.log("loading vroom configs: vroom/" + this.roombyName + ".json");
-          this.chat_open = json.autologin;
-          this.video_chat_open = json.autologin;
+          if ('autologin' in json)
+          {
+            this.chat_open = json.autologin;
+            this.video_chat_open = json.autologin;
+          }
           if (json.server) this.server = json.server;
           if (json.iceServers) this.iceServers = json.iceServers;
           if (json.info_link) this.info_link = json.info_link;
           if (json.schedule_link) this.schedule_link = json.schedule_link;
           if (json.title) this.title = json.title;
           if (json.subtitle) this.subtitle = json.subtitle;
+          if (json.stage) {
+            this.hasStreaming = false;
+            this.stage = json.stage;
+          }
 
           self.loadConfig()
         }).catch( () => {
           console.log("no valid room config found");
+          self.loadConfig()
         })
     },
 

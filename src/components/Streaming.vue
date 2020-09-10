@@ -171,7 +171,7 @@ export default {
             }
           } else if(msg["error"] !== undefined && msg["error"] !== null) {
             console.log(self.pluginName, msg["error"]);
-            self.$alert.open(msg["error"]);
+            //self.alert.open(msg["error"]);
           }
 
           if(jsep !== undefined && jsep !== null) {

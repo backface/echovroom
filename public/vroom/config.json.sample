@@ -1,7 +1,7 @@
 {
   "server": [
-    "wss://chat.echovroom.live/janus_ws",
-    "https://chat.echovroom.live/janus"
+    "wss://chat.echovroom.live:8989",
+    "https://chat.echovroom.live:8089"
   ],
   "iceServers": [
     {"urls": "stun:chat.echovroom.live"},
