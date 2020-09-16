@@ -439,7 +439,7 @@ export const janusMixin = {
         return 777;
       if(string == "demoroom")
         return 1234
-      if(string == "STWST48x6")
+      if(string == "STWST48X6")
         string = string.toLowerCase()
 
         var hash = 0, i = 0, len = string.length;

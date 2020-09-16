@@ -1573,7 +1573,7 @@ export default {
 
 .videoroom .stage video {
   object-fit: cover;
-  max-height:360px;
+  max-height:450px;
   width:100%;
   height:100%;
   border-radius: 0%;
@@ -1605,6 +1605,16 @@ export default {
 .a-loader-title {
   background: #ddcccc;
   color:black;
+}
+
+@media (max-width:1440px) {
+  .videoroom .stage video {
+    object-fit: cover;
+    max-height:360px;
+    width:100%;
+    height:100%;
+    border-radius: 0%;
+  }
 }
 
 @media (max-width:461px) {

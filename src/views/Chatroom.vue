@@ -6,8 +6,8 @@
 
     <div class="room_details">
       <span v-if="subtitle" class="room_subtitle">{{ subtitle }}</span>
-      <a target="_blank" :href="info_link" v-if="info_link">&raquo;  read more ...</a>
-      <a target="_blank" :href="schedule_link" v-if="schedule_link">&raquo;  schedule</a>
+      <span v-if="info_link">&raquo; </span><a target="_blank" :href="info_link" v-if="info_link">read more ...</a>
+      <span v-if="schedule_link">&raquo; </span><a target="_blank" :href="schedule_link" v-if="schedule_link">schedule</a>
     </div>
 
     <div class="stage" v-if="$route.name != 'embed'">
@@ -241,7 +241,9 @@ export default {
 .main {}
 .main { margin-bottom:100px }
 h1.title { padding-bottom:0; margin-bottom:0.2rem}
-.room_details {margin-bottom:1.2rem}
+.room_details {margin-bottom:0.9rem; font-size:0.8em}
+.room_details a { color:#999}
+.room_details a:hover { color:black}
 .room_details a:not(:last-child) { margin-right:12px}
 .room_subtitle { margin-right:12px}
 </style>

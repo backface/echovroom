@@ -19,6 +19,7 @@
       </div>
 
       <div class="navbar-menu" :class="{'is-active':menuOpen}">
+
         <router-link to="/about" v-slot="{ href, route, isActive }">
           <div class="navbar-item" :active="isActive"  :class="{'is-active':isActive}">
             <a :href="href" @click="menuOpen=false" title="about">?</a>
@@ -27,16 +28,18 @@
 
         <div class="navbar-start shortcuts">
 
+          <!--
+            <div class="navbar-item" style="padding-right:0;color:#aaa">
+            NOW:
+          </div>
+          -->
           <router-link v-for="f in shortcuts" :key="f" :to="'/'+f" v-slot="{ href, route, isActive }">
             <div class="navbar-item" :active="isActive"  :class="{'is-active':isActive}">
-              <a :href="href"  @click="menuOpen=false">#{{ f}}</a>
+              <a :href="href"  @click="menuOpen=false">#/
+                <span v-if="f === 'lager'">archive</span>
+                <span v-else>{{ f }}</span>
+              </a>
             </div>
-          </router-link>
-
-          <router-link :to="{ path: '/' }" v-slot="{ href }">
-            <a class="navbar-item" :href="href" title="create a room">
-                +
-            </a>
           </router-link>
 
         </div>
@@ -234,7 +237,6 @@ footer a {color:#333 !important; text-decoration:underline}
   transform: translateX(10px);
   opacity: 0;
 }
-
 
 .fade-enter-active,
 .fade-leave-active {
