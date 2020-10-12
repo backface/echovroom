@@ -24,11 +24,11 @@
     <p>The tools we use shape us. Nowhere is this less apparent than in artistic creation and thinking</p>
 
     <p> Brought to you by: <a href="https://m.ash.to">m.ash.to</a>
-      in collaboration with <a href="https://echoraeume.klingt.org/" style="color:black;text-decoration:underline">echoraeume</a><br>
+      in collaboration with <a href="https://echoraeume.klingt.org/" style="color:black;text-decoration:underline">echoraeume</a><br />
     </p>
 
     <p>
-        EchoVroom is Free Software. Find it on <a href="https://github.com/backface/echovroom">github</a></br >
+        EchoVroom is Free Software. Find it on <a href="https://github.com/backface/echovroom">github</a><br />
     </p>
 
 

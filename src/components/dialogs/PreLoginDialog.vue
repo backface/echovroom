@@ -2,18 +2,17 @@
   <v-dialog v-model="dialog" :max-width="options.width" :style="{ zIndex: options.zIndex }" persistent>
     <v-card>
       <v-card-title class="headline">{{title}}</v-card-title>
-      <v-card-text>
+
         <v-form ref="signUpForm" v-model="valid" :lazy-validation="lazy" @submit.prevent="">
 
-          <v-card-actions>
-            <v-checkbox v-model="login_videochat" class="" label="video"></v-checkbox>
-            <v-spacer></v-spacer>
-            <v-checkbox v-model="login_muted" class="mx-2" :disabled="!login_videochat" label="mute on start"></v-checkbox>
-          </v-card-actions>
+          <v-card-text>
+            <v-checkbox v-model="login_videochat" class="mx-2" label="enable video"></v-checkbox>
+            <v-checkbox v-model="login_muted" class="mx-2" :disabled="!login_videochat" label="mute me on start"></v-checkbox>
+          </v-card-text>
         </v-form>
 
 
-      </v-card-text>
+
       <v-card-actions class="pt-0">
         <v-spacer></v-spacer>
         <v-btn v-if="options.cancelable" color="grey darken-1" text @click.native="cancel">Cancel</v-btn>
@@ -44,7 +43,7 @@ export default {
     title: null,
     valid: true,
     lazy: false,
-    login_muted: true,
+    login_muted: false,
     login_videochat: true,
     options: {
       color: 'primary',
@@ -87,3 +86,7 @@ export default {
   }
 }
 </script>
+
+<style>
+.mx-2 {margin-top:0px}
+</style>

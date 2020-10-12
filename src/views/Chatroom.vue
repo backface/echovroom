@@ -60,16 +60,15 @@
           v-if="janusReady"
           v-show="chat_open"
           :open="chat_open"
-          :myJanus="janus"
           :roombyName="roombyName"
           :host="server"
           :nick="login_name"
+          :emitCallEvents="true"
           :login_password="password"
           @hasNick="login_name = $event;"
           @hasPassword="password = $event;"
           @hasRoomInfo="foyer_info = $event"
           @hasJanus="janus = $event"
-          :emitCallEvents="true"
           @call="handleCall"
         />
       </transition>
@@ -91,12 +90,12 @@ import Streaming from '@/components/Streaming.vue'
 import LoginDialog from '@/components/dialogs/LoginDialog'
 import PreLoginDialog from '@/components/dialogs/PreLoginDialog'
 import Toast from '@/components/dialogs/Toast'
-import { janusMixin } from "@/mixins/janusMixin";
+//import { janusMixin } from "@/mixins/janusMixin";
 
 export default {
   name: 'App',
 
-  mixins: [janusMixin],
+  //mixins: [janusMixin],
 
   components: {
     Stage,
@@ -121,7 +120,11 @@ export default {
     hasStreaming:  {
       type: Boolean,
       default: true,
-    }
+    },
+    roombyName: {
+      type: String,
+      default: ""
+    },
   },
 
   mounted() {
@@ -150,9 +153,9 @@ export default {
 
   data() {
     return {
-      chat_open: true,
+      chat_open: false,
       video_chat_open: true,
-      video_chat_muted: true,
+      video_chat_muted: false,
       janusReady: false,
       login_name: null,
       password: null,
@@ -166,13 +169,28 @@ export default {
       info_link:"",
       schedule_link:"",
       stage:"",
+      server: [
+        //"wss://" +  window.location.hostname + "/ws/janus",
+        // window.location.protocol + "//" +  window.location.hostname + "/janus",
+         "wss://" +  window.location.hostname + ":8989/janus",
+          window.location.protocol + "//" +  window.location.hostname + ":8089/janus",
+       ],
+      iceServer: [
+        {"urls": "stun:" + window.location.hostname },
+        {"urls": "turn:" + window.location.hostname, "username": "turn", "credential": "hinterseer"}
+      ],
     }
   },
 
   methods: {
 
     loadRoomConfig() {
-      let self = this;
+      if (window.location.protocol === "http:")
+      this.server = [
+         "wss://" +  window.location.hostname + ":8989/janus",
+          window.location.protocol + "//" +  window.location.hostname + ":8088/janus",
+       ]
+
       console.log("loading room config");
       fetch('vroom/' + this.roombyName + '.json')
         .then(r => r.json())
@@ -193,11 +211,9 @@ export default {
             this.hasStreaming = false;
             this.stage = json.stage;
           }
-
-          self.loadConfig()
         }).catch( () => {
           console.log("no valid room config found");
-          self.loadConfig()
+
         })
     },
 
@@ -228,6 +244,7 @@ export default {
           self.video_chat_open = r.login_videochat;
           self.video_chat_muted = r.login_muted;
           self.chat_open= true;
+          self.janusReady = true;
         }
       })
 

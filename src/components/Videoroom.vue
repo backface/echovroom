@@ -35,6 +35,10 @@
           <volume-x-icon size="1x" class="icons linked warn_is_on"></volume-x-icon>
         </a>
 
+        <a @click="selectDevice" title="select device">
+          <settings-icon size="1x" class="icons linked"></settings-icon>
+        </a>
+
         <a v-if="betaOptions && allowFacetime && !facetime && is_streaming" title="facetime is off" @click="toggleFacetime">
           <eye-off-icon size="1x" class="icons linked"></eye-off-icon>
         </a>
@@ -265,6 +269,7 @@
                     </span>
                     <a @click="feed.showOptions=!feed.showOptions" title="show settings">
                       <settings-icon v-if="allowSettings" size="1x" class="icons linked"></settings-icon>
+
                     </a>
                     <a @click="makeVideoFullscreen" title="fullscreen">
                       <maximize-2-icon size="1x" class="icons linked"></maximize-2-icon>
@@ -296,6 +301,7 @@
     <login-dialog ref="login"></login-dialog>
     <alert-dialog ref="alert"></alert-dialog>
     <rtp-dialog ref="rtp_dialog"></rtp-dialog>
+    <device-dialog ref="device_dialog"></device-dialog>
 
     <video ref="videosrc" style="display:none"></video>
     <canvas ref="canvas" v-show="facetime && is_tracking" class="facetrackdebug"></canvas>
@@ -325,6 +331,7 @@ import { Volume2Icon, VolumeXIcon, ArrowRightIcon } from 'vue-feather-icons'
 import LoginDialog from '@/components/dialogs/LoginDialog'
 import AlertDialog from '@/components/dialogs/AlertDialog'
 import RtpDialog from '@/components/dialogs/RtpDialog'
+import DeviceDialog from '@/components/dialogs/DeviceDialog'
 import Toast from '@/components/dialogs/Toast'
 import { VueHammer } from 'vue2-hammer'
 import { forceSimulation }  from 'd3-force';
@@ -348,7 +355,7 @@ export default {
     MinusIcon, PlusIcon, SettingsIcon, ArrowRightIcon,
     Maximize2Icon, CompassIcon, DeleteIcon, //Minimize2Icon,
     MonitorIcon, AirplayIcon, EyeOffIcon, EyeIcon, PhoneCallIcon,
-    LoginDialog, Toast, AlertDialog, RtpDialog,
+    LoginDialog, Toast, AlertDialog, RtpDialog, DeviceDialog,
     Volume2Icon, VolumeXIcon, CircleIcon, StopCircleIcon
   },
 
@@ -1343,7 +1350,7 @@ export default {
           Janus.debug("Got SDP!");
           Janus.debug(jsep);"screen"
           self.pluginHandle.send({"message": body, "jsep": jsep});
-          this.resetForces()
+          self.resetForces()
         },
         error: function(error) {
           Janus.error("WebRTC error:", error);
@@ -1477,7 +1484,48 @@ export default {
     makeVideoFullscreen(e) {
       let v = e.target.parentElement.parentElement.parentElement.querySelector('video')
       screenfull.request(v)
-    }
+    },
+
+    selectDevice() {
+      Janus.listDevices(this.initDevices);
+    },
+
+    initDevices(devices) {
+      var self = this;
+      var body = { "audio": true, "video": true };
+      var options = { bitrates: self.bitrates, bitrate: self.bitrate}
+      this.$refs.device_dialog.open(devices, options).then(
+        (r) => {
+          if (r) {
+            console.log("selected devices: ", r);
+            self.pluginHandle.createOffer({
+              media: {
+                video: { deviceId: { exact: r.video_device } },
+                audio: { deviceId: { exact: r.audio_device } },
+                replaceVideo: true,
+                replaceAudio: true,
+                data: true
+              },
+              simulcast: self.doSimulcast,
+              success: function(jsep) {
+                Janus.debug("Got SDP!");
+                self.pluginHandle.send({"message": body, "jsep": jsep});
+                //self.resetForces()
+              },
+              error: function(error) {
+                Janus.error("WebRTC error:", error);
+                self.alert.open("ERROR" + error);
+              }
+            });
+
+            if (r.bitrate != self.bitrate) {
+              self.bitrate = r.bitrate;
+              self.updateBitrateCap()
+            }
+          }
+        }
+      )
+    },
   }
 }
 
