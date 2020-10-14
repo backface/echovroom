@@ -153,7 +153,7 @@ export default {
 
   data() {
     return {
-      chat_open: false,
+      chat_open: true,
       video_chat_open: true,
       video_chat_muted: false,
       janusReady: false,
@@ -185,11 +185,13 @@ export default {
   methods: {
 
     loadRoomConfig() {
-      if (window.location.protocol === "http:")
-      this.server = [
-         "wss://" +  window.location.hostname + ":8989/janus",
-          window.location.protocol + "//" +  window.location.hostname + ":8088/janus",
-       ]
+      if (window.location.protocol == "http:") {
+        this.server = [
+            window.location.protocol + "//" +  window.location.hostname + ":8088/janus",
+         ]
+
+        console.log(this.server);
+      }
 
       console.log("loading room config");
       fetch('vroom/' + this.roombyName + '.json')
@@ -211,9 +213,10 @@ export default {
             this.hasStreaming = false;
             this.stage = json.stage;
           }
+          this.janusReady = true
         }).catch( () => {
           console.log("no valid room config found");
-
+          this.janusReady = true
         })
     },
 

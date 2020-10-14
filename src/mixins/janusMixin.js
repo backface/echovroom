@@ -92,6 +92,7 @@ export const janusMixin = {
     console.log("screen size is ", window.screen.width, window.screen.height);
     console.log("device ratio is ",  window.devicePixelRatio);
     console.log("screen size with ratio is", window.screen.width * window.devicePixelRatio, window.screen.height * window.devicePixelRatio);
+
     this.toast = this.$refs.toast;
     this.alert = this.$refs.alert;
     if (this.roombyId > 0)
@@ -105,6 +106,13 @@ export const janusMixin = {
     if(this.host) {
       console.log("has host");
       this.server = this.host;
+    } else {
+      if (window.location.protocol === "http:") {
+          console.log(window.location.protocol);
+        this.server = [
+            window.location.protocol + "//" +  window.location.hostname + ":8088/janus",
+         ]
+      }
     }
   },
 

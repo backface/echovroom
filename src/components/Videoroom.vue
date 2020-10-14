@@ -464,7 +464,9 @@ export default {
       rtp_dialog:null,
       isRTPforwarding:false,
       rtp_forward: null,
-      is_recording: false
+      is_recording: false,
+      current_video_device: "",
+      current_audio_device: "",
     }
   },
 
@@ -1493,23 +1495,36 @@ export default {
     initDevices(devices) {
       var self = this;
       var body = { "audio": true, "video": true };
-      var options = { bitrates: self.bitrates, bitrate: self.bitrate}
+      var options = {
+        bitrates: self.bitrates,
+        bitrate: self.bitrate,
+        current_video_device:self.current_video_device,
+        current_audio_device:self.current_audio_device,
+        resolution: self.videoResolution,
+      }
       this.$refs.device_dialog.open(devices, options).then(
         (r) => {
           if (r) {
             console.log("selected devices: ", r);
+
             self.pluginHandle.createOffer({
               media: {
-                video: { deviceId: { exact: r.video_device } },
+                video: { deviceId: { exact: r.video_device }, width: r.resolution.width, height:r.resolution.height },
                 audio: { deviceId: { exact: r.audio_device } },
+                //replaceVideo: self.current_video_device != r.video_device ? true : false,
                 replaceVideo: true,
-                replaceAudio: true,
+                replaceAudio: self.current_audio_device != r.audio_device ? true : false,
                 data: true
               },
               simulcast: self.doSimulcast,
               success: function(jsep) {
                 Janus.debug("Got SDP!");
                 self.pluginHandle.send({"message": body, "jsep": jsep});
+                self.current_video_device = r.video_device;
+                self.current_audio_device = r.audio_device;
+                if (r.resolution.id != self.videoResolution) {
+                  self.videoResolution = r.resolution.id;
+                }
                 //self.resetForces()
               },
               error: function(error) {
@@ -1522,6 +1537,8 @@ export default {
               self.bitrate = r.bitrate;
               self.updateBitrateCap()
             }
+
+
           }
         }
       )
