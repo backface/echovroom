@@ -1,8 +1,6 @@
 <template>
   <div class="main">
 
-    <h1 v-if="title" class="title">{{ title}}</h1>
-    <h1 v-else class="title">#{{ roombyName }}</h1>
 
     <div class="room_details">
       <span v-if="subtitle" class="room_subtitle">{{ subtitle }}</span>

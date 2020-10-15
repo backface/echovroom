@@ -3,7 +3,13 @@
   <img src="../assets/testbild.jpg" v-show="!is_streaming">
 
   <div class="player">
-      <video ref="stream" playsinline autoplay v-show="is_streaming" poster="/img/testbild.jpg"></video>
+      <video ref="stream" playsinline autoplay muted v-show="is_streaming" poster="/img/testbild.jpg"></video>
+
+      <div class="muted">
+        <a v-if="muted && is_streaming" @click="muteMe(false)"  title="unmute me">
+          <volume-x-icon size="10x" class="icons linked" ></volume-x-icon>
+        </a>
+      </div>
 
       <div class="overlay meta">
         <a v-if="muted" @click="muteMe(false)"  title="unmute me">
@@ -82,23 +88,24 @@ export default {
   },
 
   mounted () {
-    console.log(this.$options._componentTag + " mounted");
+    var self = this;
+    console.log(self.pluginName, "-",this.$options._componentTag + " mounted");
     this.muted = this.is_muted === "true"
     if (this.myJanus == null) {
       fetch('vroom/streaming_config.json')
         .then(r => r.json())
         .then(json => {
           if (json.server) {
-            console.log("streaming server set from json");
+            console.log(self.pluginName, "-", "streaming server set from json");
             this.server = json.server;
           }
           if (json.iceServers)  {
-            console.log("streaming stun/turn set from json");
+            console.log(self.pluginName, "-", "streaming stun/turn set from json");
             this.iceServers = json.iceServers;
           }
           this.initJanus();
         }).catch( () => {
-          console.log("no valid streaming_config.json found");
+          console.log(self.pluginName, "-", "no valid streaming_config.json found");
           this.initJanus();
         })
     } else {
@@ -117,42 +124,37 @@ export default {
     attachPlugin() {
       let self = this;
 
-      console.log(self.opaqueId, 'attach plugin: ' + self.pluginName)
+      console.log(self.pluginName, "-",  'attach plugin: ' + self.pluginName)
 
       self.janus.attach({
-
         plugin: "janus.plugin." + self.pluginName,
         opaqueId: self.opaqueId,
 
         success: function(pluginHandle) {
           self.pluginHandle = pluginHandle;
-          Janus.log(self.opaqueId, "Plugin attached! (" + self.pluginHandle.getPlugin() + ", id=" + self.pluginHandle.getId() + ")");
+          console.log(self.pluginName, "-", "Plugin attached! (" + self.pluginHandle.getPlugin() + ", id=" + self.pluginHandle.getId() + ")");
           let body = { 'request': 'watch', id: '' + self.room }
-          console.log(self.opaqueId, "sending watch request for", self.room)
+          console.log(self.pluginName, "-",  "sending watch request for", self.room)
           pluginHandle.send({ 'message': body })
         },
 
         error: function(error) {
-          console.error(self.opaqueId, "  -- Error attaching plugin...", error);
+          console.log(self.pluginName, "-", "Error attaching plugin...", error);
         },
 
 
         webrtcState: function(on) {
-          Janus.log(self.opaqueId, "Janus says our WebRTC PeerConnection is " + (on ? "up" : "down") + " now");
+          console.log(self.pluginName, "-", "Janus says our WebRTC PeerConnection is " + (on ? "up" : "down") + " now");
           self.webRTCUp = true;
         },
 
         onmessage: function(msg, jsep) {
-          Janus.debug(" ::: Got a message :::");
-          Janus.debug(msg);
-          var event = msg[self.pluginName];
-					Janus.debug("Event: " + event);
-          console.log(self.opaqueId, msg, event);
+          console.log(self.pluginName, "-",   "Got Message: ", msg);
 
           var result = msg["result"];
 					if(result !== null && result !== undefined) {
             if(result["status"] !== undefined && result["status"] !== null) {
-              console.log(self.pluginName, "status:  " + result["status"]);
+              console.log(self.pluginName, "-",  "status:  " + result["status"]);
 						} else if(msg["streaming"] === "event") {
               var substream = msg["substream"];
               var temporal = msg["temporal"];
@@ -161,36 +163,35 @@ export default {
                   self.simulcastStarted = true;
                   self.substream = substream
                   self.temporal = temporal
-                  console.log("started simulcast", substream, temporal)
+                  console.log(self.pluginName, "-",  "started simulcast", substream, temporal)
                 } else {
                   self.substream = substream
                   self.temporal = temporal
-                  console.log("update simulcast", substream, temporal)
+                  console.log(self.pluginName, "-",   "update simulcast", substream, temporal)
                 }
               }
             }
           } else if(msg["error"] !== undefined && msg["error"] !== null) {
-            console.log(self.pluginName, msg["error"]);
+            console.log(self.pluginName, "-", msg["error"]);
             //self.alert.open(msg["error"]);
           }
 
           if(jsep !== undefined && jsep !== null) {
-            Janus.debug(self.opaqueId, "Handling SDP as well...");
+            console.log(self.pluginName, "-", "Handling SDP as well...");
             Janus.debug(jsep);
             if (jsep.type === 'offer') {
-              console.log("jsep type was an offer, lets make an answer")
+              console.log(self.pluginName, "-", "jsep type was an offer, lets make an answer")
               self.pluginHandle.createAnswer(
                 {
                   jsep,
                   media: { audioSend: false, videoSend: false },
                   success: function (jsep) {
-                    console.log("sending a message to request the stream starts")
+                    console.log(self.pluginName, "-", "sending a message to request the stream starts")
                     const body = { 'request': 'start' }
-
                     self.pluginHandle.send({ 'message': body, 'jsep': jsep })
                   },
                   error: function (error) {
-                    Janus.error('WebRTC error:', error)
+                    console.log(self.pluginName, "-", 'WebRTC error:', error)
                   }
                 }
               )
@@ -199,16 +200,20 @@ export default {
         },
 
         onremotestream: function(stream) {
-          console.log(self.opaqueId, "we have a remote stream");
-
+          console.log(self.pluginName, "-",  "we have a remote stream");
           Janus.attachMediaStream(self.$refs.stream, stream);
+          if(stream.getAudioTracks().length < 1) {
+            console.log(self.pluginName, "-",  "stream has no audio track");
+          } else {
+            self.muted = true;
+          }
           self.is_streaming = true;
 				},
 
         oncleanup: function() {
-          Janus.log(self.opaqueId, " ::: Got a cleanup notification :::");
-
+          console.log(self.pluginName, "-", " ::: Got a cleanup notification :::");
         }
+
       });
     },
 
@@ -235,7 +240,6 @@ export default {
 
   },
 
-
 }
 
 </script>
@@ -259,19 +263,22 @@ export default {
       position: relative; opacity: 0.9;
       left: 50%; top:-36px;transform:translate(-50%,0);
       width:auto;
-      /*bottom:5px; left: 5px;*/
-      /*background:white; color:#333;padding:0.3em;*/
       background:rgba(0,0,0, 0.7); color:white;padding:0.1rem 0.5rem;
   }
-
 
   .options {
       opacity: 0.7;  position: absolute;
       left: 100%; bottom:38px;  transform:translate(-10%,0);
-      /*bottom:5px; left: 5px;*/
-      /*background:white; color:#333;padding:0.3em;*/
-       background:rgba(0,0,0, 0.2); color:white;padding:0.15rem 0.5rem;
+      background:rgba(0,0,0, 0.2); color:white;padding:0.15rem 0.5rem;
   }
+
+  .muted {
+      opacity: 0.5;  position: absolute; width:auto; height:auto;
+      top:50%; left:50%; transform:translate(-50%,-50%);
+  }
+  .muted .linked { color:white}
+
+
   .player:hover .meta {display:block}
 
 
