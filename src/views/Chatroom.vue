@@ -153,7 +153,7 @@ export default {
 
   data() {
     return {
-      chat_open: true,
+      chat_open: false,
       video_chat_open: true,
       video_chat_muted: false,
       janusReady: false,
