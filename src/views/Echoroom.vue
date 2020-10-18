@@ -5,7 +5,7 @@
         <iframe src="https://kontakta.modular-t.org:8443/html/loadbalancer.html" style="border:none;" allowfullscreen="true" scrolling="no" width="640" height=" 360" frameborder="0" align="middle"></iframe>
       </div>
     </div>
-    <Echorooms :roombyId="room" />
+    <Echorooms :roombyName="roombyName" />
     <p style="font-size:90%">
       Componized version as seen on <a href="https://echoraeume.klingt.org/" style="color:black;text-decoration:underline">echoraeume</a><br>
     </p>
@@ -19,9 +19,9 @@ export default {
   name: 'Echoroom',
 
   props: {
-    room:  {
-      type: Number,
-      default: 777
+    roombyName: {
+      type: String,
+      default: "echoraueme"
     },
   },
 

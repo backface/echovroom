@@ -37,7 +37,7 @@ export default {
   props: {
     videoResolution:  {
       type: String,
-      default: "low-res"
+      default: "lowres"
     },
   },
 

@@ -143,6 +143,13 @@
                 :class="screenshare && is_streaming? '' : 'flip'" />
 
               <div class="overlay name">ME</div>
+
+              <div class="muted">
+                <a v-if="muted && is_streaming" @click="muteMe(false)"  title="unmute me">
+                  <mic-off-icon size="5x" class="icons linked" ></mic-off-icon>
+                </a>
+              </div>
+
               <div class="overlay meta">
                 <a v-if="muted" @click="muteMe(false)"  title="unmute me">
                   <mic-off-icon size="1x" class="icons linked" ></mic-off-icon>
@@ -175,6 +182,13 @@
               :class="screenshare && is_streaming? '' : 'flip'" />/>
 
               <div class="overlay name">ME</div>
+
+              <div class="muted">
+                <a v-if="muted && is_streaming" @click="muteMe(false)"  title="unmute me">
+                  <mic-off-icon size="5x" class="icons linked" ></mic-off-icon>
+                </a>
+              </div>
+
               <div class="overlay meta">
                 <a v-if="muted" @click="muteMe(false)"  title="unmute me">
                   <mic-off-icon size="1x" class="icons linked" ></mic-off-icon>
@@ -339,7 +353,7 @@ import { forceManyBody }  from 'd3-force';
 //import { forceCenter }  from 'd3-force';
 import { forceCollide }  from 'd3-force';
 import { forceRadial }  from 'd3-force';
-import "aframe"
+
 
 Vue.use(fullscreen)
 Vue.use(VueHammer)
@@ -1601,6 +1615,13 @@ export default {
     /*background:white; color:#333;padding:0.3em;*/
      background:rgba(0,0,0, 0.2); color:white;padding:0.15rem 0.5rem;
 }
+
+.videoroom .muted {
+      opacity: 0.3;  position: absolute; width:auto; height:auto;
+      top:50%; left:50%; transform:translate(-50%,-50%);
+      color:white;
+}
+.muted .linked { color:white}
 
 .videoroom .video {
   z-index:151;

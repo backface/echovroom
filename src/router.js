@@ -39,7 +39,7 @@ export default new Router({
       path: '/echoraeume',
       name: 'echoraeume',
       component: Echoroom,
-      props: { room: 777 } //2577359740
+      props: { roombyNamed: "echoraeume" } //2577359740
     },
     {
       path: '/demoroom',

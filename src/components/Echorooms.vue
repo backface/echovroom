@@ -42,7 +42,7 @@
 
       <Textroom
         v-if="janusReady"
-        :roombyId="room"
+        :roombyName="roombyName"
         @participantNumberChanged="foyer_count = $event"
         @hasNick="nick = $event;"
         @hasRoomInfo="foye_info = $event"
@@ -98,7 +98,11 @@ export default {
     },
     videoResolution:  {
       type: String,
-      default: "low-res"
+      default: "lowres"
+    },
+    roombyName: {
+      type: String,
+      default: "echoraueme"
     },
 
   },
@@ -124,11 +128,11 @@ export default {
   methods: {
     loadRoomConfig() {
       console.log("loading room config");
-      console.log('vroom/' + this.roombyId + '.json')
-      fetch('vroom/' + this.roombyId + '.json')
+      console.log('vroom/' + this.roombyName + '.json')
+      fetch('vroom/' + this.roombyName + '.json')
         .then(r => r.json())
         .then(json => {
-          console.log('loading vroom config: vroom/' + this.roombyId + '.json');
+          console.log('loading vroom config: vroom/' + this.roombyName + '.json');
           this.chat_open = json.autologin;
           this.video_chat_open = json.autologin;
           if (json.server) this.server = json.server;

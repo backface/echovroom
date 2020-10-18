@@ -184,7 +184,7 @@ export default {
     attachPlugin() {
       let self = this;
 
-      console.log(self.opaqueId, 'attach plugin: ' + self.pluginName)
+      console.log(self.opaqueId, ':', 'attach plugin: ' + self.pluginName)
 
       self.janus.attach({
 
@@ -203,27 +203,26 @@ export default {
         },
 
         error: function(error) {
-          console.error(self.opaqueId, "  -- Error attaching plugin...", error);
+          console.error(self.opaqueId, ':',  "  -- Error attaching plugin...", error);
         },
 
         consentDialog: function(on) {
-          Janus.debug(self.opaqueId, "Consent dialog should be " + (on ? "on" : "off") + " now");
+          console.log(self.opaqueId, ':',  "Consent dialog should be " + (on ? "on" : "off") + " now");
         },
 
 
         webrtcState: function(on) {
-          Janus.log(self.opaqueId, "Janus says our WebRTC PeerConnection is " + (on ? "up" : "down") + " now");
+          console.log(self.opaqueId, ':', "Janus says our WebRTC PeerConnection is " + (on ? "up" : "down") + " now");
           self.webRTCUp = true;
         },
 
         onmessage: function(msg, jsep) {
           //console.log(msg);
           var result = msg["result"];
-          console.log("got message", result);
+          console.log(self.opaqueId, ':', "got message", result);
           if(result !== null && result !== undefined) {
             if(result["list"] !== undefined && result["list"] !== null) {
-              console.log("Got a list of registered peers:");
-              console.log(result["list"]);
+              console.log(self.opaqueId, ':', "Got a list of registered peers:", result["list"]);
 
               if (!self.initial_participants) {
                 self.initial_participants = result["list"];
@@ -236,7 +235,7 @@ export default {
               var event = result["event"];
 
               if(event === 'registered') {
-                console.log("successully registered as ", result["username"]);
+                console.log(self.opaqueId, ':', "successully registered as ", result["username"]);
                 self.is_registered = true;
 
               } else if(event === 'calling') {
@@ -254,7 +253,7 @@ export default {
                     if (!d)
                       self.hangup()
                     else {
-                      console.log("creating answer");
+                      console.log(self.opaqueId, ':', "creating answer");
                       self.is_loading = true;
                       self.pluginHandle.createAnswer({
                         jsep: jsep,
@@ -267,7 +266,7 @@ export default {
                           self.pluginHandle.send({"message": body, "jsep": jsep});
                         },
                         error: function(error) {
-                          console.log("WebRTC error:", error);
+                          console.error(self.opaqueId, ':', "WebRTC error:", error);
                           self.alert.open("WebRTC error... " + JSON.stringify(error));
                         }
                       });
@@ -276,13 +275,13 @@ export default {
                 // Notify user
 
               } else if(event === 'accepted') {
-                console.log("Peer accepted ...", msg, jsep);
+                console.log(self.opaqueId, ':', "Peer accepted ...", msg, jsep);
                 var peer = result["username"];
 								if(peer === null || peer === undefined) {
                   self.toast.open("Call started!");
-                  console.log("Call started");
+                  console.log(self.opaqueId, ':', "Call started");
 								} else {
-									console.log(peer + " accepted the call!");
+									console.log(self.opaqueId, ':', peer + " accepted the call!");
                   self.toast.open(peer + " accepted the call!");
 									self.peer = peer;
 								}
@@ -290,11 +289,11 @@ export default {
                   self.is_loading = true;
 									self.pluginHandle.handleRemoteJsep({jsep: jsep});
                 } else {
-                  console.log("no jsep");
+                  console.log(self.opaqueId, ':', "no jsep");
                 }
 
               } else if(event === 'update') {
-                console.log("got update", jsep);
+                console.log(self.opaqueId, ':', "got update", jsep);
                 // An 'update' event may be used to provide renegotiation attempts
                 if(jsep) {
                   if(jsep.type === "answer") {
@@ -310,7 +309,7 @@ export default {
                         self.pluginHandle.send({"message": body, "jsep": jsep});
                       },
                       error: function(error) {
-                        console.log("WebRTC error:", error);
+                        console.error(self.opaqueId, ':',"WebRTC error:", error);
                         self.alert.open("WebRTC error... " + JSON.stringify(error));
                       }
                     });
@@ -319,13 +318,13 @@ export default {
 
               } else if(event === 'hangup') {
                 if (result["reason"] == "User busy" ) {
-                  console.log("Callee is busy!");
+                  console.log(self.opaqueId, ':', "Callee is busy!");
                   self.toast.open("Callee is busy");
                 } else if (result["username"] == self.display) {
-                  console.log("hanging up..")
+                  console.log(self.opaqueId, ':', "hanging up..")
                   self.toast.open("hanging up..");
                 } else {
-                  console.log("Call hung up by " + result["username"] + " (" + result["reason"] + ")!");
+                  console.log(self.opaqueId, ':', "Call hung up by " + result["username"] + " (" + result["reason"] + ")!");
                   self.toast.open("Call hung up by " + result["username"]);
                   self.pluginHandle.hangup()
                 }
@@ -335,21 +334,21 @@ export default {
                 self.$emit("hangup")
 
               } else if(event === "simulcast") {
-                console.log("switched to substream",result["substream"] );
+                console.log(self.opaqueId, ':', "switched to substream",result["substream"] );
                 self.substream = result["substream"];
 
               }
             }
           } else {
             var error = msg["error"];
-            console.log(error);
+            console.error(self.opaqueId, ':', error);
             self.alert.open(error)
           }
 
         },
 
         onlocalstream: function(stream) {
-          console.log(self.opaqueId, "we have a local stream");
+          console.log(self.opaqueId, ':', self.opaqueId, "we have a local stream");
           Janus.attachMediaStream(self.$refs.videolocal, stream);
           self.is_streaming = true;
           self.pluginHandle.send( {
@@ -359,7 +358,7 @@ export default {
 				},
 
         onremotestream: function(stream) {
-          console.log(self.opaqueId, "we have a remote stream", stream.getVideoTracks());
+          console.log(self.opaqueId, ':', "we have a remote stream", stream.getVideoTracks());
           self.$emit("takingCall")
           Janus.attachMediaStream(self.$refs.videoremote, stream);
           self.has_stream = true;
@@ -374,15 +373,15 @@ export default {
 				},
 
         ondataopen: function() {
-          Janus.log("The DataChannel is available!");
+          console.log(self.opaqueId, ':', "The DataChannel is available!");
         },
 
         ondata: function(data) {
-          Janus.debug("We got data from the DataChannel! " + data);
+          console.log(self.opaqueId, ':', "We got data from the DataChannel! " + data);
         },
 
         oncleanup: function() {
-          Janus.log(self.opaqueId, " ::: Got a cleanup notification :::");
+          console.log(self.opaqueId, ':', self.opaqueId, " ::: Got a cleanup notification :::");
         },
 
         destroyed: function() {
@@ -395,19 +394,19 @@ export default {
 
     call(callee) {
       let self = this
-      console.log("creating offer");
+      console.log(self.opaqueId, ':', "creating offer");
       self.pluginHandle.createOffer({
         media: { data: true, video: self.videoResolution },
         simulcast: self.doSimulcast,
         success: function(jsep) {
-          console.log("Got SDP!");
-          console.log(jsep);
+          console.log(self.opaqueId, ':', "Got SDP!");
+          console.log(self.opaqueId, ':', jsep);
           var body = { "request": "call", "username": callee };
-          console.log("calling ", callee);
+          console.log(self.opaqueId, ':', "calling ", callee);
           self.pluginHandle.send({"message": body, "jsep": jsep });
         },
         error: function(error) {
-          console.log();("WebRTC error...", error);
+          console.error(self.opaqueId, ':', "WebRTC error...", error);
           self.alert.open("WebRTC error... " + error);
         }
       });
@@ -419,13 +418,13 @@ export default {
       if (!self.is_open)
         self.is_open = true;
 
-      console.log(self.opaqueId, "login");
+      console.log(self.opaqueId, ':', "login");
 
       if (!self.nick) {
-        console.log(self.opaqueId, "no name provided");
+        console.log(self.opaqueId, ':', "no name provided");
         self.askForUsername();
       } else if ( (self.nick) in self.initial_participants) {
-        console.log(self.opaqueId, "username already taken");
+        console.log(self.opaqueId, ':', "username already taken");
         self.askForUsername(true);
       } else {
         self.display = self.nick
@@ -489,7 +488,6 @@ export default {
     },
 
     updateBitrateCap() {
-      console.log(this.bitrate);
       this.pluginHandle.send( {
         "message":
           { "request": "set", "bitrate": this.bitrate }
@@ -498,13 +496,14 @@ export default {
     },
 
     changeFeedQuality(substream) {
-      console.log(substream);
       this.pluginHandle.send({
         "message": {
           request: "set",
           substream: substream
         },
-        success: (r) => { console.log(r)}
+        success: (r) => {
+          console.log(self.opaqueId, ':', r)
+        }
       })
     },
 
