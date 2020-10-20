@@ -1,0 +1,11 @@
+{
+  "autologin": false,
+  "server": [
+    "wss://janus.modular-t.org:8989/janus",
+    "https://janus.modular-t.org:8089/janus"
+  ],
+  "iceServers": [
+    {"urls": "stun:turn.modular-t.org"},
+    {"urls": "turn:turn.modular-t.org", "username": "turn", "credential": "hinterseer"}
+  ]
+}
