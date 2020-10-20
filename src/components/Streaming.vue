@@ -85,6 +85,7 @@ export default {
         { text: "High", value: 2},
       ],
       rtspServer: "rtsp://" + window.location.hostname + ":8554",
+      tried_creating_mountpoint: 0,
     }
   },
 
@@ -177,38 +178,43 @@ export default {
 
             //self.alert.open(msg["error"]);
             if ( msg.error_code == 455) {
-              console.log(self.pluginName, "-", "create mountpoint");
-              var request = {
-                "request": "create",
-                "type" : "rtsp",
-                "id" : self.room + "",
-                "name" : self.room_name,
-                "audio" : true,
-                "video" : true,
-                "url": self.rtspServer + "/" + self.room_name,
-                "videopt": 96,
-                "videortpmap": "H264/90000",
-                "videofmtp": "profile-level-id=42e01f;packetization-mode=1",
-                "audioport": 10006,
-                "audiopt": 111,
-                "audiortpmap": "opus/48000/2",
-              }
-              console.log(request);
-              if (self.password) {
-                request.pin = self.password
-              }
+              console.log(self.pluginName, "-",   "mountpoint not found");
 
-              self.pluginHandle.send({
-                "message": request,
-                success: function(response) {
-                  console.log(response);
-                  console.log(self.pluginName, "-",  "sending watch request for", self.room)
-                  self.pluginHandle.send({ 'message': { 'request': 'watch', id: '' + self.room } })
-                },
-                error: function(reason) {
-                  console.log("ERR" + reason);
+              if (self.tried_creating_mountpoint < 1) {
+                console.log(self.pluginName, "-", "create mountpoint");
+                var request = {
+                  "request": "create",
+                  "type" : "rtsp",
+                  "id" : self.room + "",
+                  "name" : self.room_name,
+                  "audio" : true,
+                  "video" : true,
+                  "url": self.rtspServer + "/" + self.room_name,
+                  "videopt": 96,
+                  "videortpmap": "H264/90000",
+                  "videofmtp": "profile-level-id=42e01f;packetization-mode=1",
+                  "audioport": 10006,
+                  "audiopt": 111,
+                  "audiortpmap": "opus/48000/2",
                 }
-              });
+                console.log(request);
+                if (self.password) {
+                  request.pin = self.password
+                }
+
+                self.tried_creating_mountpoint++;
+                self.pluginHandle.send({
+                  "message": request,
+                  success: function(response) {
+                    console.log(response);
+                    console.log(self.pluginName, "-",  "sending watch request for", self.room)
+                    self.pluginHandle.send({ 'message': { 'request': 'watch', id: '' + self.room } })
+                  },
+                  error: function(reason) {
+                    console.log("ERR" + reason);
+                  }
+                });
+              }
             }
 
             else

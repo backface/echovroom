@@ -185,7 +185,12 @@ export default {
   methods: {
 
     loadRoomConfig() {
-
+      if (window.location.protocol === "http:") {
+          console.log(window.location.protocol);
+        this.server = [
+            window.location.protocol + "//" +  window.location.hostname + ":8088/janus",
+         ]
+      }
       console.log("loading room config");
       fetch('vroom/' + this.roombyName + '.json')
         .then(r => r.json())
