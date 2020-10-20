@@ -445,10 +445,12 @@ export const janusMixin = {
     hashCode(string) {
       if(string == "echoraeume")
         return 777;
-      if(string == "demoroom")
+      else if(string == "demoroom")
         return 1234
-      if(string == "STWST48X6")
+      else if(string == "STWST48X6")
         string = string.toLowerCase()
+      if(string == "echo")
+        return 777;
 
         var hash = 0, i = 0, len = string.length;
         while ( i < len ) {

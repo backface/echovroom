@@ -26,13 +26,8 @@
           </div>
         </router-link>
 
+<!--
         <div class="navbar-start shortcuts">
-
-          <!--
-            <div class="navbar-item" style="padding-right:0;color:#aaa">
-            NOW:
-          </div>
-          -->
           <router-link v-for="f in shortcuts" :key="f" :to="'/'+f" v-slot="{ href, route, isActive }">
             <div class="navbar-item" :active="isActive"  :class="{'is-active':isActive}">
               <a :href="href"  @click="menuOpen=false">#/
@@ -43,6 +38,8 @@
           </router-link>
 
         </div>
+
+        -->
 
         <div class="navbar-end">
           <div class="navbar-item">

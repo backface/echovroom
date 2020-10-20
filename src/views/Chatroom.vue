@@ -3,6 +3,7 @@
 
 
     <div class="room_details">
+      <span v-if="title" class="title">{{ title }}</span>
       <span v-if="subtitle" class="room_subtitle">{{ subtitle }}</span>
       <span v-if="info_link">&raquo; </span><a target="_blank" :href="info_link" v-if="info_link">read more ...</a>
       <span v-if="schedule_link">&raquo; </span><a target="_blank" :href="schedule_link" v-if="schedule_link">schedule</a>
@@ -115,7 +116,7 @@ export default {
       type: Boolean,
       default: false
     },
-    hasStreaming:  {
+    withStreaming:  {
       type: Boolean,
       default: true,
     },
@@ -162,7 +163,7 @@ export default {
       callee: "",
       beta:false,
       advanced:false,
-      title:"",
+      title:this.roombyName,
       subtitle:"",
       info_link:"",
       schedule_link:"",
@@ -177,19 +178,13 @@ export default {
         {"urls": "stun:" + window.location.hostname },
         {"urls": "turn:" + window.location.hostname, "username": "turn", "credential": "hinterseer"}
       ],
+      hasStreaming: false,
     }
   },
 
   methods: {
 
     loadRoomConfig() {
-      if (window.location.protocol == "http:") {
-        this.server = [
-            window.location.protocol + "//" +  window.location.hostname + ":8088/janus",
-         ]
-
-        console.log(this.server);
-      }
 
       console.log("loading room config");
       fetch('vroom/' + this.roombyName + '.json')
@@ -210,11 +205,15 @@ export default {
           if (json.stage) {
             this.hasStreaming = false;
             this.stage = json.stage;
+          } else {
+            this.hasStreaming = this.withStreaming;
           }
           this.janusReady = true
         }).catch( () => {
           console.log("no valid room config found");
-          this.janusReady = true
+          this.hasStreaming = this.withStreaming;
+          this.janusReady = true;
+
         })
     },
 
@@ -258,7 +257,7 @@ export default {
 <style scoped>
 .main {}
 .main { margin-bottom:100px }
-h1.title { padding-bottom:0; margin-bottom:0.2rem}
+.title { padding-bottom:0; margin-bottom:0.2rem; background:#333;color:#fff; padding:1px 10px 3px 10px}
 .room_details {margin-bottom:0.9rem; font-size:0.8em}
 .room_details a { color:#999}
 .room_details a:hover { color:black}

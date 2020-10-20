@@ -1,15 +1,38 @@
 <template>
   <div class="home">
 
-    <input ref="room_input"
-      class="in"
-      type="text"
-      v-model="room_name"
-      v-on:keyup.enter.exact="enterRoom"
-      placeholder="Enter or create a Room"
-    />
+
+    <div>
+      <input ref="room_input"
+        class="in"
+        type="text"
+        v-model="room_name"
+        v-on:keyup.enter.exact="enterRoom"
+        placeholder="Enter or create a Room"
+      />
+    </div>
+
+
+    <div class="shortcuts">
+      <h2 class="title">Or join:</h2>
+
+      <router-link v-for="f in shortcuts" :key="f.hash || f " :to="'/'+f" v-slot="{ href }">
+          <a :href="href"  @click="menuOpen=false">
+            {{ f.title || f }}
+          </a>
+      </router-link>
+
+    </div>
+
+    <br/>
+    <br/>
+    <br/>
+    <br/>
+
+
 
     <img class="logo" src="../assets/vroom.jpg">
+
   </div>
 
 </template>
@@ -21,7 +44,12 @@ export default {
 
   data() {
     return {
-      room_name: ""
+      room_name: "",
+      shortcuts: [
+        "echoraeume",
+         "grundltv"
+         //{ title: "Porgy & Bess", hash:"porgy"}, "infolab",
+      ]
     }
   },
 
@@ -43,17 +71,22 @@ export default {
 </script>
 
 <style scoped>
-.home {  }
+.home { text-align:center; z-index:20;  }
 .home input {
   border:0px; border-bottom: 1px solid black; background:none; font-size:1.5rem; text-align:center;
   padding: 5px;
 }
 .home input::placeholder { opacity: 0.2}
-.logo { z-index:2000;width:480px; height:480px; position: fixed; bottom:-180px; left: 80%; transform: translate(-50%,0); overflow:hidden}
+
+.shortcuts { width:400px; max-width: 100%; padding: 50px 0px; margin:auto;}
+.shortcuts a { margin:10px; color: #666}
+.shortcuts .title { opacity:0.2}
+
+.logo { z-index:0;width:480px; height:480px; position: fixed; bottom:-180px; left: 80%; transform: translate(-50%,0); overflow:hidden}
 
 
 @media (max-width:461px) {
-  .logo { z-index:20;width:256px; height:256px; position: fixed; bottom:-8      0px; left: 50%; transform: translate(-50%,0); overflow:hidden}
+  .logo { z-index:20;width:256px; height:256px; position: fixed; bottom:-80px; left: 50%; transform: translate(-50%,0); overflow:hidden}
 
 }
 </style>
