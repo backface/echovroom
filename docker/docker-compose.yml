@@ -1,0 +1,53 @@
+version: "3.5"
+
+services:
+
+  coturn:
+    image: instrumentisto/coturn
+    volumes:
+      - /opt/certs:/opt/certs:ro
+    network_mode: host        
+    command:
+        - -n
+        - --verbose
+        - --lt-cred-mech
+        - --fingerprint
+        - --no-multicast-peers --no-cli \
+        - --no-tlsv1
+        - --no-tlsv1_1
+        - --user=${TURN_USER}:${TURN_PASSWORD}
+        - --realm=${SERVERNAME}.${DOMAIN} 
+        - --cert=/opt/certs/fullchain.pem
+        - --pkey=/opt/certs/privkey.pem
+        - --external-ip=$$(detect-external-ip)
+
+  janus:
+    image: backface/janus
+    volumes:
+     - "/opt/certs:/opt/certs:ro"
+    #- "./conf/janus:/opt/janus/etc/janus"
+    network_mode: host
+        
+  rtmp:
+    image: backface/nginx-rtmp
+    ports:
+      - 1935:1935
+    volumes:
+      - /opt/certs:/opt/certs:ro
+      - ./conf/nginx-rtmp.conf:/etc/nginx/nginx.conf:ro
+    
+  rtsp:
+    image: aler9/rtsp-simple-server
+    volumes:
+      - ./conf/rtsp-simple-server.yml:/rtsp-simple-server.yml:ro
+    network_mode: host
+     
+  echovroom:
+    image: backface/echovroom
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+       - /opt/certs:/opt/certs:ro
+       - ./conf/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    restart: always
