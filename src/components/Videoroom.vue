@@ -73,7 +73,6 @@
             ></stop-circle-icon>
         </a>
 
-
         <a v-if="!vr" @click="toggleForce" title="toggle force-directed layout">
           <compass-icon size="1x" class="icons linked"  :style="{ color: use_force ? 'var(--color-alert)' : '' }"></compass-icon>
         </a>
@@ -157,15 +156,12 @@
                 <a v-if="!muted" @click="muteMe(true)" title="mute me">
                   <mic-icon size="1x" class="icons linked"></mic-icon>
                 </a>
-                <a v-if="allowSettings" @click="showBitrateOptions=!showBitrateOptions"  title="show settings">
+                <a @click="selectDevice"  title="show settings">
                   <settings-icon size="1x" class="icons linked"></settings-icon>
                 </a>
                 <a @click="makeVideoFullscreen" title="fullscreen">
                   <maximize-2-icon size="1x" class="icons linked" ></maximize-2-icon>
                 </a>
-              </div>
-              <div class="overlay options" v-show="showBitrateOptions">
-                <v-select dark label="Cap Bitrate" dense v-model="bitrate" :items="bitrates" @change="updateBitrateCap"></v-select>
               </div>
             </div>
           </template>
@@ -196,16 +192,14 @@
                 <a v-if="!muted" @click="muteMe(true)" title="mute me">
                   <mic-icon size="1x" class="icons linked"></mic-icon>
                 </a>
-                <a v-if="allowSettings" @click="showBitrateOptions=!showBitrateOptions"  title="show settings">
+                <a @click="selectDevice"  title="show settings">
                   <settings-icon size="1x" class="icons linked"></settings-icon>
                 </a>
                 <a @click="makeVideoFullscreen" title="fullscreen">
                   <maximize-2-icon size="1x" class="icons linked" ></maximize-2-icon>
                 </a>
               </div>
-              <div class="overlay options" v-show="showBitrateOptions">
-                <v-select dark label="Cap Bitrate" dense v-model="bitrate" :items="bitrates" @change="updateBitrateCap"></v-select>
-              </div>
+
             </div>
           </template>
 
@@ -353,7 +347,7 @@ import { forceManyBody }  from 'd3-force';
 //import { forceCenter }  from 'd3-force';
 import { forceCollide }  from 'd3-force';
 import { forceRadial }  from 'd3-force';
-
+import "aframe"
 
 Vue.use(fullscreen)
 Vue.use(VueHammer)
