@@ -14,7 +14,16 @@ const vuetify = new Vuetify({
         accent: '#8c9eff',
         error: '#b71c1c',
       },
+      dark: {
+        primary: '#8A8808',
+        secondary: '#666666',
+        accent: '#8c9eff',
+        error: '#b71c1c',
+        background: '#333'
+      }
     },
+    dark: false,
+    // use with: this.$vuetify.theme.dark
   },
 })
 

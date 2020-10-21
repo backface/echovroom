@@ -89,10 +89,6 @@ export const janusMixin = {
   },
 
   mounted() {
-    console.log("screen size is ", window.screen.width, window.screen.height);
-    console.log("device ratio is ",  window.devicePixelRatio);
-    console.log("screen size with ratio is", window.screen.width * window.devicePixelRatio, window.screen.height * window.devicePixelRatio);
-
     this.toast = this.$refs.toast;
     this.alert = this.$refs.alert;
     if (this.roombyId > 0)
@@ -104,25 +100,24 @@ export const janusMixin = {
     this.is_open = this.open
 
     if(this.host) {
-      console.log("has host");
+      console.log(this.opaqueId, ":", "has host");
       this.server = this.host;
     } else {
-      console.log(this.server);
+      console.log(this.opaqueId, ":", JSON.stringify(this.server));
     }
   },
 
   watch: {
     // whenever question changes, this function will run
     open: function (value) {
-      console.log(value);
       if (value === true) {
-        console.log("got an open request");
+        console.log(this.opaqueId, ":", "got an open request");
         this.login();
       }
     },
     login: function (value) {
       if (value === true)
-        console.log("got a login request");
+        console.log(this.opaqueId, ":", "got a login request");
         this.login();
     }
   },
@@ -136,8 +131,8 @@ export const janusMixin = {
     },
 
     loadConfig() {
-      console.log(this.isMobile ? "is mobile" : "is desktop");
-      console.log("loading chat config");
+      console.log(this.opaqueId, ":", this.isMobile ? "is mobile" : "is desktop");
+      console.log(this.opaqueId, ":", "loading chat config");
       fetch('vroom/config.json')
         .then(r => {
             return r.json()
@@ -145,11 +140,11 @@ export const janusMixin = {
         .then(json => {
           // load servers from config file
           if (json.server) {
-            console.log("janus server set from json");
+            console.log(this.opaqueId, ":", "janus server set from json");
             this.server = json.server;
           }
           if (json.iceServers)  {
-            console.log("stun/turn set from json");
+            console.log(this.opaqueId, ":", "stun/turn set from json");
             this.iceServers = json.iceServers;
           }
           if (this.room === 0) {
@@ -160,9 +155,11 @@ export const janusMixin = {
               this.room = json.room
             }
           }
+          console.log(this.opaqueId, ":", "using server:" + this.server);
           this.initJanus()
         }).catch( () => {
-          console.log("no valid config.json found");
+          console.log(this.opaqueId, ":", "no valid config.json found");
+          console.log(this.opaqueId, ":", "using server:" + this.server);
           this.initJanus()
         })
     },
@@ -170,7 +167,7 @@ export const janusMixin = {
     initJanus () {
       let self = this;
       this.loading = true
-      console.log(this.opaqueId, 'calling Janus init')
+      console.log(this.opaqueId, ":", ":", 'calling Janus init')
 
       Janus.init({
         debug: 'all',
@@ -180,20 +177,20 @@ export const janusMixin = {
               server: self.server,
               iceServers: self.iceServers,
               success: () => {
-                console.log("janus initialized");
+                console.log(self.opaqueId, ":", "janus initialized");
               //  Janus.listDevices( (d) => {
-              //    console.log("available devices: ");
-              //    d.forEach( d => console.log(d))
+              //    console.log(self.opaqueId, ":", "available devices: ");
+              //    d.forEach( d => console.log(self.opaqueId, ":", d))
               //  })
                 this.$emit("hasJanus", self.janus)
                 this.attachPlugin()
               },
               error: (cause) => {
-                console.log("janus got an error");
-                console.log(cause)
+                console.log(self.opaqueId, ":", "janus got an error");
+                console.log(self.opaqueId, ":", cause)
               },
               destroyed: () => {
-                console.log('janus destroyed')
+                console.log(self.opaqueId, ":", 'janus destroyed')
               }
             })
         }
@@ -206,24 +203,26 @@ export const janusMixin = {
     },
 
     askForUsername() {
-      console.log(this.opaqueId, "Ask for username");
       let self=this;
+      console.log(self.opaqueId, ":", "Ask for username");
       //if(/[^a-zA-Z0-9]/.test(username)) {
       self.$refs.login.open("Your name?", {
         participants: self.initial_participants,
         with_password: self.needs_pin
       } ).then((r) => {
+        console.log(self.opaqueId, ":", "I am:", r.nick);
         self.display = r.nick;
-        if (r.pin)
+        if (r.pin) {
           self.password = r.pin;
-        self.registerUser()
+        }
+        self.registerUser();
       })
 
     },
 
     registerUser() {
       let self = this;
-      console.log(self.opaqueId, "register user");
+      console.log(self.opaqueId, ":", "register user");
       var transaction = Janus.randomString(12);
       var request = {
         //id: Janus.randomString(12),
@@ -245,7 +244,7 @@ export const janusMixin = {
 
     leaveRoom() {
       let self = this;
-      console.log(self.opaqueId, "leave room");
+      console.log(self.opaqueId, ":", "leave room");
       var transaction = Janus.randomString(12);
       var request = {
         request: "leave",
@@ -260,7 +259,7 @@ export const janusMixin = {
         self.pluginHandle.send({
           "message": request,
           success: function() {
-            console.log("left room successull");
+            console.log(self.opaqueId, ":", "left room successull");
           }
         });
       }
@@ -275,8 +274,8 @@ export const janusMixin = {
       if (!self.is_open)
         self.is_open = true;
 
-      console.log(self.opaqueId, "login");
-      console.log(self.opaqueId, "ask for existing participants");
+      console.log(self.opaqueId, ":", "login");
+      console.log(self.opaqueId, ":", "ask for existing participants");
       var transaction = Janus.randomString(12);
       var request = {
         transaction: transaction,
@@ -288,15 +287,16 @@ export const janusMixin = {
       self.pluginHandle.send({
         "message": request,
         success: function(response) {
+          console.log(self.opaqueId, ":", response);
           self.initial_participants = response.participants;
           self.count = response.participants.length
           self.$emit('participantNumberChanged', self.count)
 
           if (!self.nick) {
-            console.log(self.opaqueId, "no name provided");
+            console.log(self.opaqueId, ":", "no name provided");
             self.askForUsername();
           } else if (self.initial_participants.find(d => d.display == self.nick)) {
-            console.log(self.opaqueId, "username already taken");
+            console.log(self.opaqueId, ":", "username already taken");
             self.askForUsername(true);
           } else {
             self.display = self.nick
@@ -304,14 +304,14 @@ export const janusMixin = {
           }
         },
         error: function(reason) {
-          console.log("ERR" + reason);
+          console.log(self.opaqueId, ":", "ERR " + reason);
         }
       });
     },
 
     getParticipantList() {
       let self = this;
-      console.log(self.opaqueId, "ask for participants", self.room);
+      console.log(self.opaqueId, ":", "ask for participants", self.room);
       var transaction = Janus.randomString(12);
       var request = {
         transaction: transaction,
@@ -326,7 +326,7 @@ export const janusMixin = {
           self.count = self.initial_participants.length
         },
         error: function(reason) {
-          console.log("ERR" + reason);
+          console.log(self.opaqueId, ":", "ERR" + reason);
         }
       });
     },
@@ -334,7 +334,7 @@ export const janusMixin = {
     getRoomsInfo() {
       return new Promise((resolve, reject) => {
         let self = this;
-        console.log(self.opaqueId, "ask for rooms info", self.room );
+        console.log(self.opaqueId, ":", "ask for rooms info", self.room );
 
         var transaction = Janus.randomString(12);
         var request = {
@@ -347,7 +347,7 @@ export const janusMixin = {
         self.pluginHandle.send({
           "message": request,
           success: function(response) {
-            console.log(self.opaqueId, response);
+            console.log(self.opaqueId, ":", response);
             self.rooms = response.list;
             if (response.list.find(d => d.room == self.room)) {
               self.room_name = response.list.find(d => d.room == self.room).description
@@ -361,7 +361,7 @@ export const janusMixin = {
             }
           },
           error: function(reason) {
-            console.log("ERR" + reason);
+            console.log(self.opaqueId, ":", "ERR" + reason);
             reject(reason);
           }
         })
@@ -371,7 +371,7 @@ export const janusMixin = {
     initRoom() {
       let self = this
       self.getRoomsInfo().then(()=> {
-        console.log(self.opaqueId, "init room");
+        console.log(self.opaqueId, ":", "init room");
         self.getParticipantList();
         setTimeout(self.updateParticipantsInfo, 10000)
         if (self.is_open)
@@ -389,7 +389,7 @@ export const janusMixin = {
     createRoom() {
       return new Promise((resolve, reject) => {
         let self = this;
-        console.log(self.opaqueId, "create room ", self.room, self.room_name);
+        console.log(self.opaqueId, ":", "create room ", self.room, self.room_name);
         var transaction = Janus.randomString(12);
         var request = self.room_options
         request.transaction = transaction
@@ -404,11 +404,11 @@ export const janusMixin = {
         self.pluginHandle.send({
           "message": request,
           success: function(response) {
-            console.log(response);
+            console.log(self.opaqueId, ":", response);
             resolve(true);
           },
           error: function(reason) {
-            console.log("ERR" + reason);
+            console.log(self.opaqueId, ":", "ERR" + reason);
             reject(reason);
           }
         });
@@ -428,10 +428,10 @@ export const janusMixin = {
       self.pluginHandle.send({
         "message": request,
         success: function(response) {
-          console.log(response);
+          console.log(self.opaqueId, ":", response);
         },
         error: function(reason) {
-          console.log("ERR" + reason);
+          console.log(self.opaqueId, ":", "ERR" + reason);
         }
       });
       this.$emit('kick', id)

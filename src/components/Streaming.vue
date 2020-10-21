@@ -91,24 +91,24 @@ export default {
 
   mounted () {
     var self = this;
-    console.log(self.pluginName, "-",this.$options._componentTag + " mounted");
+    console.log(self.opaqueId, ":", this.$options._componentTag + " mounted");
     this.muted = this.is_muted === "true"
     if (this.myJanus == null) {
       fetch('vroom/streaming_config.json')
         .then(r => r.json())
         .then(json => {
           if (json.server) {
-            console.log(self.pluginName, "-", "streaming server set from json");
+            console.log(self.opaqueId, ":", "streaming server set from json");
             this.server = json.server;
           }
           if (json.iceServers)  {
-            console.log(self.pluginName, "-", "streaming stun/turn set from json");
+            console.log(self.opaqueId, ":", "streaming stun/turn set from json");
             this.iceServers = json.iceServers;
           }
           if (json.rtspServer) this.rtspServer = json.rtspServer;
           this.initJanus();
         }).catch( () => {
-          console.log(self.pluginName, "-", "no valid streaming_config.json found");
+          console.log(self.opaqueId, ":", "no valid streaming_config.json found");
           this.initJanus();
         })
     } else {
@@ -127,7 +127,7 @@ export default {
     attachPlugin() {
       let self = this;
 
-      console.log(self.pluginName, "-",  'attach plugin: ' + self.pluginName)
+      console.log(self.opaqueId, ":",  'attach plugin: ' + self.pluginName)
 
       self.janus.attach({
         plugin: "janus.plugin." + self.pluginName,
@@ -135,29 +135,29 @@ export default {
 
         success: function(pluginHandle) {
           self.pluginHandle = pluginHandle;
-          console.log(self.pluginName, "-", "Plugin attached! (" + self.pluginHandle.getPlugin() + ", id=" + self.pluginHandle.getId() + ")");
+          console.log(self.opaqueId, ":", "Plugin attached! (" + self.pluginHandle.getPlugin() + ", id=" + self.pluginHandle.getId() + ")");
           let body = { 'request': 'watch', id: '' + self.room }
-          console.log(self.pluginName, "-",  "sending watch request for", self.room)
+          console.log(self.opaqueId, ":",  "sending watch request for", self.room)
           pluginHandle.send({ 'message': body })
         },
 
         error: function(error) {
-          console.log(self.pluginName, "-", "Error attaching plugin...", error);
+          console.log(self.opaqueId, ":", "Error attaching plugin...", error);
         },
 
 
         webrtcState: function(on) {
-          console.log(self.pluginName, "-", "Janus says our WebRTC PeerConnection is " + (on ? "up" : "down") + " now");
+          console.log(self.opaqueId, ":", "Janus says our WebRTC PeerConnection is " + (on ? "up" : "down") + " now");
           self.webRTCUp = true;
         },
 
         onmessage: function(msg, jsep) {
-          console.log(self.pluginName, "-",   "Got Message: ", msg);
+          console.log(self.opaqueId, ":",   "Got Message: ", msg);
 
           var result = msg["result"];
 					if(result !== null && result !== undefined) {
             if(result["status"] !== undefined && result["status"] !== null) {
-              console.log(self.pluginName, "-",  "status:  " + result["status"]);
+              console.log(self.opaqueId, ":",  "status:  " + result["status"]);
 						} else if(msg["streaming"] === "event") {
               var substream = msg["substream"];
               var temporal = msg["temporal"];
@@ -166,11 +166,11 @@ export default {
                   self.simulcastStarted = true;
                   self.substream = substream
                   self.temporal = temporal
-                  console.log(self.pluginName, "-",  "started simulcast", substream, temporal)
+                  console.log(self.opaqueId, ":",  "started simulcast", substream, temporal)
                 } else {
                   self.substream = substream
                   self.temporal = temporal
-                  console.log(self.pluginName, "-",   "update simulcast", substream, temporal)
+                  console.log(self.opaqueId, ":",   "update simulcast", substream, temporal)
                 }
               }
             }
@@ -178,10 +178,10 @@ export default {
 
             //self.alert.open(msg["error"]);
             if ( msg.error_code == 455) {
-              console.log(self.pluginName, "-",   "mountpoint not found");
+              console.log(self.opaqueId, ":",   "mountpoint not found");
 
               if (self.tried_creating_mountpoint < 1) {
-                console.log(self.pluginName, "-", "create mountpoint");
+                console.log(self.opaqueId, ":", "create mountpoint");
                 var request = {
                   "request": "create",
                   "type" : "rtsp",
@@ -207,7 +207,7 @@ export default {
                   "message": request,
                   success: function(response) {
                     console.log(response);
-                    console.log(self.pluginName, "-",  "sending watch request for", self.room)
+                    console.log(self.opaqueId, ":",  "sending watch request for", self.room)
                     self.pluginHandle.send({ 'message': { 'request': 'watch', id: '' + self.room } })
                   },
                   error: function(reason) {
@@ -218,25 +218,25 @@ export default {
             }
 
             else
-              console.log(self.pluginName, "-", msg["error"]);
+              console.log(self.opaqueId, ":", msg["error"]);
           }
 
           if(jsep !== undefined && jsep !== null) {
-            console.log(self.pluginName, "-", "Handling SDP as well...");
+            console.log(self.opaqueId, ":", "Handling SDP as well...");
             Janus.debug(jsep);
             if (jsep.type === 'offer') {
-              console.log(self.pluginName, "-", "jsep type was an offer, lets make an answer")
+              console.log(self.opaqueId, ":", "jsep type was an offer, lets make an answer")
               self.pluginHandle.createAnswer(
                 {
                   jsep,
                   media: { audioSend: false, videoSend: false },
                   success: function (jsep) {
-                    console.log(self.pluginName, "-", "sending a message to request the stream starts")
+                    console.log(self.opaqueId, ":", "sending a message to request the stream starts")
                     const body = { 'request': 'start' }
                     self.pluginHandle.send({ 'message': body, 'jsep': jsep })
                   },
                   error: function (error) {
-                    console.log(self.pluginName, "-", 'WebRTC error:', error)
+                    console.log(self.opaqueId, ":", 'WebRTC error:', error)
                   }
                 }
               )
@@ -245,10 +245,10 @@ export default {
         },
 
         onremotestream: function(stream) {
-          console.log(self.pluginName, "-",  "we have a remote stream");
+          console.log(self.opaqueId, ":",  "we have a remote stream");
           Janus.attachMediaStream(self.$refs.stream, stream);
           if(stream.getAudioTracks().length < 1) {
-            console.log(self.pluginName, "-",  "stream has no audio track");
+            console.log(self.opaqueId, ":",  "stream has no audio track");
           } else {
             self.muted = true;
           }
@@ -256,7 +256,7 @@ export default {
 				},
 
         oncleanup: function() {
-          console.log(self.pluginName, "-", " ::: Got a cleanup notification :::");
+          console.log(self.opaqueId, ":", " ::: Got a cleanup notification :::");
         }
 
       });

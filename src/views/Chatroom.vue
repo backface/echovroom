@@ -127,6 +127,12 @@ export default {
   },
 
   mounted() {
+
+    console.log("screen size is ", window.screen.width, window.screen.height);
+    console.log("device ratio is ",  window.devicePixelRatio);
+    console.log("screen size with ratio is", window.screen.width * window.devicePixelRatio, window.screen.height * window.devicePixelRatio);
+
+
     if (typeof this.$route.query.login !=  undefined) {
       this.login_name = this.$route.query.login;
     }
@@ -186,12 +192,11 @@ export default {
 
     loadRoomConfig() {
       if (window.location.protocol === "http:") {
-          console.log(window.location.protocol);
+        console.log("protocol ist http - assume local dev",);
         this.server = [
             window.location.protocol + "//" +  window.location.hostname + ":8088/janus",
          ]
       }
-      console.log("loading room config");
       fetch('vroom/' + this.roombyName + '.json')
         .then(r => r.json())
         .then(json => {
@@ -236,7 +241,6 @@ export default {
     },
 
     handleCall(callee) {
-      console.log(callee);
       this.callee = callee + "@" + this.roombyName;
       setTimeout( () => {this.callee = ""}, 700)
     },

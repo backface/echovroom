@@ -152,9 +152,30 @@ export default {
   --color-alert: red;
   --color-bg-footer: #f9f9f9;
   --color-bg-nav: #ffffff;
-  --color-a: #333;
-  --color-a-hover:  #000;
+  --color-a: #555;
+  --color-a-hover:#000;
 }
+
+
+/*
+.dark
+  :root {
+    --color-bg: #111;
+    --color-bg-trans: rgba(0,0,0, 0.7);
+    --color-fg: #eee;
+    --color-alert: red;
+    --color-bg-footer: #ddd;
+    --color-bg-nav: #000;
+    --color-a: #ddd;
+    --color-a-hover:#fff;
+  }
+  img {filter:invert(0.93)}
+  .navbar .navbar-brand a:hover {
+    color:var(--color-bg);
+    background:var(--color-fg);
+  }
+}
+*/
 
 #app {
   font-family: "Asap Condensed", Arial, Helvetica, sans-serif;
@@ -177,11 +198,16 @@ export default {
   color:var(--color-a); text-decoration: none; text-transform: uppercase;
   background:var(--color-bg);
 }
-.navbar .navbar-item a:hover,
-.navbar .navbar-brand a:hover {
+.navbar .navbar-brand a:hover,
+.navbar .navbar-item a:hover {
   color:var(--color-a-hover);
   background:var(--color-bg);
 }
+
+a {color:var(--color-a)};
+a:hover {color:var(--color-a-hover)};
+
+
 .navbar .navbar-item.is-active a { font-weight:500; text-decoration: none; color:#333}
 .navbar { margin-bottom:0px; background:var(--color-bg);}
 .navbar-menu {

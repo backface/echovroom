@@ -12,7 +12,6 @@
       />
     </div>
 
-
     <div class="shortcuts">
       <p>or join:</p>
 
@@ -29,8 +28,6 @@
     <br/>
     <br/>
 
-
-
     <img class="logo" src="../assets/vroom.jpg">
 
   </div>
@@ -46,8 +43,8 @@ export default {
     return {
       room_name: "",
       shortcuts: [
-        "echoraeume",
-         "grundltv"
+        "echoraeume", "echo",
+         "grundltv", "stwst48x6"
          //{ title: "Porgy & Bess", hash:"porgy"}, "infolab",
       ]
     }
@@ -73,13 +70,14 @@ export default {
 <style scoped>
 .home { text-align:center; z-index:20;  }
 .home input {
-  border:0px; border-bottom: 1px solid black; background:none; font-size:1.5rem; text-align:center;
+  border:0px; border-bottom: 1px solid var(--color-fg); background:none; font-size:1.5rem; text-align:center;
   padding: 5px;
 }
 .home input::placeholder { opacity: 0.2}
 
 .shortcuts { width:400px; max-width: 100%; padding: 50px 0px; margin:auto;}
-.shortcuts a { margin:10px; color: #666}
+.shortcuts a { margin:10px; color: var(--color-a);  background: var(--color-bg); padding:1px 5px}
+.shortcuts a:hover { filter:invert(1) }
 .shortcuts .title { opacity:0.2}
 
 .logo { z-index:0;width:480px; height:480px; position: fixed; bottom:-180px; left: 80%; transform: translate(-50%,0); overflow:hidden}

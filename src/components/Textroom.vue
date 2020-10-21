@@ -225,57 +225,54 @@ export default {
     attachPlugin() {
       let self = this;
 
-
       this.janus.attach({
-
         plugin: "janus.plugin.textroom",
         opaqueId: this.opaqueId,
 
         success: function(pluginHandle) {
           self.pluginHandle = pluginHandle;
-          Janus.log("Plugin attached! (" + self.pluginHandle.getPlugin() + ", id=" + self.pluginHandle.getId() + ")");
+          console.log(self.opaqueId, ":", "Plugin attached! (" + self.pluginHandle.getPlugin() + ", id=" + self.pluginHandle.getId() + ")");
           var body = { "request": "setup" };
-          console.log("Sending message (" + JSON.stringify(body) + ")");
+          console.log(self.opaqueId, ":", "Sending message (" + JSON.stringify(body) + ")");
           self.pluginHandle.send({"message": body});
+          self.getRoomsInfo();
         },
 
         error: function(error) {
-          console.error("  -- Error attaching plugin...", error);
+          console.error(self.opaqueId, "  -- Error attaching plugin...", error);
         },
 
         webrtcState: function(on) {
-          Janus.log("Janus says our WebRTC PeerConnection is " + (on ? "up" : "down") + " now");
+          console.log(self.opaqueId, ":", "Janus says our WebRTC PeerConnection is " + (on ? "up" : "down") + " now");
         },
 
         onmessage: function(msg, jsep) {
-          Janus.debug(" ::: Got a message :::");
-          Janus.debug(msg);
-
+          console.log(self.opaqueId, ":", "Got a message", msg);
           if(jsep !== undefined && jsep !== null) {
             // Answer
             self.pluginHandle.createAnswer({
               jsep: jsep,
               media: { audio: false, video: false, data: true },	// We only use datachannels
               success: function(jsep) {
-                Janus.log("Got SDP!");
-                Janus.debug(jsep);
+                console.log(self.opaqueId, ":", "Got SDP!");
+                //console.log(self.opaqueId, ":", jsep);
                 var body = { "request": "ack" };
                 self.pluginHandle.send({"message": body, "jsep": jsep});
               },
               error: function(error) {
-                Janus.error("WebRTC error:", error);
+                console.error(self.opaqueId, ":", "WebRTC error:", error);
               }
             });
           }
         },
 
         ondataopen: function() {
-          Janus.log("The DataChannel is available!");
+          console.log(self.opaqueId, ":", "The DataChannel is available!");
           //self.initRoom()
         },
 
         ondata: function(data) {
-          Janus.debug("We got data from the DataChannel! " + data);
+          console.log(self.opaqueId, ":", "We got data from the DataChannel! ")
 
           var json = JSON.parse(data);
           var transaction = json["transaction"];
@@ -348,7 +345,7 @@ export default {
             if(json["room"] !== self.room)
               return;
             self.alert.open('The room ' + self.room + ' has been destroyed!')
-            Janus.warn("The room has been destroyed!");
+            console.log(self.opaqueId, ":", "The room has been destroyed!");
 
           } else if(what === "list") {
 
@@ -357,19 +354,20 @@ export default {
           }  else if(what === "list") {
 
             self.alert.open('Error: ' + json["error"])
+            console.log(self.opaqueId, ":", "Error: " + json["error"])
           }
 
 
         },
         oncleanup: function() {
-          Janus.log(" ::: Got a cleanup notification :::");
+          console.log(self.opaqueId, ":", " ::: Got a cleanup notification :::");
         }
       });
     },
 
     registerUser() {
-      console.log("register user");
       let self = this;
+      console.log(self.opaqueId, ":", "register user");
       self.username = Janus.randomString(12);
       var transaction = Janus.randomString(12);
       var register = {
@@ -386,21 +384,21 @@ export default {
       self.transactions[transaction] = function(response) {
         if(response["textroom"] === "error") {
           if(response["error_code"] === 417) {
-            console.log( self.room + "does not exist." );
+            console.log(self.opaqueId, ":",  self.room + "does not exist." );
           } else if(response["error_code"] === 413) {
-            console.log( self.room + "needs a pin" );
+            console.log(self.opaqueId, ":", self.room + "needs a pin" );
             self.alert.open('The room ' + self.room_info.description + ' needs a pin!')
           } else if(response["error_code"] === 419) {
-            console.log( self.room + " needs a pin" );
+            console.log(self.opaqueId, ":", self.room + " needs a pin" );
             self.alert.open('Wrong Pin!')
             self.askForUsername();
           } else {
-            console.log(response["error"]);
+            console.log(self.opaqueId, ":", response["error"]);
           }
           return;
         }
         // We're in
-        console.log("we are in");
+        console.log(self.opaqueId, ":", "we are in");
         self.loading = false;
         self.webRTCUp = true;
         self.$emit('hasNick', self.display)
@@ -427,7 +425,7 @@ export default {
       self.pluginHandle.data({
         text: JSON.stringify(register),
         error: function(reason) {
-          console.log(":ERR" + reason);
+          console.log(self.opaqueId, ":", ":ERR" + reason);
         }
       });
 
@@ -523,6 +521,7 @@ export default {
             error: function(reason) { self.alert.open(reason) },
             success: function() {
               self.toast.open("Whisper send!")
+              console.log(self.opaqueId, ":", "Whisper sent")
             }
           });
         }

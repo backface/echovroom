@@ -711,7 +711,7 @@ export default {
 
         success: function(pluginHandle) {
           self.pluginHandle = pluginHandle;
-          Janus.log(self.opaqueId, "Plugin attached! (" + self.pluginHandle.getPlugin() + ", id=" + self.pluginHandle.getId() + ")");
+          console.log(self.opaqueId, ":",  "Plugin attached! (" + self.pluginHandle.getPlugin() + ", id=" + self.pluginHandle.getId() + ")");
           self.initRoom()
         },
 
@@ -720,15 +720,15 @@ export default {
         },
 
         consentDialog: function(on) {
-          Janus.debug(self.opaqueId, "Consent dialog should be " + (on ? "on" : "off") + " now");
+          console.log(self.opaqueId, ":",  "Consent dialog should be " + (on ? "on" : "off") + " now");
         },
 
         mediaState: function(medium, on) {
-          Janus.log(self.opaqueId, "Janus " + (on ? "started" : "stopped") + " receiving our " + medium);
+          console.log(self.opaqueId, ":",  "Janus " + (on ? "started" : "stopped") + " receiving our " + medium);
         },
 
         webrtcState: function(on) {
-          Janus.log(self.opaqueId, "Janus says our WebRTC PeerConnection is " + (on ? "up" : "down") + " now");
+          console.log(self.opaqueId, ":",  "Janus says our WebRTC PeerConnection is " + (on ? "up" : "down") + " now");
           self.webRTCUp = true;
         },
 
@@ -736,9 +736,7 @@ export default {
           //Janus.debug(" ::: Got a message :::");
           //Janus.debug(msg);
           var event = msg[self.pluginName];
-					Janus.debug("Event: " + event);
-
-          //console.log(self.opaqueId, msg, event);
+					console.log(self.opaqueId, ":", "Event: " + event);
 
           if(event != undefined && event != null) {
 
@@ -759,7 +757,7 @@ export default {
 
               self.username = msg["id"];
               self.private_id = msg["private_id"];
-              Janus.log("Successfully joined room " + msg["room"] + " with ID " + msg["id"]);
+              console.log(self.opaqueId, ":", "Successfully joined room " + msg["room"] + " with ID " + msg["id"]);
 
               self.$emit("joined");
               self.publishOwnFeed(true);
@@ -780,7 +778,7 @@ export default {
               }
 
 						} else if(event === "destroyed") {
-							Janus.warn(self.opaqueId, "The room has been destroyed!");
+							console.log(self.opaqueId, ":", self.opaqueId, "The room has been destroyed!");
 							self.alert.open(self.opaqueId, "The room has been destroyed");
 
 						} else if(event === "event") {
@@ -800,7 +798,7 @@ export default {
                   self.$emit('participantNumberChanged', self.count)
 
               } else if(msg["leaving"] !== undefined && msg["leaving"] !== null) {
-                Janus.log("Publisher left: " + msg["leaving"]);
+                console.log(self.opaqueId, ":", "Publisher left: " + msg["leaving"]);
 
                 if (msg["leaving"] == "ok") {
                   console.log("I left the room");
@@ -846,7 +844,7 @@ export default {
               } else if(msg["unpublished"] !== undefined && msg["unpublished"] !== null) {
                 // One of the publishers has unpublished?
                 var unpublished = msg["unpublished"];
-                Janus.log("Publisher unpublished: " + unpublished);
+                console.log(self.opaqueId, ":", "Publisher unpublished: " + unpublished);
                 if(unpublished === 'ok') {
                   // That's us
                   //self.$refs.videolocal.detach();
@@ -880,8 +878,8 @@ export default {
           }
 
           if(jsep !== undefined && jsep !== null) {
-            Janus.debug(self.opaqueId, "Handling SDP as well...");
-            Janus.debug(jsep);
+            console.log(self.opaqueId, ":",  "Handling SDP as well...");
+            //console.log(self.opaqueId, ":", jsep);
             self.pluginHandle.handleRemoteJsep({jsep: jsep});
             // Check if any of the media we wanted to publish has
             // been rejected (e.g., wrong or unsupported codec)
@@ -900,8 +898,8 @@ export default {
 
         onlocalstream: function(stream) {
           console.log(self.opaqueId, "we have a local stream");
-          Janus.debug(self.opaqueId, " ::: Got a local stream :::");
-          Janus.debug(self.opaqueId, stream);
+          console.log(self.opaqueId, ":", self.opaqueId, " ::: Got a local stream :::");
+          console.log(self.opaqueId, ":", self.opaqueId, stream);
 
           Janus.attachMediaStream(self.$refs.videolocal, stream);
 
@@ -928,7 +926,7 @@ export default {
 				},
 
         oncleanup: function() {
-          Janus.log(self.opaqueId, " ::: Got a cleanup notification :::");
+          console.log(self.opaqueId, ":",  " ::: Got a cleanup notification :::");
         }
       });
     },
@@ -951,8 +949,7 @@ export default {
                 simulcast: self.doSimulcast,
 
                 success: function(jsep) {
-                  Janus.debug(self.opaqueId, "Got publisher SDP!");
-                  Janus.debug(jsep);
+                  console.log(self.opaqueId, ":", self.opaqueId, "Got publisher SDP!");
                   var publish = { "request": "configure", "audio": useAudio, "video": true, data: true  };
                   self.pluginHandle.send({"message": publish, "jsep": jsep});
                 },
@@ -978,8 +975,7 @@ export default {
           simulcast: self.doSimulcast,
 
           success: function(jsep) {
-            Janus.debug(self.opaqueId, "Got publisher SDP!");
-            Janus.debug(jsep);
+            console.log(self.opaqueId, ":", self.opaqueId, "Got publisher SDP!");
             var publish = { "request": "configure", "audio": useAudio, "video": true, data:true };
             self.pluginHandle.send({"message": publish, "jsep": jsep});
           },
@@ -1014,7 +1010,7 @@ export default {
       // A new feed has been published, create a new plugin handle and attach to it as a subscriber
       let self = this
       let remoteFeed = null;
-      console.log(id);
+      console.log(self.opaqueId, ":", id);
 
       self.janus.attach({
         plugin: "janus.plugin." + self.pluginName,
@@ -1023,9 +1019,9 @@ export default {
         success: function(pluginHandle) {
           remoteFeed = pluginHandle;
           remoteFeed.simulcastStarted = false;
-          Janus.log(self.opaqueId, "Plugin attached! (" + remoteFeed.getPlugin() + ", id=" + remoteFeed.getId() + ")");
-          Janus.log(self.opaqueId, "  -- This is a subscriber");
-          Janus.log(self.opaqueId, remoteFeed.getId(), id);
+          console.log(self.opaqueId, ":",  "Plugin attached! (" + remoteFeed.getPlugin() + ", id=" + remoteFeed.getId() + ")");
+          console.log(self.opaqueId, ":",  "  -- This is a subscriber");
+          console.log(self.opaqueId, ":",  remoteFeed.getId(), id);
           // We wait for the plugin to send us an offer
           var subscribe = {
             "request": "join",
@@ -1056,10 +1052,7 @@ export default {
         },
 
         onmessage: function(msg, jsep) {
-          //Janus.debug(self.opaqueId, " ::: Got a message (subscriber) :::");
-          //Janus.debug(self.opaqueId, msg);
           var event = msg["videoroom"];
-          //Janus.debug(self.opaqueId, "REMOTE Event: " + event);
 
           if(msg["error"] !== undefined && msg["error"] !== null) {
             console.log(self.opaqueId, "GOT AN ERROR", msg);
@@ -1091,7 +1084,7 @@ export default {
                   self.updateVRpositions()
                 }
               }
-              Janus.log(self.opaqueId,
+              console.log(self.opaqueId, ":",
                 "Successfully attached to feed " + remoteFeed.id + " ("
                 + remoteFeed.rfdisplay + ") in room " + msg["room"]);
 
@@ -1116,8 +1109,7 @@ export default {
           }
 
           if(jsep !== undefined && jsep !== null) {
-            Janus.debug(self.opaqueId, "Handling SDP as well...");
-            Janus.debug(jsep);
+            console.log(self.opaqueId, ":",  "Handling SDP as well...");
             // Answer and attach
             remoteFeed.createAnswer( {
               jsep: jsep,
@@ -1126,8 +1118,7 @@ export default {
 
               media: { audioSend: false, videoSend: false, data: true },	// We want recvonly audio/video
               success: function(jsep) {
-                Janus.debug(self.opaqueId,"Got SDP!");
-                Janus.debug(jsep);
+                console.log(self.opaqueId, ":", "Got SDP!");
                 var body = { "request": "start", "room": self.room };
                 remoteFeed.send({"message": body, "jsep": jsep});
               },
@@ -1140,7 +1131,7 @@ export default {
         },
 
         ondataopen: function() {
-          Janus.log(self.opaqueId, "The DataChannel is available!");
+          console.log(self.opaqueId, ":",  "The DataChannel is available!");
 
           // send a sendmetostage message if new data channel comes available and I am on stage
           if (self.onstage == self.username)
@@ -1148,11 +1139,11 @@ export default {
         },
 
         ondata: function(message) {
-          Janus.debug(self.opaqueId, "We got data from the DataChannel! " + message);
-          console.log(message);
+          console.log(self.opaqueId, ":", self.opaqueId, "We got data from the DataChannel! " + message);
+          console.log(self.opaqueId, ":", message);
           message = JSON.parse(message);
-          console.log(message["request"]);
-          console.log(message.publisher);
+          console.log(self.opaqueId, ":", message["request"]);
+          console.log(self.opaqueId, ":", message.publisher);
           if (message.request == "onstage")
             self.onstage = message.publisher
           if (message.request == "offstage")
@@ -1162,7 +1153,7 @@ export default {
         },
 
         webrtcState: function(on) {
-          Janus.log(self.opaqueId, "Janus says this WebRTC PeerConnection (feed #" + remoteFeed.id + ") is " + (on ? "up" : "down") + " now");
+          console.log(self.opaqueId, ":",  "Janus says this WebRTC PeerConnection (feed #" + remoteFeed.id + ") is " + (on ? "up" : "down") + " now");
         },
 
         onlocalstream: function() {
@@ -1170,8 +1161,8 @@ export default {
         },
 
         onremotestream: function(stream) {
-          Janus.log(self.opaqueId, "Remote feed #" + remoteFeed.id)
-          console.log("feed", self.feeds[remoteFeed.publisher]);
+          console.log(self.opaqueId, ":",  "Remote feed #" + remoteFeed.id)
+          console.log(self.opaqueId, ":", "feed", self.feeds[remoteFeed.publisher]);
 
           //setTimeout( function() {
           //console.log(document.getElementById('v'+ remoteFeed.id);
@@ -1216,7 +1207,7 @@ export default {
         },
 
         oncleanup: function() {
-          Janus.log(" ::: Got a cleanup notification (remote feed " + id + " / "  +  remoteFeed.id +") :::");
+          console.log(self.opaqueId, ":", " ::: Got a cleanup notification (remote feed " + id + " / "  +  remoteFeed.id +") :::");
           if(self.feeds[remoteFeed.publisher]) {
             self.$delete(self.feeds,remoteFeed.publisher)
           }
@@ -1231,7 +1222,7 @@ export default {
     },
 
     muteMe(muted) {
-      console.log("set muteme:", muted);
+      console.log(this.opaqueId, ":", "set muteme:", muted);
       if (muted) {
           this.pluginHandle.muteAudio();
       } else {
@@ -1242,17 +1233,15 @@ export default {
     },
 
     muteAll(muted) {
-      console.log("mute all ", muted);
+      console.log(this.opaqueId, ":", "mute all ", muted);
       for (let feed in this.feeds) {
-        console.log(feed);
-        console.log(  this.$refs['v'+this.feeds[feed].id]);
         this.$refs['v'+this.feeds[feed].id][0].muted = muted;
       }
       this.all_muted = muted;
     },
 
     updateBitrateCap() {
-      console.log(this.bitrate);
+      console.log(this.opaqueId, ":", "cap birate at", this.bitrate);
       this.pluginHandle.send( {
         "message":
           { "request": "configure", "bitrate": this.bitrate }
@@ -1261,7 +1250,7 @@ export default {
     },
 
     changeFeedQuality(feed) {
-      console.log(feed.substream);
+      console.log(this.opaqueId, ":", "switch to substream", feed.substream);
       feed.send({
         "message": {
           request: "configure",
@@ -1275,7 +1264,6 @@ export default {
       let self=this
       if (!self.isRTPforwarding) {
         self.rtp_dialog.open().then(function(r) {
-          console.log(r);
           self.pluginHandle.send({
             "message": {
               request: "rtp_forward",
@@ -1286,11 +1274,10 @@ export default {
               video_port:r.video_port
             },
             success: function(r) {
-              console.log(r);
               if (r.error_code) {
                 self.alert.open("ERROR:" + r.error);
               } else {
-                console.log(r.rtp_stream);
+                console.log(self.opaqueId, ":", "set up rtpstream", r.rtp_stream);
                 self.isRTPforwarding = true
                 self.rtp_forward = r.rtp_stream;
               }
@@ -1306,7 +1293,7 @@ export default {
             stream_id: self.rtp_forward.audio_stream_id,
           },
           success: function(r) {
-            console.log(r);
+            console.log(self.opaqueId, ":", "stopped rtp forward for audio stream", r);
           }
         })
         self.pluginHandle.send({
@@ -1317,7 +1304,7 @@ export default {
             stream_id: self.rtp_forward.video_stream_id,
           },
           success: function(r) {
-              console.log(r);
+            console.log(self.opaqueId, ":", "stopped rtp forward for video stream", r);
             self.isRTPforwarding = false
             self.rtp_forward = null
           }
@@ -1332,7 +1319,7 @@ export default {
       var body = { "audio": true, "video": true };
       self.is_streaming = false;
 
-      Janus.debug("Trying a createOffer too (audio/video sendrecv)");
+      console.log(self.opaqueId, ":", "Trying a createOffer too (audio/video sendrecv)");
       // media: { video: capture, captureDesktopAudio: useAudio, audioRecv: true, videoRecv: false, data: true },
       self.pluginHandle.createOffer({
         media: {
@@ -1344,8 +1331,7 @@ export default {
         },
         simulcast: self.doSimulcast,
         success: function(jsep) {
-          Janus.debug("Got SDP!");
-          Janus.debug(jsep);"screen"
+          console.log(self.opaqueId, ":", "Got SDP!");
           self.pluginHandle.send({"message": body, "jsep": jsep});
           self.resetForces()
         },
@@ -1389,7 +1375,7 @@ export default {
 
     sendMeToStage(goUp=true) {
       let self = this;
-      console.log("send me on stage");
+      console.log(self.opaqueId, ":", "send me on stage");
       if (goUp)
         this.pluginHandle.data({
           text: JSON.stringify({
@@ -1419,7 +1405,7 @@ export default {
 
     sendToStage(id) {
       let self = this;
-      console.log("send on stage", id);
+      console.log(self.opaqueId, ":", "send on stage", id);
 
       // just hack it in so it can be used locally but it needs datachannel
       if (self.onstage === id) {
@@ -1453,7 +1439,7 @@ export default {
         text: message,
         error: function(reason) { this.alert.open(reason); },
         success: function() {
-            console.log("sent on data channel");
+          console.log(this.opaqueId, ":", "sending on data channel");
         }
       });
     },
@@ -1508,7 +1494,7 @@ export default {
       this.$refs.device_dialog.open(devices, options).then(
         (r) => {
           if (r) {
-            console.log("selected devices: ", r);
+            console.log(self.opaqueId, ":", "selected devices: ", r);
 
             self.pluginHandle.createOffer({
               media: {
@@ -1521,7 +1507,7 @@ export default {
               },
               simulcast: self.doSimulcast,
               success: function(jsep) {
-                Janus.debug("Got SDP!");
+                console.log(self.opaqueId, ":", "Got SDP!");
                 self.pluginHandle.send({"message": body, "jsep": jsep});
                 self.current_video_device = r.video_device;
                 self.current_audio_device = r.audio_device;
@@ -1647,7 +1633,7 @@ export default {
 .stage video {
   object-fit: contain;
   width:100%;
-  height:100%;
+
   border-radius: 0%;
 }
 
@@ -1679,15 +1665,7 @@ export default {
   color:black;
 }
 
-@media (max-width:1440px) {
-  .stage video {
-    object-fit: cover;
-    max-height:360px;
-    width:100%;
-    height:100%;
-    border-radius: 0%;
-  }
-}
+
 
 @media (max-width:461px) {
   .overlay { display:none}
