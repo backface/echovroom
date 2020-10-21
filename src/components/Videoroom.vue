@@ -1423,21 +1423,29 @@ export default {
 
       // just hack it in so it can be used locally but it needs datachannel
       if (self.onstage === id) {
-        self.onstage = null
+        this.pluginHandle.data({
+          text: JSON.stringify({
+            request: "offstage",
+            publisher: id,
+          }),
+          error: function(reason) { this.alert.open(reason); },
+          success: function() {
+            self.onstage = null;
+          }
+        });
       } else {
-        self.onstage = id
+        this.pluginHandle.data({
+          text: JSON.stringify({
+            request: "onstage",
+            publisher: id,
+          }),
+          error: function(reason) { this.alert.open(reason); },
+          success: function() {
+            self.onstage = id
+          }
+        });
       }
 
-      this.pluginHandle.data({
-        text: JSON.stringify({
-          request: "onstage",
-          publisher: id,
-        }),
-        error: function(reason) { this.alert.open(reason); },
-        success: function() {
-          self.onstage = id
-        }
-      });
     },
 
     sendMessage(message) {
