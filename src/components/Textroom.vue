@@ -2,7 +2,7 @@
   <div ref="textroom" class="textroom">
 
     <div class="header">
-      <div class="columns is-mobile is-narrow headers is-gapless">
+      <div class="columns is-mobile is-narrow headers is-gapless" @dblclick="is_active=!is_active">
         <div class="column has-text-left is-10">
           <message-square-icon size="1x" class="icons linked"></message-square-icon>
             Chat
@@ -20,131 +20,103 @@
       </div>
     </div>
 
-    <div class="chatroom" v-show="is_open">
+    <div class="" v-show="is_active && is_open">
 
-      <vue-custom-scrollbar class="participants">
-        <div class="has-text-left" ref="participants">
-          <ul>
+      <div class="chatroom">
+        <vue-custom-scrollbar class="participants">
+          <div class="has-text-left" ref="participants">
+            <ul>
+              <li v-for="(user, index) in participants" :key="index" class="participant">
+                <v-menu v-if="user.username != username">
+                  <template v-slot:activator="{ on }">
+                    <span v-on="on" :style="{ color: user.color }">{{ user.display }}</span>
+                  </template>
+                  <v-list>
+                    <v-list-item @click="sendWhisper(user.username)">
+                      <v-list-item-title>Send Whisper</v-list-item-title>
+                    </v-list-item>
+                    <v-list-item v-if="emitCallEvents" @click="$emit('call', user.display)">
+                      <v-list-item-title>Videocall</v-list-item-title>
+                    </v-list-item>
+                    <v-list-item @click="kick(user.username)">
+                      <v-list-item-title>Kick</v-list-item-title>
+                    </v-list-item>
+                  </v-list>
+                </v-menu>
+               <!--  <span v-if="user.username == username" style="color: #aaa" >(
+                  <span style="font-size:0.8rem">Me:</span> {{ display }})</span>-->
+              </li>
+            </ul>
+          </div>
+        </vue-custom-scrollbar>
+        <vue-custom-scrollbar class="chat" id="chatbar" ref="chatbar">
+          <div class="has-text-left" id="chat">
+            <div  class="item" v-if="welcome_msg">
+              <div class="user">
+                <span>@ {{ room_name}}</span>
+              </div>
+              <div class="msg" >
+                <span v-html="welcome_msg.msg"></span>
+              </div>
+            </div>
 
-            <!--
-            <li v-for="(user, index) in participants" :key="'h' + index" class="participant">
+            <div v-for="msg in messages" :key="msg.id" class="item">
+              <div class="user" :style="{ color: msg.color }">
+                <span v-if="msg.from != username" >{{ msg.from }}</span>
+                <span v-else>(me: {{ display }})</span>:
+              </div>
+              <div class="msg" >
+                <span v-html="msg.msg"></span>
+              </div>
+            </div>
+          </div>
+        </vue-custom-scrollbar>
+      </div>
 
+      <div class="talk">
+        <div class="columns is-mobile">
+          <div class="column is-one-quarter-desktop is-narrow-mobile has-text-right me">
+            talk:
+          </div>
+          <div class="column">
+            <v-text-field class="msg_editor" v-on:keyup.enter.exact="sendMsg" v-model="msg" placeholder="type here" />
+          </div>
+          <div class="column is-narrow has-text-right emojicol">
+            <a @click="sendMsg" title="send">
+              <send-icon size="1x" class="icons linked"></send-icon>
+            </a>
+            <emoji-picker @emoji="insert_emoji" :search="search_emoji" style="display:inline">
 
-                <div v-if="user.username != username" class="dropdown is-hoverable">
-                  <a class="dropdown-trigger" aria-haspopup="true" :aria-controls="'dropdown-menu-'+ user.id">
-                    <span :style="{ color: user.color }" >{{ user.display }}</span>
-                  </a>
-                  <div class="dropdown-menu" :id="'dropdown-menu-'+ user.id " role="menu">
-                    <div class="dropdown-content">
-                      <div class="dropdown-item">
-                        <a title="Copy to Clipboard" @click="sendWhisper(user.username)">
-                          Send a Whisper
-                        </a>
-
+              <a slot="emoji-invoker" slot-scope="{ events: { click: clickEvent } }" @click.stop="clickEvent" class="emoji-invoker"
+                title="pick an emoji">
+                <smile-icon size="1x" class="icons linked"></smile-icon>
+              </a>
+              <div slot="emoji-picker" slot-scope="{ emojis, insert }">
+                <div class="emoji-picker">
+                  <div class="emoji-picker__search">
+                    <input type="text" v-model="search_emoji">
+                  </div>
+                  <div >
+                    <div v-for="(emojiGroup, category) in emojis" :key="category">
+                      <h5>{{ category }}</h5>
+                      <div class="emojis">
+                        <span
+                          v-for="(emoji, emojiName) in emojiGroup"
+                          :key="emojiName"
+                          @click="insert(emoji)"
+                          :title="emojiName"
+                        >{{ emoji }}</span>
                       </div>
                     </div>
                   </div>
                 </div>
-
-            </li>
-          -->
-
-            <li v-for="(user, index) in participants" :key="index" class="participant">
-              <v-menu v-if="user.username != username">
-                <template v-slot:activator="{ on }">
-                  <span v-on="on" :style="{ color: user.color }">{{ user.display }}</span>
-                </template>
-                <v-list>
-                  <v-list-item @click="sendWhisper(user.username)">
-                    <v-list-item-title>Send Whisper</v-list-item-title>
-                  </v-list-item>
-                  <v-list-item v-if="emitCallEvents" @click="$emit('call', user.display)">
-                    <v-list-item-title>Videocall</v-list-item-title>
-                  </v-list-item>
-                  <v-list-item @click="kick(user.username)">
-                    <v-list-item-title>Kick</v-list-item-title>
-                  </v-list-item>
-                </v-list>
-              </v-menu>
-             <!--  <span v-if="user.username == username" style="color: #aaa" >(
-                <span style="font-size:0.8rem">Me:</span> {{ display }})</span>-->
-            </li>
-
-
-          </ul>
-        </div>
-      </vue-custom-scrollbar>
-
-      <vue-custom-scrollbar class="chat" id="chatbar" ref="chatbar">
-        <div class="has-text-left" id="chat">
-          <div  class="item" v-if="welcome_msg">
-            <div class="user">
-              <span>@ {{ room_info.description}}</span>
-            </div>
-            <div class="msg" >
-              <span v-html="welcome_msg.msg"></span>
-            </div>
-          </div>
-
-          <div v-for="msg in messages" :key="msg.id" class="item">
-            <div class="user" :style="{ color: msg.color }">
-              <span v-if="msg.from != username" >{{ msg.from }}</span>
-              <span v-else>(me: {{ display }})</span>:
-            </div>
-            <div class="msg" >
-              <span v-html="msg.msg"></span>
-            </div>
-          </div>
-
-        </div>
-      </vue-custom-scrollbar>
-    </div>
-
-    <div class="talk" v-if="is_open">
-      <div class="columns is-mobile">
-        <div class="column is-one-quarter-desktop is-narrow-mobile has-text-right me">
-          talk:
-        </div>
-        <div class="column">
-          <v-text-field class="msg_editor" v-on:keyup.enter.exact="sendMsg" v-model="msg" placeholder="type here" />
-        </div>
-        <div class="column is-narrow has-text-right emojicol">
-          <a @click="sendMsg" title="send">
-            <send-icon size="1x" class="icons linked"></send-icon>
-          </a>
-          <emoji-picker @emoji="insert_emoji" :search="search_emoji" style="display:inline">
-
-            <a slot="emoji-invoker" slot-scope="{ events: { click: clickEvent } }" @click.stop="clickEvent" class="emoji-invoker"
-              title="pick an emoji">
-              <smile-icon size="1x" class="icons linked"></smile-icon>
-            </a>
-            <div slot="emoji-picker" slot-scope="{ emojis, insert }">
-              <div class="emoji-picker">
-                <div class="emoji-picker__search">
-                  <input type="text" v-model="search_emoji">
-                </div>
-                <div >
-                  <div v-for="(emojiGroup, category) in emojis" :key="category">
-                    <h5>{{ category }}</h5>
-                    <div class="emojis">
-                      <span
-                        v-for="(emoji, emojiName) in emojiGroup"
-                        :key="emojiName"
-                        @click="insert(emoji)"
-                        :title="emojiName"
-                      >{{ emoji }}</span>
-                    </div>
-                  </div>
-                </div>
               </div>
-            </div>
-          </emoji-picker>
+            </emoji-picker>
+          </div>
         </div>
-
       </div>
+
     </div>
-
-
 
     <toast ref="toast"></toast>
     <login-dialog ref="login"></login-dialog>
@@ -199,6 +171,10 @@ export default {
       type: Boolean,
       default: false
     },
+    active: {
+      type: Boolean,
+      default: true
+    },
   },
 
   data() {
@@ -211,6 +187,7 @@ export default {
       msg: "",
       welcome_msg: null,
       search_emoji: '',
+      is_active: this.active
     }
   },
 
@@ -232,9 +209,7 @@ export default {
       this.janus = this.myJanus
       this.attachPlugin()
     }
-  },
 
-  updated () {
   },
 
   destroyed () {
@@ -245,11 +220,12 @@ export default {
 
     insert_emoji(emoji) {
       this.msg += emoji;
-
     },
 
     attachPlugin() {
       let self = this;
+
+
       this.janus.attach({
 
         plugin: "janus.plugin.textroom",
@@ -295,7 +271,7 @@ export default {
 
         ondataopen: function() {
           Janus.log("The DataChannel is available!");
-          self.initRoom()
+          //self.initRoom()
         },
 
         ondata: function(data) {
@@ -618,10 +594,11 @@ export default {
     },
 
     openChat() {
-      if (this.webRTCUp)
+      if (this.webRTCUp) {
         this.is_open = true
-      else
+      } else {
         this.login()
+      }
     }
   }
 

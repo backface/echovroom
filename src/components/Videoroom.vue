@@ -531,7 +531,7 @@ export default {
       self.force = self.force.nodes(self.force_positions)
         .force('collision', forceCollide().radius(self.tile_width/2+ 5))
         .force('r', forceRadial()
-          .radius( (Math.min(self.getWindowWidth(), self.getWindowHeight()) / 1.9))
+          .radius( (Math.min(self.getWindowWidth(), self.getWindowHeight()) / 1.5))
           .x(self.getWindowWidth()/ 2 - self.tile_width/2)
           .y(self.getWindowHeight()/ 2 - self.tile_width/2)
         )

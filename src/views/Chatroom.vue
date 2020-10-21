@@ -57,6 +57,7 @@
           v-if="janusReady"
           v-show="chat_open"
           :open="chat_open"
+          :active="false"
           :roombyName="roombyName"
           :host="server"
           :nick="login_name"
