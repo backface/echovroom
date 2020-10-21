@@ -1,7 +1,5 @@
 <template>
   <div class="main">
-
-
     <div class="room_details">
       <span v-if="title" class="title">{{ title }}</span>
       <span v-if="subtitle" class="room_subtitle">{{ subtitle }}</span>
@@ -23,9 +21,9 @@
       </div>
     </div>
 
-    <div class="echorooms">
+    <v-btn @click="preLogin" v-if="!chat_open" class="enter">Join the Conversation</v-btn>
 
-      <v-btn @click="preLogin" v-if="!chat_open" class="enter">Join the Conversation</v-btn>
+    <div class="stageroom">
 
       <Videoroom
         :roombyName="roombyName"
@@ -89,6 +87,7 @@ import Streaming from '@/components/Streaming.vue'
 import LoginDialog from '@/components/dialogs/LoginDialog'
 import PreLoginDialog from '@/components/dialogs/PreLoginDialog'
 import Toast from '@/components/dialogs/Toast'
+//import { PortalTarget } from 'portal-vue'
 //import { janusMixin } from "@/mixins/janusMixin";
 
 export default {
@@ -98,9 +97,9 @@ export default {
 
   components: {
     Stage,
-    Textroom, Videoroom, Videocall,
-    Streaming,
+    Textroom, Videoroom, Videocall,Streaming,
     LoginDialog, PreLoginDialog, Toast,
+    //PortalTarget,
   },
 
   props: {
@@ -259,7 +258,9 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
+
+
 .main {}
 .main { margin-bottom:100px }
 .title { padding-bottom:0; margin-bottom:0.2rem; background:#333;color:#fff; padding:1px 10px 3px 10px}
@@ -268,4 +269,61 @@ export default {
 .room_details a:hover { color:black}
 .room_details a:not(:last-child) { margin-right:12px}
 .room_subtitle { margin-right:12px}
+.stage { width: 1024px; margin: 0 auto; max-width: 100%; margin-bottom:30px}
+
+/* compoonent pparts */
+
+.max-width { width: 1024px; margin: auto auto; max-width: 100%;}
+.textroom .chatroom { min-height: 156px}
+
+.stageroom {
+	position: fixed;
+	width: 1280px; max-width: 100%;
+	bottom: 8px;
+	background: var(--color-bg-trans);
+  color: var(--color-fg);
+	left: 50%;
+	transform: translate(-50%,0);
+	border: 1px solid #999;
+	box-shadow: 10px 6px 12px rgba(0,0,0,0.25);
+	border-radius: 3px;
+  padding: 5px 10px;
+  z-index:200;
+}
+
+.topcontrols {
+  position: fixed;
+  top:-2px; left:50%;
+  transform:translate(-50%,0);
+  border: 1px solid #999;
+  background: var(--color-bg-trans);
+  box-shadow: 10px 6px 12px rgba(0,0,0,0.25);
+  border-radius: 3px;
+  z-index:200;
+  width:350px;
+}
+
+.topcontrols .headers {border:0; padding-bottom: 0}
+
+@media (max-width:1440px) {
+  .max-width { width:800px }
+  .stageroom { width:1024px }
+}
+
+@media (max-width:1280px) {
+  .max-width { width:800px }
+  .stageroom { width:1024px }
+}
+
+@media (max-width:1024px) {
+  .max-width { width:640px }
+  .stageroom { width:800px;}
+}
+
+@media (max-width:461px) {
+  .max-width { width:640px }
+  .topcontrols { width:250px;}
+}
+
+
 </style>

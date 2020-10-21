@@ -14,7 +14,7 @@
 
 
     <div class="shortcuts">
-      <h2 class="title">Or join:</h2>
+      <p>or join:</p>
 
       <router-link v-for="f in shortcuts" :key="f.hash || f " :to="'/'+f" v-slot="{ href }">
           <a :href="href"  @click="menuOpen=false">

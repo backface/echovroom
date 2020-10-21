@@ -4,15 +4,15 @@ source .env
 
 docker run --rm -v "$PWD":/app treeder/bump patch
 version=`cat VERSION`
-echo "version: $version"
+
 
 ./docker-build.sh
 
 # tag it
-git commit -m "v$version"
-git tag -a "v$version" -m "$v$version"
-git push
-git push --tags
+#git commit -m "v$version"
+#git tag -a "v$version" -m "$v$version"
+#git push
+#git push --tags
 
 
 docker tag $USERNAME/$IMAGE:latest $USERNAME/$IMAGE:$version

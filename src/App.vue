@@ -80,6 +80,8 @@
       </div>
     </footer>
 
+    <portal-target name="portalsreen"></portal-target>
+    <portal-target name="topcontrols" class="topcontrols"></portal-target>
 
   </v-app>
 </template>
@@ -88,13 +90,15 @@
 import TransitionPage from './components/TransitionPage.vue';
 import { ArrowUpLeftIcon, Share2Icon, ClipboardIcon } from 'vue-feather-icons'
 import 'typeface-asap-condensed'
+import { PortalTarget } from 'portal-vue'
 
 export default {
   name: 'App',
 
   components: {
     TransitionPage,
-    ArrowUpLeftIcon, Share2Icon, ClipboardIcon
+    ArrowUpLeftIcon, Share2Icon, ClipboardIcon,
+    PortalTarget,
   },
 
   data() {
@@ -141,19 +145,24 @@ export default {
 
 <style lang="css">
 
+:root {
+	--color-bg: white;
+  --color-bg-trans: rgba(255,255,255, 0.7);
+	--color-fg: #666;
+  --color-alert: red;
+  --color-bg-footer: #f9f9f9;
+  --color-bg-nav: #ffffff;
+  --color-a: #333;
+  --color-a-hover:  #000;
+}
+
 #app {
   font-family: "Asap Condensed", Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #666;
-}
-
-:root {
-	font-size: 100%;
-	--color-bg: #fff;
-	--color-fg: #666;
-  --color-alert: red;
+  color: var(--color-fg);
+  background: var(--color-bg);
 }
 
 *:focus {
@@ -165,28 +174,25 @@ export default {
 
 .navbar .navbar-item a,
 .navbar .navbar-brand a {
-  color: #666; text-decoration: none; text-transform: uppercase
+  color:var(--color-a); text-decoration: none; text-transform: uppercase;
+  background:var(--color-bg);
 }
 .navbar .navbar-item a:hover,
 .navbar .navbar-brand a:hover {
-  color: #000;
+  color:var(--color-a-hover);
+  background:var(--color-bg);
 }
 .navbar .navbar-item.is-active a { font-weight:500; text-decoration: none; color:#333}
-.navbar { margin-bottom:0px}
-
+.navbar { margin-bottom:0px; background:var(--color-bg);}
+.navbar-menu {
+  background:var(--color-bg);
+}
 
 /* main set */
 .embed-container { position: relative; padding:0; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%;}
 .embed-container iframe, .embed-container object, .embed-container embed, .embed-container div
   { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
 
-.stage { width: 800px; margin: 0 auto; max-width: 100%; margin-bottom:30px}
-
-
-/* compoonent pparts */
-
-.max-width { width: 800px; margin: auto auto; max-width: 100%;}
-.textroom .chatroom { min-height: 156px}
 
 .header { flex: 0 0 auto}
 .headers { background: none; border-bottom: 1px solid var(--color-fg); padding:5px 5px; margin-bottom: 0.7rem !important}
@@ -210,30 +216,57 @@ footer {
   left: 0;
   position: fixed;
   right: 0;
-  z-index: 30;
+  z-index: 201;
   padding:0px;
-  font-size: .75em; line-height: 1.2em; background:#f9f9f9;padding:5px
+  font-size: .75em; line-height: 1.2em; background:
+  var(--color-bg-footer);
+  ;padding:5px
 }
-footer a {color:#333 !important; text-decoration:underline}
+footer a {color:var(--color-a) !important; text-decoration:underline}
+
+
+
+
+@media (max-width:1440px) {
+  .max-width {  }
+}
+
+@media (max-width:461px) {
+  .navbar { margin-bottom:10px}
+  .stageroom { padding: 0 15px 0 10px;}
+}
+/* .shortcuts { display: none !important } */
+.textroom { max-height:300px !important}
 
 @-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }
 @-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
 @keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
 
+
+.loadingComponent {background:var(--color-bg) !important; opacity: 0.7}
+.linked { cursor:pointer; color: var(--color-fg)}
+
+v-text-field:not(.v-input--has-state):hover > .v-input__control > .v-input__slot:before,
+.theme--light.v-text-field:not(.v-input--has-state):hover > .v-input__control > .v-input__slot::before,
+.theme--light.v-text-field > .v-input__control > .v-input__slot::before,
+.theme--light.v-input, .theme--light.v-input input, .theme--light.v-input textarea,
+.v-input, .v-input input, .v-input textarea,
+.v-input input::placeholder, .v-input textarea::placeholder,
+.theme--light.v-input input::placeholder, .theme--light.v-input textarea::placeholder,
+.v-text-field > .v-input__control > .v-input__slot:after,
+.v-text-field > .v-input__control > .v-input__slot::before {
+  border-color: var(--color-fg);
+  color: var(--color-fg);
+  font-size:100%;
+}
+.v-input input::placeholder, .v-input textarea::placeholder,
+.theme--light.v-input input::placeholder, .theme--light.v-input textarea::placeholder {
+  opacity: 0.7;
+}
+
 /* TRANSITIONS */
 /*-------------------*/
 
-.slide-fade-enter-active {
-  transition: all 2.3s ease;
-}
-.slide-fade-leave-active {
-  transition: all .8s cubic-bezier(1.0, 0.5, 0.8, 1.0);
-}
-.slide-fade-enter, .slide-fade-leave-to
-/* .slide-fade-leave-active below version 2.1.8 */ {
-  transform: translateX(10px);
-  opacity: 0;
-}
 
 .fade-enter-active,
 .fade-leave-active {
@@ -241,23 +274,11 @@ footer a {color:#333 !important; text-decoration:underline}
   transition-property: opacity;
   transition-timing-function: ease;
 }
-
 .fade-enter, .fade-leave-to {
   opacity: 0;
 }
 
-.textroom { max-height:300px !important}
 
-body {vertical-align: middle}
 
-@media (max-width:1440px) {
-  .max-width { width: 640px; }
-}
 
-@media (max-width:461px) {
-  .navbar { margin-bottom:10px}
-  .echorooms { padding: 0 15px 0 10px;}
-  .stage { padding: 0 5px 0 5px;}
-}
-/* .shortcuts { display: none !important } */
 </style>

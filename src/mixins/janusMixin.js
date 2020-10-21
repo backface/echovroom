@@ -107,12 +107,7 @@ export const janusMixin = {
       console.log("has host");
       this.server = this.host;
     } else {
-      if (window.location.protocol === "http:") {
-          console.log(window.location.protocol);
-        this.server = [
-            window.location.protocol + "//" +  window.location.hostname + ":8088/janus",
-         ]
-      }
+      console.log(this.server);
     }
   },
 
