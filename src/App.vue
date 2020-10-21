@@ -80,7 +80,7 @@
       </div>
     </footer>
 
-    <portal-target name="portalsreen"></portal-target>
+    <portal-target name="portalscreen"></portal-target>
     <portal-target name="topcontrols" class="topcontrols"></portal-target>
 
   </v-app>

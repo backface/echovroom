@@ -16,6 +16,7 @@
     </div>
 
     <!--<div class="bg" v-show="is_streaming && has_stream"></div >-->
+    <portal to="portalscreen" class="">
 
     <div v-show="is_streaming && has_stream" class="videocalllocal" :style="'transform: translate('+ (width/-2-80) + 'px, ' + (width/2+80) + 'px)'">
       <video ref="videolocal" id="videolocal" autoplay loop  muted></video>
@@ -65,6 +66,7 @@
       </div>
     </div>
 
+  </portal>
 
     <toast ref="toast"></toast>
     <login-dialog ref="login"></login-dialog>
@@ -82,6 +84,7 @@ import LoginDialog from '@/components/dialogs/LoginDialog'
 import AlertDialog from '@/components/dialogs/AlertDialog'
 import Toast from '@/components/dialogs/Toast'
 import screenfull from 'screenfull'
+import { Portal  } from 'portal-vue'
 
 export default {
   name: 'Videocall',
@@ -91,7 +94,8 @@ export default {
   components: {
     LoginDialog, Toast, AlertDialog,
     MicIcon, MicOffIcon, MinusIcon, LoaderIcon, VideoIcon,
-    Maximize2Icon, SettingsIcon, PhoneOffIcon
+    Maximize2Icon, SettingsIcon, PhoneOffIcon,
+    Portal,
   },
 
   props: {
@@ -517,9 +521,9 @@ export default {
 </script>
 
 <style lang="css" scoped>
-.videocall .headers {display: none}
+.headers {display: none}
 
-.videocall video {
+video {
    object-fit: cover;
    width:100%;
    height:100%;
@@ -528,38 +532,38 @@ export default {
    background: black;
    color:white;
 }
-.videocall .bg { position: absolute; top:0px; left:0px; width:100%; height:100%; background: rgba(0,0,0,0.7);z-index:99 }
-.videocall .videocalllocal { display:none;position: absolute; bottom:50%; left:50%; width:256px; height:256px;z-index:99; opacity: 0.8}
-.videocall .videocallremote { position: absolute; top:50%; left:50%;transform: translate(-50%,-50%);z-index:100; }
+.bg { position: absolute; top:0px; left:0px; width:100%; height:100%; background: rgba(0,0,0,0.7);z-index:99 }
+.videocalllocal { display:none;position: absolute; bottom:50%; left:50%; width:256px; height:256px;z-index:99; opacity: 0.8}
+.videocallremote { position: absolute; top:50%; left:50%;transform: translate(-50%,-50%);z-index:100; }
 
 .videoroom .videocalllocal {
   -webkit-transform: scaleX(-1);
   transform: scaleX(-1);
 }
 
-.videocall .overlay .icons {   opacity: 0.7 }
-.videocall .overlay .linked{  background:none }
-.videocall .overlay .linked:hover { opacity: 1; color:white }
-.videocall .name {
+.overlay .icons {   opacity: 0.7 }
+.overlay .linked{  background:none }
+.overlay .linked:hover { opacity: 1; color:white }
+.name {
   position: absolute; top:2px; left: 50%; transform:translate(-50%,0);
   background:rgba(0,0,0, 0.2); color:white;padding:0.01rem 0.5rem;
   opacity: 0.7
 }
-.videocall .loading {
+.loading {
     position: absolute;
     left: 50%; top:50%;transform:translate(-50%,-50%);
     /*bottom:5px; left: 5px;*/
     /*background:white; color:#333;padding:0.3em;*/
     background:rgba(0,0,0, 0.2); color:white;padding:0.1rem 0.5rem;
 }
-.videocall .meta {
+.meta {
     position: absolute; opacity: 0.7;
     left: 50%; bottom:2px;transform:translate(-50%,0);
     /*bottom:5px; left: 5px;*/
     /*background:white; color:#333;padding:0.3em;*/
     background:rgba(0,0,0, 0.2); color:white;padding:0.1rem 0.5rem;
 }
-.videocall .options {
+.options {
     opacity: 0.7;  position: absolute;
     left: 50%; bottom:28px;  height:45px; transform:translate(-50%,0);
     /*bottom:5px; left: 5px;*/

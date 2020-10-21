@@ -46,12 +46,12 @@
         <a v-if="allowScreenshare && is_streaming" v-show="is_open" @click="toggleScreenShare" title="share screen">
           <monitor-icon size="1x" class="icons linked {}" :style="{ color: screenshare ? 'var(--color-alert)' : '' }"></monitor-icon>
         </a>
-        <a v-if="advancedOptions && allowStageSends && is_streaming && !vr" v-show="is_open" @click="sendMeToStage(username !=onstage)" title="Send me to stage">
+        <a v-if="allowStageSends && is_streaming && !vr" v-show="is_open" @click="sendMeToStage(username !=onstage)" title="Send me to stage">
           <airplay-icon size="1x" class="icons linked"
             :style="{ color: username == onstage && onstage != null ? 'var(--color-alert)' : '' }"
           ></airplay-icon>
         </a>
-        <a v-if="advancedOptions && allowRTPforward && is_streaming" title="configure RTP Forward" @click="toggleRTPForward">
+        <a v-if="betaOptions && allowRTPforward && is_streaming" title="configure RTP Forward" @click="toggleRTPForward">
           <arrow-right-icon size="1x" class="icons linked"
               :style="{ color: isRTPforwarding ? 'var(--color-alert)' : '' }"
             ></arrow-right-icon>
@@ -125,7 +125,7 @@
     </div>
 
 
-    <portal to="portalsreen">
+    <portal to="portalscreen">
 
       <fullscreen ref="fullscreen" :fullscreen.sync="fullscreen"
         @change="fullscreenChange"  background="white" v-if="is_open">
@@ -263,7 +263,6 @@
                       </span>
                       <a @click="feed.showOptions=!feed.showOptions" title="show settings">
                         <settings-icon v-if="allowSettings" size="1x" class="icons linked"></settings-icon>
-
                       </a>
                       <a @click="makeVideoFullscreen" title="fullscreen">
                         <maximize-2-icon size="1x" class="icons linked"></maximize-2-icon>
@@ -289,7 +288,6 @@
         </div>
       </fullscreen>
 
-      asdfdkasjf;dkjs;as
     </portal>
 
     <toast ref="toast"></toast>
@@ -1618,10 +1616,9 @@ export default {
 }
 
 .stage {
-  position: relative;
-  top:-70px; left: 50%;
-  width:100%;
-  transform:translate(-50%,-100%);
+  position: absolute;
+  top:50%; left: 50%;
+  transform:translate(-50%,-50%);
 }
 .stage .meta { bottom:10px}
 .fullscreen { background:white}
@@ -1637,10 +1634,10 @@ export default {
   border:0;
   box-shadow: 10px 6px 12px rgba(0,0,0,0.55);
 }
+.stage:hover .overlay { display:block }
 
 .stage video {
-  object-fit: cover;
-  max-height:450px;
+  object-fit: contain;
   width:100%;
   height:100%;
   border-radius: 0%;
