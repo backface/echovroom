@@ -191,7 +191,7 @@ export default {
       msg: "",
       welcome_msg: null,
       search_emoji: '',
-      is_active: this.is_active,
+      is_active: this.active,
     }
   },
 
@@ -402,9 +402,11 @@ export default {
           return;
         }
         // We're in
+        console.log(self.opaqueId, "a", self.is_open, self.is_active);
         console.log(self.opaqueId, ":", "we are in");
         self.loading = false;
         self.webRTCUp = true;
+
         self.$emit('hasNick', self.display)
         if (self.password)
           self.$emit('hasPassword', self.password)

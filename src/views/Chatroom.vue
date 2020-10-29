@@ -23,7 +23,7 @@
 
     <v-btn @click="preLogin" v-if="!chat_open" class="enter">Join the Conversation</v-btn>
 
-    <div class="echorooms">
+    <div class="echovrooms">
 
       <Videoroom
         :roombyName="roombyName"
@@ -295,7 +295,7 @@ export default {
 
 .max-width { width: 1024px; margin: auto auto; max-width: 100%;}
 
-.echorooms {
+.echovrooms {
 	position: fixed;
 	width: 1280px; max-width: 100%;
 	bottom: 20px;
