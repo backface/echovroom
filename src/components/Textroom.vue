@@ -10,10 +10,10 @@
            <span v-if="count > 0"> ({{ count }})</span>
         </div>
         <div class="column  has-text-right">
-          <a v-if="is_open" @click="is_open=false" title="hide room">
+          <a v-if="is_active" @click="is_active=false" title="hide room">
             <minus-icon size="1x" class="icons linked"></minus-icon>
           </a>
-          <a v-if="!is_open" @click="openChat" title="enter room">
+          <a v-if="!is_active" @click="openChat" title="enter room">
             <plus-icon size="1x" class="icons linked"></plus-icon>
           </a>
         </div>
@@ -175,6 +175,10 @@ export default {
       type: Boolean,
       default: true
     },
+    autologin: {
+      type: Boolean,
+      default: false
+    },
   },
 
   data() {
@@ -187,7 +191,7 @@ export default {
       msg: "",
       welcome_msg: null,
       search_emoji: '',
-      is_active: this.active
+      is_active: this.is_active,
     }
   },
 
@@ -244,6 +248,7 @@ export default {
 
         webrtcState: function(on) {
           console.log(self.opaqueId, ":", "Janus says our WebRTC PeerConnection is " + (on ? "up" : "down") + " now");
+          if (self.autologin) self.login()
         },
 
         onmessage: function(msg, jsep) {
@@ -356,7 +361,6 @@ export default {
             self.alert.open('Error: ' + json["error"])
             console.log(self.opaqueId, ":", "Error: " + json["error"])
           }
-
 
         },
         oncleanup: function() {
@@ -593,6 +597,7 @@ export default {
     },
 
     openChat() {
+      this.is_active = true;
       if (this.webRTCUp) {
         this.is_open = true
       } else {
@@ -612,7 +617,6 @@ export default {
   width:100%;
   display: flex;
   flex-direction: column;
-
 }
 
 .chatroom { flex: 1 1 auto;display:flex; max-height:70%; }

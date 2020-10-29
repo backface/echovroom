@@ -23,11 +23,11 @@
 
     <v-btn @click="preLogin" v-if="!chat_open" class="enter">Join the Conversation</v-btn>
 
-    <div class="stageroom">
+    <div class="echorooms">
 
       <Videoroom
         :roombyName="roombyName"
-        v-if="login_name  && showVroom"
+        v-if="login_name  && showVroom && janusReady"
         :nick="login_name"
         :is_muted="video_chat_muted"
         :login_password="password"
@@ -44,7 +44,7 @@
 
       <Videocall
         :roombyName="roombyName"
-        v-if="login_name"
+        v-if="login_name && janusReady"
         :nick="login_name + '@' + roombyName"
         :is_muted="true"
         :host="server"
@@ -57,6 +57,7 @@
           v-if="janusReady"
           v-show="chat_open"
           :open="chat_open"
+          :autologin="chat_open && login_name!=''"
           :active="false"
           :roombyName="roombyName"
           :host="server"
@@ -185,6 +186,7 @@ export default {
         {"urls": "turn:" + window.location.hostname, "username": "turn", "credential": "hinterseer"}
       ],
       hasStreaming: false,
+      delayed_login: false // crude HACK!!
     }
   },
 
@@ -218,18 +220,33 @@ export default {
           } else {
             this.hasStreaming = this.withStreaming;
           }
-          this.janusReady = true
+          this.attach()
         }).catch( () => {
           console.log("no valid room config found");
           this.hasStreaming = this.withStreaming;
-          this.janusReady = true;
-
+          this.attach()
         })
+    },
+
+    loginFromParam() {
+      this.chat_open = true;
+      this.video_chat_open = true;
+      this.janusReady = true;
     },
 
     attachPlugin() {
       console.log("janus is ready");
       this.janusReady = true
+    },
+
+    attach() {
+      let self = this;
+      if (this.login_name) {
+        this.chat_open = true;
+        this.video_chat_open = true;
+      }
+      this.janusReady = true;
+      setTimeout( () => {self.delayed_login = true})
     },
 
     recreateVRoom() {
@@ -259,12 +276,10 @@ export default {
 
     }
   }
-
 }
 </script>
 
 <style>
-
 
 .main {}
 .main { margin-bottom:100px }
@@ -279,12 +294,11 @@ export default {
 /* compoonent pparts */
 
 .max-width { width: 1024px; margin: auto auto; max-width: 100%;}
-.textroom .chatroom { min-height: 156px}
 
-.stageroom {
+.echorooms {
 	position: fixed;
 	width: 1280px; max-width: 100%;
-	bottom: 8px;
+	bottom: 20px;
 	background: var(--color-bg-trans);
   color: var(--color-fg);
 	left: 50%;
@@ -296,6 +310,9 @@ export default {
   z-index:200;
 }
 
+.textroom  { max-height:600px}
+.textroom .chatroom { height:180px}
+
 .topcontrols {
   position: fixed;
   top:-2px; left:50%;
@@ -305,24 +322,24 @@ export default {
   box-shadow: 10px 6px 12px rgba(0,0,0,0.25);
   border-radius: 3px;
   z-index:200;
-  width:350px;
+  width:400px; max-width:75%;
 }
 
 .topcontrols .headers {border:0; padding-bottom: 0}
 
 @media (max-width:1440px) {
   .max-width { width:800px }
-  .stageroom { width:1024px }
+  .echorooms { width:1024px }
 }
 
 @media (max-width:1280px) {
   .max-width { width:800px }
-  .stageroom { width:1024px }
+  .echorooms { width:1024px }
 }
 
 @media (max-width:1024px) {
   .max-width { width:640px }
-  .stageroom { width:800px;}
+  .echorooms { width:800px;}
 }
 
 @media (max-width:461px) {

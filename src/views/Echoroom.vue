@@ -6,7 +6,7 @@
       </div>
     </div>
     <Echorooms :roombyName="roombyName" />
-    <p style="font-size:90%">
+    <p style="font-size:90%:clear: all">
       Componized version as seen on <a href="https://echoraeume.klingt.org/" style="color:black;text-decoration:underline">echoraeume</a><br>
     </p>
   </div>
@@ -47,7 +47,7 @@ export default {
 .embed-container { position: relative; padding:0; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%;}
 .embed-container iframe, .embed-container object, .embed-container embed, .embed-container div
   { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
-.stage { width: 800px; margin: 0 auto; max-width: 100%; margin-bottom: 10px}
-.echorooms {width:800px; margin:auto;max-width: 100%}
+.stage { width: 640px; margin: 0 auto; max-width: 100%; margin-bottom: 10px}
+.echorooms {width:640px; margin:auto;max-width: 100%}
 
 </style>

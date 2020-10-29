@@ -85,6 +85,7 @@ export const janusMixin = {
       webRTCUp:null,
       password:this.login_password,
       needs_pin: false,
+      opaqueId: "janus_mix_in",
     }
   },
 
