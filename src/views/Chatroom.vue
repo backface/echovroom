@@ -298,7 +298,7 @@ export default {
 .echovrooms {
 	position: fixed;
 	width: 1280px; max-width: 100%;
-	bottom: 20px;
+	bottom: 10px;
 	background: var(--color-bg-trans);
   color: var(--color-fg);
 	left: 50%;
