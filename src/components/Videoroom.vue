@@ -407,6 +407,10 @@ export default {
       type: Boolean,
       default: false
     },
+    publish: {
+      type: Boolean,
+      default: true
+    },
   },
 
   data() {
@@ -760,7 +764,12 @@ export default {
               console.log(self.opaqueId, ":", "Successfully joined room " + msg["room"] + " with ID " + msg["id"]);
 
               self.$emit("joined");
-              self.publishOwnFeed(true);
+
+              if (self.publish) {
+                self.publishOwnFeed(true);                
+              } else {
+                self.webRTCUp = true;
+              }
 
               // Any new feed to attach to?
               if(msg["publishers"] !== undefined && msg["publishers"] !== null) {

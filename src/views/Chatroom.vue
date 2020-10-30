@@ -40,6 +40,7 @@
         :emitCallEvents="true"
         @call="handleCall"
         :vr="vr"
+        :publish="publish"
       />
 
       <Videocall
@@ -146,6 +147,12 @@ export default {
     if (typeof this.$route.query.adv !=  undefined) {
       this.advanced = this.$route.query.adv === 'true';
     }
+
+    if (typeof this.$route.query.publish !=  undefined) {
+      this.publish = this.$route.query.publish != "false";
+    }
+
+    // vr stuff - is it still needed
     if (typeof this.$route.query.vr !=  undefined) {
       this.vr = this.$route.query.vr === 'true';
     }
@@ -174,6 +181,7 @@ export default {
       subtitle:"",
       info_link:"",
       schedule_link:"",
+      publish:true,
       stage:"",
       server: [
         //"wss://" +  window.location.hostname + "/ws/janus",
