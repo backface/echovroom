@@ -272,16 +272,21 @@ export default {
 
     preLogin() {
       let self =this;
-      self.$refs.prelogin.open("Join the chat system!", {
-      } ).then((r) => {
-        if (r) {
-          self.video_chat_open = r.login_videochat;
-          self.video_chat_muted = r.login_muted;
-          self.chat_open= true;
-          self.janusReady = true;
-        }
-      })
-
+      if (this.publish) {
+        self.$refs.prelogin.open("Join the chat system!", {
+        } ).then((r) => {
+          if (r) {
+            self.video_chat_open = r.login_videochat;
+            self.video_chat_muted = r.login_muted;
+            self.chat_open= true;
+            self.janusReady = true;
+          }
+        })
+      } else {
+        this.chat_open = true;
+        this.video_chat_open = true;
+        self.janusReady = true;
+      }
     }
   }
 }
