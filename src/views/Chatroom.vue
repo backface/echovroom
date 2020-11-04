@@ -211,11 +211,7 @@ export default {
         .then(r => r.json())
         .then(json => {
           console.log("loading vroom configs: vroom/" + this.roombyName + ".json");
-          if ('autologin' in json)
-          {
-            this.chat_open = json.autologin;
-            this.video_chat_open = json.autologin;
-          }
+
           if (json.server) this.server = json.server;
           if (json.iceServers) this.iceServers = json.iceServers;
           if (json.info_link) this.info_link = json.info_link;
@@ -227,6 +223,12 @@ export default {
             this.stage = json.stage;
           } else {
             this.hasStreaming = this.withStreaming;
+          }
+          if ('autologin' in json && !this.login_name)
+          {
+            //this.chat_open = json.autologin;
+            //this.video_chat_open = json.autologin;
+            this.preLogin()
           }
           this.attach()
         }).catch( () => {
@@ -342,17 +344,17 @@ export default {
 
 @media (max-width:1440px) {
   .max-width { width:800px }
-  .echorooms { width:1024px }
+  .echovrooms { width:1024px }
 }
 
 @media (max-width:1280px) {
   .max-width { width:800px }
-  .echorooms { width:1024px }
+  .echovrooms { width:1024px }
 }
 
 @media (max-width:1024px) {
   .max-width { width:640px }
-  .echorooms { width:800px;}
+  .echovrooms { width:800px;}
 }
 
 @media (max-width:461px) {
