@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Home from './views/Home.vue'
 import Chatroom from './views/Chatroom.vue'
+import Mixer from './views/Mixer.vue'
 import About from './views/About.vue'
 import Monitor from './views/Monitor.vue'
 import NotFound from './views/NotFound.vue'
@@ -64,6 +65,14 @@ export default new Router({
       props: (route) => ({
           roombyName: route.params.roombyName,
           enterVR:true
+      }),
+    },
+    {
+      path: '/mix/:roombyName',
+      name: 'mix',
+      component: Mixer,
+      props: (route) => ({
+          roombyName: route.params.roombyName,
       }),
     },
 
