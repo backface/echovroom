@@ -5,10 +5,14 @@
       <div class="columns is-mobile is-narrow headers is-gapless" @dblclick="is_active=!is_active">
         <div class="column has-text-left is-10">
           <message-square-icon size="1x" class="icons linked"></message-square-icon>
+
             Chat
            <span v-if="room_info.description && showRoomInfo"> - {{ room_info.description }} </span>
            <span v-if="count > 0"> ({{ count }})</span>
+           &nbsp;
+           <div v-if="new_messages > 0" class="new_message_counter"> {{ new_messages }}</div>
         </div>
+
         <div class="column  has-text-right">
           <a v-if="is_active" @click="is_active=false" title="hide room">
             <minus-icon size="1x" class="icons linked"></minus-icon>
@@ -192,7 +196,20 @@ export default {
       welcome_msg: null,
       search_emoji: '',
       is_active: this.active,
+      new_messages: 0
     }
+  },
+
+  watch: {
+    is_active: function (val) {
+      if (val) {
+        var self = this;
+        window.setTimeout( function() {
+          self.$refs.chatbar.$el.scrollTop = self.$refs.chatbar.$el.scrollHeight;
+        }, 200);
+        this.new_messages = 0;
+      }
+    },
   },
 
   computed: {
@@ -319,10 +336,11 @@ export default {
                 msg: Autolinker.link(strip_tags(msg)),
                 date: dateString,
               })
+              if (!self.is_active)
+                self.new_messages++;
+
               window.setTimeout( function() {
-                console.log(self.$refs.chatbar.$el);
                 self.$refs.chatbar.$el.scrollTop = self.$refs.chatbar.$el.scrollHeight;
-                //document.getElementById("chatbar").scrollTop = document.getElementById("chatbar").scrollHeight;
               }, 200);
             }
 
@@ -659,6 +677,17 @@ export default {
 .loadingComponent div {position: absolute; top:50%; left: 50%; transform:translate(-50%,-50%)}
 .loading { }
 
+.new_message_counter {
+  display: inline-block;
+  text-align: center;
+  background: red;
+  color: white;
+  border-radius: 50%;
+  font-size: 0.6em;
+  width:1.5em;
+  height:1.5em;
+  line-height: 1.5em;
+}
 
 .emoji-picker {
   text-align: center;
