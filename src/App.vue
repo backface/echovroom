@@ -220,8 +220,12 @@ a:hover {color:var(--color-a-hover)};
   { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
 
 
-.header { flex: 0 0 auto}
-.headers { background: none; border-bottom: 1px solid var(--color-fg); padding:5px 5px; margin-bottom: 0.7rem !important}
+.header { flex: 0 0 auto; font-size: 0.9em}
+.headers { background: none; border-bottom: 1px solid var(--color-fg); padding:5px 5px; margin-bottom: 0.5rem !important}
+
+.participant_counter {  margin-left: 1em;}
+.participant_counter .icons { vertical-align:text-top; margin:0px}
+
 
 .icons { vertical-align: middle; margin:0px 3px}
 .linked { cursor:pointer; }

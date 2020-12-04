@@ -5,10 +5,9 @@
       <div class="columns is-mobile is-narrow headers is-gapless" @dblclick="is_active=!is_active">
         <div class="column has-text-left is-10">
           <message-square-icon size="1x" class="icons linked"></message-square-icon>
-
             Chat
            <span v-if="room_info.description && showRoomInfo"> - {{ room_info.description }} </span>
-           <span v-if="count > 0"> ({{ count }})</span>
+           <span class="participant_counter" v-if="count > 0"> <user-icon size="1x" class="icons"></user-icon> {{ count }}   </span>
            &nbsp;
            <div v-if="new_messages > 0" class="new_message_counter"> {{ new_messages }}</div>
         </div>
@@ -148,7 +147,7 @@ import AlertDialog from '@/components/dialogs/AlertDialog'
 import PromptDialog from '@/components/dialogs/PromptDialog'
 import Toast from '@/components/dialogs/Toast'
 import { MessageSquareIcon,MinusIcon, PlusIcon } from 'vue-feather-icons'
-import { SmileIcon, SendIcon } from 'vue-feather-icons'
+import { SmileIcon, SendIcon,  UserIcon } from 'vue-feather-icons'
 import { LoaderIcon } from 'vue-feather-icons'
 import { VMenu, VList } from 'vuetify/lib'
 import { replaceEmoticons } from "../libs/emoticon"
@@ -162,7 +161,7 @@ export default {
   components: {
     vueCustomScrollbar,
     LoginDialog, Toast, AlertDialog, PromptDialog, SendIcon,
-    MessageSquareIcon,  MinusIcon, PlusIcon, LoaderIcon, SmileIcon,
+    MessageSquareIcon,  MinusIcon, PlusIcon, LoaderIcon, SmileIcon, UserIcon,
     VMenu, VList, EmojiPicker
   },
 
@@ -639,57 +638,59 @@ export default {
   flex-direction: column;
 }
 
-.chatroom { flex: 1 1 auto;display:flex; max-height:70%; }
-.participants {
+
+.textroom .new_message_counter {
+  display: inline-block;
+  text-align: center;
+  background: red;
+  color: white;
+  border-radius: 50%;
+  font-size: 0.8em;
+  width:1.5em;
+  height:1.4em;
+  line-height: 1.5em;
+  margin-left: 1.5em;
+}
+
+.textroom .chatroom { flex: 1 1 auto;display:flex; max-height:70%; }
+.textroom .participants {
   font-size: 90%;
   overflow-y: auto;
   flex: 0 0 25%;
   margin-right: 10px;
   word-wrap: break-word;
 }
-.participants ul  {padding-left: 24px}
-.participant span { cursor: pointer}
+.textroom .participants ul  {padding-left: 24px}
+.textroom .participant span { cursor: pointer}
 
-.chat {
+.textroom .chat {
   overflow-y: auto;
   flex: 1 1 auto;
 }
-.chat {  padding-left: 0.7rem }
-.chat .item { padding:0px 20px 0px 0px; margin-bottom:0px}
-.chat .user { font-style:italic; font-size: 90%; opacity: 0.8}
-.chat .item .username { padding: 0 0.2rem 0 1rem; }
-.chat .item .msg { padding:0.2rem 0 0.5rem 0.4rem; word-break: break-word}
+.textroom .chat {  padding-left: 0.7rem }
+.textroom .chat .item { padding:0px 20px 0px 0px; margin-bottom:0px}
+.textroom .chat .user { font-style:italic; font-size: 90%; opacity: 0.8}
+.textroom .chat .item .username { padding: 0 0.2rem 0 1rem; }
+.textroom .chat .item .msg { padding:0.2rem 0 0.5rem 0.4rem; word-break: break-word}
 
-.me { line-height:2.5em; margin-right: 10px;}
-.msg_editor {
+.textroom .me { line-height:2.5em; margin-right: 10px;}
+.textroom .msg_editor {
     text-align:left;
     padding-top:0px;
     line-height:2.5em;
     margin-right:0rem;
 }
-.emojicol {
+.textroom .emojicol {
   line-height:2.5em;
   padding-left:0px
 }
 
-.talk { flex:  0 0 auto; padding:0.7rem 0; margin-top: 1rem; border-top: 1px solid var(--color-fg); }
-.loadingComponent {position: absolute;top:40px;width:100%;height:100%;background:rgba(255, 255, 255, 0.7)}
-.loadingComponent div {position: absolute; top:50%; left: 50%; transform:translate(-50%,-50%)}
-.loading { }
+.textroom .talk { flex:  0 0 auto; padding:0.7rem 0; margin-top: 1rem; border-top: 1px solid var(--color-fg); }
+.textroom .loadingComponent {position: absolute;top:40px;width:100%;height:100%;background:rgba(255, 255, 255, 0.7)}
+.textroom .loadingComponent div {position: absolute; top:50%; left: 50%; transform:translate(-50%,-50%)}
+.textroom .loading { }
 
-.new_message_counter {
-  display: inline-block;
-  text-align: center;
-  background: red;
-  color: white;
-  border-radius: 50%;
-  font-size: 0.6em;
-  width:1.5em;
-  height:1.5em;
-  line-height: 1.5em;
-}
-
-.emoji-picker {
+.textroom .emoji-picker {
   text-align: center;
   position: absolute;
   z-index: 1;
@@ -707,45 +708,45 @@ export default {
   transform: translate(-12rem,-23rem);
   margin-bottom:24px;
 }
-.emoji-picker__search {
+.textroom .emoji-picker__search {
   display: flex;
 }
-.emoji-picker__search > input {
+.textroom .emoji-picker__search > input {
   flex: 1;
   border-radius: 0rem;
   border-bottom: 1px solid var(--color-fg) !important;
   padding: 0.2rem 1rem;
   margin-bottom:1.5rem;
 }
-.emoji-picker h5 {
+.textroom .emoji-picker h5 {
   margin-bottom: 0;
   color: var(--color-fg);
   text-transform: uppercase;
   font-size: 0.8rem;
   cursor: default;
 }
-.emoji-picker .emojis {
+.textroom .emoji-picker .emojis {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
 
 }
-.emoji-picker .emojis:after {
+.textroom .emoji-picker .emojis:after {
   content: "";
   flex: auto;
 }
-.emoji-picker .emojis span {
+.textroom .emoji-picker .emojis span {
   padding: 0.2rem;
   cursor: pointer;
   border-radius: 0px;
 }
-.emoji-picker .emojis span:hover {
+.textroom .emoji-picker .emojis span:hover {
   background: #ececec;
   cursor: pointer;
 }
 
 @media (max-width:421px) {
-  .participants {display: none}
+  .textroom .participants {display: none}
 }
 
 </style>

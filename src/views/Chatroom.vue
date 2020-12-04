@@ -341,7 +341,10 @@ export default {
   width:400px; max-width:75%;
 }
 
-.topcontrols .headers {border:0; padding-bottom: 0}
+.topcontrols .icons { vertical-align:text-top;}
+.topcontrols .vicon { vertical-align:middle;}
+.topcontrols .participant_counter { margin:0px 10px ;}
+.topcontrols .headers {border:0; padding-bottom: 0; font-size: 0.9em; }
 
 @media (max-width:1440px) {
   .max-width { width:800px }

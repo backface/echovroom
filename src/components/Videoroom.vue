@@ -6,21 +6,21 @@
     <div class="columns is-mobile is-narrow headers is-gapless">
       <div class="column has-text-left is-10">
         <template v-if="allowUnpublish">
-          <a  v-if="!is_streaming" @click="publishOwnFeed(true)" title="publish video">
-            <video-off-icon size="1x" class="icons linked"></video-off-icon>
+          <a v-if="!is_streaming" @click="publishOwnFeed(true)" title="publish video">
+            <video-off-icon size="1x" class="icons linked vicon"></video-off-icon>
           </a>
           <a v-if="is_streaming" @click="unpublishOwnFeed" title="unpublish video">
-            <video-icon size="1x" class="icons linked"></video-icon>
+            <video-icon size="1x" class="icons linked vicon"></video-icon>
           </a>
         </template>
         <template v-else>
-          <video-off-icon v-if="!is_streaming" size="1x" class="icons"></video-off-icon>
-          <video-icon  v-if="is_streaming" size="1x" class="icons"></video-icon>
+          <video-off-icon v-if="!is_streaming" size="1x" class="icons vicon"></video-off-icon>
+          <video-icon  v-if="is_streaming" size="1x" class="icons vicon"></video-icon>
         </template>
 
         <span v-if="vr">VR/</span>&nbsp; Vroom
         <span v-if="room_info.description && showRoomInfo"> - {{ room_info.description }}</span>
-        <span v-if="count > 0"> ({{ count }}) </span>
+        <span class="participant_counter" v-if="count > 0"><user-icon size="1x" class="icons"></user-icon> {{ count }}</span>
 
         <a title="unmute me"  v-if="muted" @click="muteMe(false)" >
           <mic-off-icon size="1x" class="icons linked warn_is_on"></mic-off-icon>
@@ -75,10 +75,10 @@
       <div class="column has-text-right">
           <loader-icon size="1x" class="icons loading" v-if="!webRTCUp && is_open"  title="Loading"></loader-icon>
         <a v-if="is_open" @click="leaveRoom()" title="Leave room">
-          <minus-icon size="1x" class="icons linked" ></minus-icon>
+          <log-out-icon size="1x" class="icons linked" ></log-out-icon>
         </a>
         <a v-if="!is_open" @click="login()" title="Enter room">
-          <plus-icon size="1x" class="icons linked"></plus-icon>
+          <log-in-icon size="1x" class="icons linked"></log-in-icon>
         </a>
       </div>
 
@@ -311,7 +311,7 @@ import { faceMixin } from "@/mixins/faceMixin";
 import fullscreen from 'vue-fullscreen'
 import Janus from '../janus'
 import screenfull from 'screenfull'
-import { MinusIcon, PlusIcon } from 'vue-feather-icons'
+import { LogOutIcon, LogInIcon, UserIcon } from 'vue-feather-icons'
 import { MicIcon, MicOffIcon, LoaderIcon } from 'vue-feather-icons'
 import { VideoIcon, VideoOffIcon } from 'vue-feather-icons'
 import { Maximize2Icon, DeleteIcon } from 'vue-feather-icons'
@@ -344,9 +344,9 @@ export default {
   mixins: [janusMixin, faceMixin],
 
   components: {
-    MicIcon, MicOffIcon, LoaderIcon,
+    MicIcon, MicOffIcon, LoaderIcon, UserIcon,
     VideoIcon, VideoOffIcon, MessageCircleIcon,
-    MinusIcon, PlusIcon, SettingsIcon, ArrowRightIcon,
+    LogInIcon, LogOutIcon, SettingsIcon, ArrowRightIcon,
     Maximize2Icon, CompassIcon, DeleteIcon, //Minimize2Icon,
     MonitorIcon, AirplayIcon, EyeOffIcon, EyeIcon, PhoneCallIcon,
     LoginDialog, Toast, AlertDialog, RtpDialog, DeviceDialog,
@@ -766,7 +766,7 @@ export default {
               self.$emit("joined");
 
               if (self.publish) {
-                self.publishOwnFeed(true);                
+                self.publishOwnFeed(true);
               } else {
                 self.webRTCUp = true;
               }
