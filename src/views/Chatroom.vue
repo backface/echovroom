@@ -217,6 +217,7 @@ export default {
           if (json.info_link) this.info_link = json.info_link;
           if (json.schedule_link) this.schedule_link = json.schedule_link;
           if (json.title) this.title = json.title;
+          if (json.no_title == "true") this.title = "";
           if (json.subtitle) this.subtitle = json.subtitle;
           if (json.stage) {
             this.hasStreaming = false;
