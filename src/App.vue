@@ -79,7 +79,8 @@
 
     <footer>
       <div class="has-text-centered">
-          &copy; 2020 ./<a href="/">echoVroom</a> by ./<a href="https://m.ash.to">m.ash.to</a> -
+          &copy; 2020 ./<a href="/">echoVroom</a> by ./<a href="https://m.ash.to">m.ash.to</a> /
+          <a href="https://github.com/backface/echovroom"><github-icon size="0.9x" class="icons linked"></github-icon></a>
       </div>
     </footer>
 
@@ -100,7 +101,7 @@
 <script>
 import TransitionPage from './components/TransitionPage.vue';
 import About from './views/About.vue';
-import { ArrowUpLeftIcon, Share2Icon, ClipboardIcon } from 'vue-feather-icons'
+import { ArrowUpLeftIcon, Share2Icon, ClipboardIcon, GithubIcon } from 'vue-feather-icons'
 import 'typeface-asap-condensed'
 import { PortalTarget } from 'portal-vue'
 
@@ -109,7 +110,7 @@ export default {
 
   components: {
     TransitionPage,
-    ArrowUpLeftIcon, Share2Icon, ClipboardIcon,
+    ArrowUpLeftIcon, Share2Icon, ClipboardIcon, GithubIcon,
     PortalTarget, About,
   },
 
@@ -118,7 +119,6 @@ export default {
       menuOpen: false,
       embed: false,
       url: "",
-      show_about:true,
       default_favorites: ['echoraeume','demoroom'],
       shortcuts: [],
     }
