@@ -119,6 +119,7 @@ export default {
       menuOpen: false,
       embed: false,
       url: "",
+      show_about: false,
       default_favorites: ['echoraeume','demoroom'],
       shortcuts: [],
     }
