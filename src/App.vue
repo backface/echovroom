@@ -20,13 +20,16 @@
 
       <div class="navbar-menu" :class="{'is-active':menuOpen}">
 
+        <div class="navbar-item">
+          <a @click="show_about=true" title="about">?</a>
+        </div>
+  <!--
         <router-link to="/about" v-slot="{ href, route, isActive }">
           <div class="navbar-item" :active="isActive"  :class="{'is-active':isActive}">
             <a :href="href" @click="menuOpen=false" title="about">?</a>
           </div>
         </router-link>
 
-<!--
         <div class="navbar-start shortcuts">
           <router-link v-for="f in shortcuts" :key="f" :to="'/'+f" v-slot="{ href, route, isActive }">
             <div class="navbar-item" :active="isActive"  :class="{'is-active':isActive}">
@@ -83,11 +86,20 @@
     <portal-target name="portalscreen"></portal-target>
     <portal-target name="topcontrols" class="topcontrols"></portal-target>
 
+  <template>
+    <v-dialog v-model="show_about" width="854px" >
+      <v-card class="about">
+        <About />
+      </v-card>
+    </v-dialog>
+  </template>
+
   </v-app>
 </template>
 
 <script>
 import TransitionPage from './components/TransitionPage.vue';
+import About from './views/About.vue';
 import { ArrowUpLeftIcon, Share2Icon, ClipboardIcon } from 'vue-feather-icons'
 import 'typeface-asap-condensed'
 import { PortalTarget } from 'portal-vue'
@@ -98,7 +110,7 @@ export default {
   components: {
     TransitionPage,
     ArrowUpLeftIcon, Share2Icon, ClipboardIcon,
-    PortalTarget,
+    PortalTarget, About,
   },
 
   data() {
@@ -106,6 +118,7 @@ export default {
       menuOpen: false,
       embed: false,
       url: "",
+      show_about:true,
       default_favorites: ['echoraeume','demoroom'],
       shortcuts: [],
     }
@@ -254,7 +267,10 @@ footer {
 }
 footer a {color:var(--color-a) !important; text-decoration:underline}
 
-
+.about {
+  max-width: 100%;
+  opacity: 0.9 !important;
+}
 
 
 @media (max-width:1440px) {

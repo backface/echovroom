@@ -31,9 +31,6 @@
         EchoVroom is Free Software. Find it on <a href="https://github.com/backface/echovroom">github</a><br />
     </p>
 
-
-    <br>
-    <br>
     <br>
 
   </div>
