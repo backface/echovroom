@@ -216,9 +216,9 @@ export default {
     outline: none;
 }
 
-a {color:var(--color-a)};
+a, .v-application a,
 a:hover {color:var(--color-a-hover)};
-
+.shortcuts a {color:var(--color-a)};
 
 /*-----------------------------*/
 /* navbar */
@@ -242,11 +242,14 @@ a:hover {color:var(--color-a-hover)};
   background:var(--color-bg);
 }
 
-/* main set */
+/*-----------------------------*/
+/* SITE elements */
+/* --------------------------*/
+
+
 .embed-container { position: relative; padding:0; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%;}
 .embed-container iframe, .embed-container object, .embed-container embed, .embed-container div
   { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
-
 
 .header { flex: 0 0 auto; font-size: 0.9em}
 .headers { background: none; border-bottom: 1px solid var(--color-fg); padding:5px 5px; margin-bottom: 0.5rem !important}
@@ -259,22 +262,21 @@ a:hover {color:var(--color-a-hover)};
   max-width: 100%;
   opacity: 0.9 !important;
 }
-.about a { text-decoration: underline; color:var(--color-a) !important}
+.about a, .shortcuts a { color:var(--color-a) !important}
 .about h1.title { margin-bottom: 3rem}
 .about { text-align: left; padding: 1rem}
 
-.icons { vertical-align: middle; margin:0px 3px}
-.linked { cursor:pointer; color: var(--color-fg)}
-.overlay .linked  {color: white;}
-.linked:hover { opacity:0.8 }
-svg.linked:hover {   transform: scale(1.2); }
-
-.loading {
-  -webkit-animation:spin 4s linear infinite;
-  -moz-animation:spin 4s linear infinite;
-  animation:spin 4s linear infinite;
+.home { text-align:center; z-index:20;  }
+.home input {
+  border:0px; border-bottom: 1px solid var(--color-fg); background:none; font-size:1.3rem; text-align:center;
+  padding: 5px;
 }
-.loadingComponent {background:var(--color-bg) !important; opacity: 0.7}
+.home input::placeholder { opacity: 0.2}
+.home .logo { z-index:0;width:480px; height:480px; position: fixed; bottom:-180px; left: 80%; transform: translate(-50%,0); overflow:hidden}
+
+.shortcuts { max-width: 90%; padding: 50px 0px; margin:auto;}
+.shortcuts a { margin:10px;  padding:1px 5px}
+.shortcuts .title { opacity:0.2}
 
 footer {
   bottom: 0;
@@ -289,6 +291,23 @@ footer {
 }
 footer a {color:var(--color-a) !important; text-decoration:underline}
 
+.loading {
+  -webkit-animation:spin 4s linear infinite;
+  -moz-animation:spin 4s linear infinite;
+  animation:spin 4s linear infinite;
+}
+.loadingComponent {background:var(--color-bg) !important; opacity: 0.7}
+
+
+/*-----------------------------*/
+/*  Icon settings
+/*-----------------------------*/
+
+.icons { vertical-align: middle; margin:0px 3px}
+.linked { cursor:pointer; color: var(--color-fg)}
+.overlay .linked  {color: white;}
+.linked:hover { opacity:0.8 }
+svg.linked:hover {   transform: scale(1.2); }
 
 /*-----------------------------*/
 /*  vuetify overrides */
@@ -336,8 +355,6 @@ v-text-field:not(.v-input--has-state):hover > .v-input__control > .v-input__slot
   opacity: 0;
 }
 
-
-
 /*-----------------------------*/
 /*  media queries  */
 /*-----------------------------*/
@@ -355,6 +372,7 @@ v-text-field:not(.v-input--has-state):hover > .v-input__control > .v-input__slot
   .navbar { margin-bottom:10px}
   .stageroom { padding: 0 15px 0 10px;}
   .logo {z-index: 202}
+  .home .logo { z-index:20;width:256px; height:256px; position: fixed; bottom:-80px; left: 50%; transform: translate(-50%,0); overflow:hidden}
   footer { font-size: 0.5em}
 }
 

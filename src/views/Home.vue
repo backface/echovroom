@@ -68,22 +68,5 @@ export default {
 </script>
 
 <style scoped>
-.home { text-align:center; z-index:20;  }
-.home input {
-  border:0px; border-bottom: 1px solid var(--color-fg); background:none; font-size:1.5rem; text-align:center;
-  padding: 5px;
-}
-.home input::placeholder { opacity: 0.2}
 
-.shortcuts { max-width: 90%; padding: 50px 0px; margin:auto;}
-.shortcuts a { margin:10px; color: var(--color-a);  background: var(--color-bg); padding:1px 5px}
-.shortcuts a:hover { filter:invert(1) }
-.shortcuts .title { opacity:0.2}
-
-.logo { z-index:0;width:480px; height:480px; position: fixed; bottom:-180px; left: 80%; transform: translate(-50%,0); overflow:hidden}
-
-
-@media (max-width:461px) {
-  .logo { z-index:20;width:256px; height:256px; position: fixed; bottom:-80px; left: 50%; transform: translate(-50%,0); overflow:hidden}
-}
 </style>

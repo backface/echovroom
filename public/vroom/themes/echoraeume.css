@@ -15,6 +15,13 @@
 
 img {filter:invert(0.93)}
 
+a {
+  text-decoration: underline;
+	text-decoration-style: dotted;
+	text-decoration-thickness: 2px;
+	text-underline-position:from-font;
+}
+
 .navbar .navbar-brand a:hover,
 .navbar .navbar-menu .navbar-item:hover,
 .navbar .navbar-menu .navbar-item:hover a,

@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import App from './App.vue'
-import 'buefy/dist/buefy.css'
+import '@/styles/buefy.css'
 import router from './router'
 
 import Vuetify from 'vuetify/lib'
@@ -9,7 +9,7 @@ const vuetify = new Vuetify({
   theme: {
     themes: {
       light: {
-        primary: '#8A8808',
+        primary: '#ac3f3f',
         secondary: '#666666',
         accent: '#8c9eff',
         error: '#b71c1c',
