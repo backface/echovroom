@@ -19,10 +19,13 @@
       </div>
 
       <div class="navbar-menu" :class="{'is-active':menuOpen}">
-
         <div class="navbar-item">
-          <a @click="show_about=true" title="about">?</a>
+          <a @click="show_about=true" title="about">about</a>
         </div>
+        <div class="navbar-item" v-if="calendar_src">
+          <a @click="show_calendar=true" title="about">calendar</a>
+        </div>
+
   <!--
         <router-link to="/about" v-slot="{ href, route, isActive }">
           <div class="navbar-item" :active="isActive"  :class="{'is-active':isActive}">
@@ -95,6 +98,20 @@
     </v-dialog>
   </template>
 
+  <template>
+    <v-dialog v-model="show_calendar" width="854px" >
+      <v-card class="about">
+        <iframe :src="calendar_src"
+          style="border:none;"
+          allowfullscreen="true"
+          scrolling="no" width="100%" height="400px" frameborder="0" align="middle">
+        </iframe>
+      </v-card>
+    </v-dialog>
+  </template>
+
+
+  <div class="logo"></div>
   </v-app>
 </template>
 
@@ -119,7 +136,9 @@ export default {
       menuOpen: false,
       embed: false,
       url: "",
+      calendar_src: null,
       show_about: false,
+      show_calendar: false,
       default_favorites: ['echoraeume','demoroom'],
       shortcuts: [],
     }
@@ -170,7 +189,11 @@ export default {
   --color-a-hover:#000;
 }
 
-
+.stage {
+    background-image: url('/img/testbild2.jpg');
+    background-position: center;
+    background-size: contain
+}
 /*
 .dark
   :root {
@@ -221,6 +244,11 @@ export default {
 a {color:var(--color-a)};
 a:hover {color:var(--color-a-hover)};
 
+.theme--light.v-sheet, .theme--dark.v-sheet,
+.theme--light.v-card, .theme--dark.v-sheet {
+  background-color:var(--color-bg);
+  color: var(--color-fg)
+}
 
 .navbar .navbar-item.is-active a { font-weight:500; text-decoration: none; color:#333}
 .navbar { margin-bottom:0px; background:var(--color-bg);}
@@ -262,13 +290,14 @@ footer {
   right: 0;
   z-index: 201;
   padding:0px;
-  font-size: .75em; line-height: 1.2em; background:
-  var(--color-bg-footer);
+  font-size: .75em; line-height: 1.2em;
+  background: var(--color-bg-footer);
   ;padding:5px
 }
 footer a {color:var(--color-a) !important; text-decoration:underline}
 
 .about {
+  background: var(--color-bg);
   max-width: 100%;
   opacity: 0.9 !important;
 }

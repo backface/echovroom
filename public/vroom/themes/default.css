@@ -1,0 +1,27 @@
+:root {
+  --color-bg: #111;
+  --color-bg-trans: rgba(0,0,0, 0.7);
+  --color-fg: #eee;
+  --color-alert: red;
+  --color-bg-footer: #333;
+  --color-bg-nav: #000;
+  --color-a: #ddd;
+  --color-a-hover:#fff;
+}
+img {filter:invert(0.93)}
+.navbar .navbar-brand a:hover {
+  color:var(--color-bg);
+  background:var(--color-fg);
+}
+
+.stage {
+  background-image: url('/img/testbild2_inv.png');
+  background-position: center;
+  background
+}
+
+.theme--light.v-sheet,
+.theme--light.v-card {
+  background-color:var(--color-bg);
+  color: var(--color-fg)
+}

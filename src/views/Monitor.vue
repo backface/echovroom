@@ -173,9 +173,5 @@ export default {
 }
 </script>
 
-<style>
-.about a { text-decoration: underline; color:black !important}
-.about h1.title { margin-bottom: 3rem}
-.about { text-align: left}
-.m { float: left; }
+<style scoped>
 </style>

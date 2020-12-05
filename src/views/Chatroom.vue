@@ -3,8 +3,6 @@
     <div class="room_details">
       <span v-if="title" class="title">{{ title }}</span>
       <span v-if="subtitle" class="room_subtitle">{{ subtitle }}</span>
-      <span v-if="info_link">&raquo; </span><a target="_blank" :href="info_link" v-if="info_link">read more ...</a>
-      <span v-if="schedule_link">&raquo; </span><a target="_blank" :href="schedule_link" v-if="schedule_link">schedule</a>
     </div>
 
     <div class="stage" v-if="$route.name != 'embed'">
@@ -201,6 +199,7 @@ export default {
   methods: {
 
     loadRoomConfig() {
+      let self = this
       if (window.location.protocol === "http:") {
         console.log("protocol ist http - assume local dev",);
         this.server = [
@@ -214,11 +213,42 @@ export default {
 
           if (json.server) this.server = json.server;
           if (json.iceServers) this.iceServers = json.iceServers;
-          if (json.info_link) this.info_link = json.info_link;
-          if (json.schedule_link) this.schedule_link = json.schedule_link;
+          if (json.calendar) {
+            // this is a hack
+            self.$parent.$parent.$parent.calendar_src =  json.calendar;
+          } else {
+            self.$parent.$parent.$parent.calendar_src = null;
+          }
+          if (json.about) this.calendar = json.about;
           if (json.title) this.title = json.title;
           if (json.no_title == "true") this.title = "";
           if (json.subtitle) this.subtitle = json.subtitle;
+          if (json.theme) {
+            if (json.theme == "dark")
+              this.$vuetify.theme.dark = true;
+            else if(json.theme == "echoraeume") {
+              this.$vuetify.theme.themes.dark.primary = "#ff0000";
+              this.$vuetify.theme.dark = true;
+            }
+            else {
+              this.$vuetify.theme.dark = false;
+            }
+            let link = document.getElementById("themestyle")
+            console.log("style", link);
+            if (link != null) {
+              link.href =  "/vroom/themes/" + json.theme + ".css"
+            }  else {
+              link = document.createElement('link');
+              //style.id ="themestyle";
+              link.rel = "stylesheet";
+              link.type = "text/css";
+              link.href =  "/vroom/themes/" + json.theme + ".css"
+              document.head.append(link)
+              console.log(link);
+            }
+
+
+          }
           if (json.stage) {
             this.hasStreaming = false;
             this.stage = json.stage;
@@ -299,7 +329,7 @@ export default {
 
 .main {}
 .main { margin-bottom:100px }
-.title { padding-bottom:0; margin-bottom:0.2rem; background:#333;color:#fff; padding:1px 10px 3px 10px}
+.title { padding-bottom:0; margin-bottom:0.2rem; background: var(--color-fg); color:var(--color-bg); padding:1px 10px 3px 10px}
 .room_details {margin-bottom:0.9rem; font-size:0.8em}
 .room_details a { color:#999}
 .room_details a:hover { color:black}
@@ -307,7 +337,7 @@ export default {
 .room_subtitle { margin-right:12px}
 .stage { width: 1024px; margin: 0 auto; max-width: 100%; margin-bottom:30px}
 
-/* compoonent pparts */
+/* compoonent parts */
 
 .max-width { width: 1024px; margin: auto auto; max-width: 100%;}
 
@@ -319,7 +349,7 @@ export default {
   color: var(--color-fg);
 	left: 50%;
 	transform: translate(-50%,0);
-	border: 1px solid #999;
+	border: 1px solid var(--color-fg);
 	box-shadow: 10px 6px 12px rgba(0,0,0,0.25);
 	border-radius: 3px;
   padding: 5px 10px;
@@ -333,7 +363,7 @@ export default {
   position: fixed;
   top:-2px; left:50%;
   transform:translate(-50%,0);
-  border: 1px solid #999;
+  border: 1px solid var(--color-fg);
   background: var(--color-bg-trans);
   box-shadow: 10px 6px 12px rgba(0,0,0,0.25);
   border-radius: 3px;

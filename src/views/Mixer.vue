@@ -177,7 +177,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 
 .main {}
 .main { margin-bottom:100px }

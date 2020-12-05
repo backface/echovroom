@@ -1,9 +1,7 @@
 <template>
 <div class="stage">
-  <img src="/img/testbild2.jpg" v-show="!is_streaming">
-
   <div class="player">
-      <video ref="stream" playsinline autoplay muted v-show="is_streaming" poster="/img/poster2.jpg"></video>
+      <video ref="stream" playsinline autoplay muted v-show="is_streaming"></video>
 
       <div class="muted">
         <a v-if="muted && is_streaming" @click="muteMe(false)"  title="unmute me">

@@ -6,8 +6,6 @@
       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
       scrolling="no" width="800" height="350" frameborder="0" align="middle">
     </iframe>
-
-    <img v-else src="../assets/testbild.jpg">
   </div>
 </template>
 
@@ -26,11 +24,7 @@ export default {
       publicPath: process.env.publicPath
     }
   },
-
-  methods: {
-
-  },
-
+  methods: { },
 }
 </script>
 

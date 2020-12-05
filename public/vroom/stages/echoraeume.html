@@ -1,0 +1,32 @@
+<html>
+<head>
+	<link href="https://unpkg.com/video.js/dist/video-js.css" rel="stylesheet">
+  <style>
+    html, body {background:black; color: white; margin:0; background: #ff5d5d;}
+    .vjs-default-skin .vjs-big-play-button {left: 50%;top: 50%;transform: translate(-50%,-50%)}
+    .video-js { width:100%; height:100%; max-height:100%; background: url(/img/logo-echoraeume.svg)}
+    .video-js {
+      background-image: url('/img/logo-echoraeume.svg');
+      background-position: center;
+      background-size: 80%;
+      background-repeat: no-repeat;
+    }
+  </style>
+</head>
+<body>
+  <video-js id="my_video_1" class="vjs-default-skin"
+    controls muted preload="auto">
+    <source src="https://kontakta.modular-t.org:8443/live/hello5.m3u8" type="application/x-mpegURL">
+  </video-js>
+  <script src="https://unpkg.com/video.js/dist/video.js"></script>
+  <script src="https://unpkg.com/@videojs/http-streaming/dist/videojs-http-streaming.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/videojs-contrib-quality-levels@latest/dist/videojs-contrib-quality-levels.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/videojs-http-source-selector@latest/dist/videojs-http-source-selector.js"></script>
+  <script>
+		//document.getElementById("my_video_1").width = "800";
+		var player = videojs('my_video_1');
+    player.httpSourceSelector();
+		//var channel = document.getElementById("channel");
+  </script>
+</body>
+</html>
