@@ -235,7 +235,7 @@ a:hover {color:var(--color-a-hover)};
   color:var(--color-a-hover);
   background:var(--color-bg);
 }
-.navbar .dropdown-content .icons { margin:0; padding: 0px 5px}
+.navbar .dropdown-content svg { margin:0; padding-left: 3px; padding-bottom: 3px}
 .navbar .navbar-item.is-active a { font-weight:500; text-decoration: none; color:#333}
 .navbar { margin-bottom:0px; background:var(--color-bg);}
 .navbar-menu {
