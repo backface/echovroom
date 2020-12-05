@@ -16,9 +16,7 @@
       <p>or join:</p>
 
       <router-link v-for="f in shortcuts" :key="f.hash || f " :to="'/'+f" v-slot="{ href }">
-          <a :href="href"  @click="menuOpen=false">
-            {{ f.title || f }}
-          </a>
+        <a :href="href"  @click="menuOpen=false">{{ f.title || f }}</a>
       </router-link>
 
     </div>

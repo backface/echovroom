@@ -10,10 +10,24 @@
 }
 img {filter:invert(0.93)}
 
-.navbar .navbar-brand a:hover {
-  color:var(--color-bg);
-  background:var(--color-fg);
+.navbar,
+.navbar, .navbar-menu, .dropdown-content {
+  background-color:var(--color-bg);
+    color:var(--color-fg);
 }
+.navbar .navbar-brand a:hover,
+  .navbar .navbar-menu .navbar-item:hover,
+  .navbar .navbar-menu .navbar-item:hover a,
+  .navbar.is-transparent a.navbar-item:hover {
+     color:var(--color-bg) ;
+    background:var(--color-fg) !important;
+}
+.navbar, .navbar-menu, .dropdown-content {
+  border-top: 1px solid var(--color-fg);
+}
+
+.dropdown-content .dropdown-item a .icons, .dropdown-item a { color:var(--color-a) ; background:var(--color-bg) !important;}
+.dropdown-content .dropdown-item  { color:var(--color-fg);}
 
 .stage {
   background-image: url('/img/testbild2_inv.png');
@@ -22,6 +36,12 @@ img {filter:invert(0.93)}
 }
 
 .home .logo {display: none}
+
+/*-----------------------------*/
+/*  vuetify overrides */
+/*-----------------------------*/
+
+.v-dialog { border: 1px solid var(--color-fg); }
 
 .theme--light.v-sheet, .theme--dark.v-sheet,
 .theme--light.v-card, .theme--dark.v-sheet {

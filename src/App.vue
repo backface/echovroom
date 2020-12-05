@@ -66,7 +66,7 @@
 
     <footer>
       <div class="has-text-centered">
-        powered by ./<a href="/">echoVroom</a> &nbsp;
+        powered by ./<a href="https://www.echovroom.live">echoVroom</a> &nbsp;
         <a href="https://github.com/backface/echovroom"><github-icon size="0.9x" class="icons linked"></github-icon></a>
       </div>
     </footer>

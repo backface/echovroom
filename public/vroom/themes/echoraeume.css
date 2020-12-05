@@ -15,20 +15,18 @@
 
 img {filter:invert(0.93)}
 
-/*
-a, .navbar .navbar-menu .navbar-item a {
+a {
   text-decoration: underline;
 	text-decoration-style: dotted;
 	text-decoration-thickness: 2px;
 	text-underline-position:from-font;
 }
-*/
 
 .navbar .navbar-brand a:hover {}
 .navbar .navbar-menu .navbar-item:hover,
 .navbar .navbar-menu .navbar-item:hover a,
 .navbar.is-transparent a.navbar-item:hover {
-   color:var(--color-bg) ;
+  color:var(--color-bg) ;
   background:var(--color-fg) !important;
   text-decoration: underline;
   text-decoration-style: dotted;
@@ -42,19 +40,15 @@ a, .navbar .navbar-menu .navbar-item a {
 .navbar .navbar-menu .navbar-item a {
   text-transform: lowercase;
 }
-
 /*
 .navbar .navbar-menu .navbar-item:not(:nth-child(1)) a::before {
   content: "| ";
 }
 */
-
 .navbar .navbar-menu .navbar-item a {
   margin-right: 10px; margin-left: 10px;
 }
-.navbar .navbar-menu .navbar-item:not(:nth-child(1)) a {
-
-}
+.navbar .navbar-menu .navbar-item:not(:nth-child(1)) a {}
 .navbar .navbar-menu .navbar-item:not(:nth-child(1))::before {
   content: '';
   height: 1em;
