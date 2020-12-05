@@ -594,7 +594,6 @@ export default {
 
     },
 
-
     removeUserFromList(username) {
       let self = this;
       self.$delete(self.participants, username);
@@ -637,7 +636,7 @@ export default {
   display: flex;
   flex-direction: column;
 }
-
+.textroom { max-height:300px !important}
 
 .textroom .new_message_counter {
   display: inline-block;

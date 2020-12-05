@@ -1,6 +1,7 @@
 {
   "theme": "echoraeume",
   "stage": "/vroom/stages/echoraeume.html",
+  "no_title": "true",
   "calendar": "https://echoraeume.klingt.org/echoraeumeannounce.php",
   "server": [
     "wss://janus.modular-t.org:8989/janus",

@@ -4,7 +4,7 @@
   --color-bg: #ff5d5d;
   --color-bg-trans: rgba(255,93,93, 0.7);
   --color-fg: #ffffff;
-  --color-alert: red;
+  --color-alert: #ac3f3f;
   --color-bg-footer: #ff5d5d;
   --color-bg-nav: #ac3f3f;
   --color-a: #ffffff;
@@ -13,11 +13,8 @@
 	--font-hdg: "Fira Code", monospace;
 }
 
-.v-application .title
-  { font-family: var(--font-body) !important}
-/* .v-application .headline */
-
 img {filter:invert(0.93)}
+
 .navbar .navbar-brand a:hover,
 .navbar .navbar-menu .navbar-item:hover,
 .navbar .navbar-menu .navbar-item:hover a,
@@ -32,51 +29,64 @@ img {filter:invert(0.93)}
 .dropdown-content .dropdown-item, .dropdown .dropdown-menu .has-link a {color:var(--color-a);}
 .dropdown-content .dropdown-item a .icons, .dropdown-item a { color:var(--color-a); background:var(--color-bg) !important;}
 
+
 .stage {
   background-image: url('/img/logo-echoraeume.svg');
   background-position: center;
-  background-size: contain
+  background-size: contain;
+  background-size: 80%;
 }
 
 .logo{
   position: absolute;
-  top:60px; left: 0px; height:100px;
-  width:500px;
-  max-width: 100%;
-  background-image: url('/img/logo-echoraeume.svg');
+  top:60px; left: 0px; height:72px;
+  width:490px;
+  background-image: url('/img/logo-echoraeume-plus-text.svg');
   background-position: 20px;
   background-size: contain;
   background-repeat: no-repeat;
 }
-
 .home .logo {display: none}
+
+/*-----------------------------*/
+/*  vuetify overrides */
+/*-----------------------------*/
 
 .theme--light.v-sheet, .theme--dark.v-sheet,
 .theme--light.v-card, .theme--dark.v-sheet {
   background-color:var(--color-bg);
   color: var(--color-fg)
 }
-
 .theme--dark.v-btn:not(.v-btn--flat):not(.v-btn--text):not(.v-btn--outlined) {
   background-color:#ac3f3f;
 }
-
+.v-application .title
+  { font-family: var(--font-body) !important}
+/* .v-application .headline */
 .v-card {
   background-color: var(--color-bg);
   color:  var(--color-fg);
 }
 .v-card > .v-card__text,
-t.v-card .v-card__subtitle {
+.v-card .v-card__subtitle {
   color:  var(--color-fg);
 }
 .v-card.v-card--outlined {
   border: thin solid var(--color-fg);
 }
 
+/*-----------------------------*/
+/*  media queries              */
+/*-----------------------------*/
+
+
 @media (max-width:1024px) {
-  .logo{ height:40px}
+  .logo{
+    top:60px;
+    height:40px;
+    width: 320px;
 }
 
 @media (max-width:461px) {
-  .logo{ top: 10px; left: 50%; height:32px; background-position: center; transform: translate(-50%, 0); z-index:31 }
+  .logo{ width: 320px; top: 10px; left: 50%; height:32px; background-position: center; transform: translate(-50%, 0);}
 }

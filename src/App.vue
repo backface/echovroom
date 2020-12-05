@@ -58,7 +58,7 @@
                 <div class="dropdown-content">
                   <div class="dropdown-item"  style="white-space: nowrap;">
                     <span contenteditable ref="url" style="display:inline;line-height:1.5rem"> {{ url }}</span>
-                    <a title="Copy to Clipboard" @click="copyURL">
+                    <a title="Copy to Clipboard" @click="copyURL" style="margin:0">
                       <clipboard-icon size="1.5x" class="icons"></clipboard-icon>
                     </a>
                   </div>
@@ -216,9 +216,15 @@ export default {
     outline: none;
 }
 
+a {color:var(--color-a)};
+a:hover {color:var(--color-a-hover)};
+
+
+/*-----------------------------*/
 /* navbar */
 /* -------------------------- */
 
+.navbar-menu.is-active { z-index: 1030; position: absolute;width: 100%}
 .navbar .navbar-item a,
 .navbar .navbar-brand a {
   color:var(--color-a); text-decoration: none; text-transform: uppercase;
@@ -229,16 +235,7 @@ export default {
   color:var(--color-a-hover);
   background:var(--color-bg);
 }
-
-a {color:var(--color-a)};
-a:hover {color:var(--color-a-hover)};
-
-.theme--light.v-sheet, .theme--dark.v-sheet,
-.theme--light.v-card, .theme--dark.v-sheet {
-  background-color:var(--color-bg);
-  color: var(--color-fg)
-}
-
+.navbar .dropdown-content .icons { margin:0; padding: 0px 5px}
 .navbar .navbar-item.is-active a { font-weight:500; text-decoration: none; color:#333}
 .navbar { margin-bottom:0px; background:var(--color-bg);}
 .navbar-menu {
@@ -257,23 +254,30 @@ a:hover {color:var(--color-a-hover)};
 .participant_counter {  margin-left: 1em;}
 .participant_counter .icons { vertical-align:text-top; margin:0px}
 
+.about {
+  background: var(--color-bg);
+  max-width: 100%;
+  opacity: 0.9 !important;
+}
+.about a { text-decoration: underline; color:var(--color-a) !important}
+.about h1.title { margin-bottom: 3rem}
+.about { text-align: left; padding: 1rem}
 
 .icons { vertical-align: middle; margin:0px 3px}
-.linked { cursor:pointer; }
-.linked {color: var(--color-fg);}
+.linked { cursor:pointer; color: var(--color-fg)}
 .overlay .linked  {color: white;}
 .linked:hover { opacity:0.8 }
-svg.linked:hover {
-  transform: scale(1.2);
-}
+svg.linked:hover {   transform: scale(1.2); }
+
 .loading {
   -webkit-animation:spin 4s linear infinite;
   -moz-animation:spin 4s linear infinite;
   animation:spin 4s linear infinite;
 }
+.loadingComponent {background:var(--color-bg) !important; opacity: 0.7}
 
 footer {
- bottom: 0;
+  bottom: 0;
   left: 0;
   position: fixed;
   right: 0;
@@ -285,34 +289,16 @@ footer {
 }
 footer a {color:var(--color-a) !important; text-decoration:underline}
 
-.about {
-  background: var(--color-bg);
-  max-width: 100%;
-  opacity: 0.9 !important;
+
+/*-----------------------------*/
+/*  vuetify overrides */
+/*-----------------------------*/
+
+.theme--light.v-sheet, .theme--dark.v-sheet,
+.theme--light.v-card, .theme--dark.v-sheet {
+  background-color:var(--color-bg);
+  color: var(--color-fg)
 }
-.about a { text-decoration: underline; color:var(--color-a) !important}
-.about h1.title { margin-bottom: 3rem}
-.about { text-align: left; padding: 1rem}
-
-
-@media (max-width:1440px) {
-  .max-width {  }
-}
-
-@media (max-width:461px) {
-  .navbar { margin-bottom:10px}
-  .stageroom { padding: 0 15px 0 10px;}
-}
-/* .shortcuts { display: none !important } */
-.textroom { max-height:300px !important}
-
-@-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }
-@-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
-@keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
-
-
-.loadingComponent {background:var(--color-bg) !important; opacity: 0.7}
-.linked { cursor:pointer; color: var(--color-fg)}
 
 v-text-field:not(.v-input--has-state):hover > .v-input__control > .v-input__slot:before,
 .theme--light.v-text-field:not(.v-input--has-state):hover > .v-input__control > .v-input__slot::before,
@@ -332,9 +318,13 @@ v-text-field:not(.v-input--has-state):hover > .v-input__control > .v-input__slot
   opacity: 0.7;
 }
 
-/* TRANSITIONS */
-/*-------------------*/
+/*-----------------------------*/
+/* TRANSITIONS and ANIMATIONS*/
+/*-----------------------------*/
 
+@-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }
+@-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
+@keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
 
 .fade-enter-active,
 .fade-leave-active {
@@ -348,5 +338,24 @@ v-text-field:not(.v-input--has-state):hover > .v-input__control > .v-input__slot
 
 
 
+/*-----------------------------*/
+/*  media queries  */
+/*-----------------------------*/
+
+@media (max-width:1440px) {
+  .max-width {  }
+}
+
+@media (max-width:1024px) {
+.navbar {position: absolute !important; width:100% ;}
+}
+
+@media (max-width:461px) {
+  .navbar {position: absolute !important; width:100%;z-index: 201 !important}
+  .navbar { margin-bottom:10px}
+  .stageroom { padding: 0 15px 0 10px;}
+  .logo {z-index: 202}
+  footer { font-size: 0.5em}
+}
 
 </style>

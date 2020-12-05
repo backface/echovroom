@@ -406,7 +406,7 @@ export default {
   .max-width { width:640px }
   .topcontrols {
     position: fixed; left:0px;
-    top:50px; width:100%; max-width: 100%;
+    top:52px; width:100%; max-width: 100%;
     transform:none;
     border-left: 0px; border-right: 0px;
   }

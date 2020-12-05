@@ -185,7 +185,7 @@
                     <mic-off-icon size="1x" class="icons linked" ></mic-off-icon>
                   </a>
                   <a v-if="!muted" @click="muteMe(true)" title="mute me">
-                    <mic-icon size="1x" class="icons linked"></mic-icon>
+                    <mic-icon size="1x" class="icons linked"></mic-icon>np
                   </a>
                   <a @click="selectDevice"  title="show settings">
                     <settings-icon size="1x" class="icons linked"></settings-icon>
