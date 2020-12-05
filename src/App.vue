@@ -187,6 +187,8 @@ export default {
   --color-bg-nav: #ffffff;
   --color-a: #555;
   --color-a-hover:#000;
+  --font-body: "Asap Condensed", Arial, Helvetica, sans-serif;
+	--font-hdg: "Asap Condensed", Arial, Helvetica, sans-serif;
 }
 
 .stage {
@@ -194,28 +196,9 @@ export default {
     background-position: center;
     background-size: contain
 }
-/*
-.dark
-  :root {
-    --color-bg: #111;
-    --color-bg-trans: rgba(0,0,0, 0.7);
-    --color-fg: #eee;
-    --color-alert: red;
-    --color-bg-footer: #ddd;
-    --color-bg-nav: #000;
-    --color-a: #ddd;
-    --color-a-hover:#fff;
-  }
-  img {filter:invert(0.93)}
-  .navbar .navbar-brand a:hover {
-    color:var(--color-bg);
-    background:var(--color-fg);
-  }
-}
-*/
 
 #app {
-  font-family: "Asap Condensed", Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;

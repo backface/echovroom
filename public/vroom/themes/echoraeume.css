@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&display=swap');
+
 :root {
   --color-bg: #ff5d5d;
   --color-bg-trans: rgba(255,93,93, 0.7);
@@ -7,7 +9,14 @@
   --color-bg-nav: #ac3f3f;
   --color-a: #ffffff;
   --color-a-hover:#ffffff;
+  --font-body: "Fira Code", monospace;
+	--font-hdg: "Fira Code", monospace;
 }
+
+.v-application .title
+  { font-family: var(--font-body) !important}
+/* .v-application .headline */
+
 img {filter:invert(0.93)}
 .navbar .navbar-brand a:hover,
 .navbar .navbar-menu .navbar-item:hover,
@@ -20,7 +29,8 @@ img {filter:invert(0.93)}
   background-color:var(--color-bg);
   color:var(--color-bg);
 }
-.dropdown-item, .dropdown .dropdown-menu .has-link a {color:var(--color-a);}
+.dropdown-content .dropdown-item, .dropdown .dropdown-menu .has-link a {color:var(--color-a);}
+.dropdown-content .dropdown-item a .icons, .dropdown-item a { color:var(--color-a); background:var(--color-bg) !important;}
 
 .stage {
   background-image: url('/img/logo-echoraeume.svg');
@@ -61,4 +71,12 @@ t.v-card .v-card__subtitle {
 }
 .v-card.v-card--outlined {
   border: thin solid var(--color-fg);
+}
+
+@media (max-width:1024px) {
+  .logo{ height:40px}
+}
+
+@media (max-width:461px) {
+  .logo{ top: 10px; left: 50%; height:32px; background-position: center; transform: translate(-50%, 0); z-index:31 }
 }

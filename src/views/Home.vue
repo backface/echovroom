@@ -75,7 +75,7 @@ export default {
 }
 .home input::placeholder { opacity: 0.2}
 
-.shortcuts { width:400px; max-width: 100%; padding: 50px 0px; margin:auto;}
+.shortcuts { max-width: 90%; padding: 50px 0px; margin:auto;}
 .shortcuts a { margin:10px; color: var(--color-a);  background: var(--color-bg); padding:1px 5px}
 .shortcuts a:hover { filter:invert(1) }
 .shortcuts .title { opacity:0.2}
@@ -85,6 +85,5 @@ export default {
 
 @media (max-width:461px) {
   .logo { z-index:20;width:256px; height:256px; position: fixed; bottom:-80px; left: 50%; transform: translate(-50%,0); overflow:hidden}
-
 }
 </style>

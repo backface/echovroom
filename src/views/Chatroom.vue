@@ -227,7 +227,7 @@ export default {
             if (json.theme == "dark")
               this.$vuetify.theme.dark = true;
             else if(json.theme == "echoraeume") {
-              this.$vuetify.theme.themes.dark.primary = "#ff0000";
+              this.$vuetify.theme.themes.dark.primary = "#ac3f3f";
               this.$vuetify.theme.dark = true;
             }
             else {
@@ -374,7 +374,7 @@ export default {
 .topcontrols .icons { vertical-align:text-top;}
 .topcontrols .vicon { vertical-align:middle;}
 .topcontrols .participant_counter { margin:0px 10px ;}
-.topcontrols .headers {border:0; padding-bottom: 0; font-size: 0.9em; }
+.topcontrols .headers {border:0; padding-bottom: 0; padding-top:10px; font-size: 1em; }
 
 @media (max-width:1440px) {
   .max-width { width:800px }
@@ -389,11 +389,23 @@ export default {
 @media (max-width:1024px) {
   .max-width { width:640px }
   .echovrooms { width:800px;}
+  .topcontrols .headers { }
+}
+
+@media (max-width:768px) {
+  .echovrooms  { border-left:0px; border-right:0px;left: 0px; width:100%; transform: none}
+  .topcontrols .headers {}
 }
 
 @media (max-width:461px) {
   .max-width { width:640px }
-  .topcontrols { width:250px;}
+  .topcontrols {
+    position: fixed; left:0px;
+    top:50px; width:100%; max-width: 100%;
+    transform:none;
+    border-left: 0px; border-right: 0px;
+  }
+
 }
 
 

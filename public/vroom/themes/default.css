@@ -7,6 +7,8 @@
   --color-bg-nav: #000;
   --color-a: #ddd;
   --color-a-hover:#fff;
+  --font-body: "Asap Condensed", Arial, Helvetica, sans-serif;
+	--font-hdg: "Asap Condensed", Arial, Helvetica, sans-serif;
 }
 img {filter:invert(0.93)}
 .navbar .navbar-brand a:hover {
