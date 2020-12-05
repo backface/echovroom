@@ -219,7 +219,12 @@ export default {
           } else {
             self.$parent.$parent.$parent.calendar_src = null;
           }
-          if (json.about) this.calendar = json.about;
+          if (json.about) {
+            // this is a hack
+            self.$parent.$parent.$parent.about_src = json.about;
+          } else {
+            self.$parent.$parent.$parent.about_src = null;
+          }
           if (json.title) this.title = json.title;
           if (json.no_title == "true") this.title = "";
           if (json.subtitle) this.subtitle = json.subtitle;

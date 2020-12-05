@@ -93,7 +93,12 @@
   <template>
     <v-dialog v-model="show_about" width="854px" >
       <v-card class="about">
-        <About />
+
+        <template v-if="!about_src">
+          <About />
+        </template>
+        <div v-else class="about" v-html="about_src"></div>
+
       </v-card>
     </v-dialog>
   </template>
@@ -137,6 +142,7 @@ export default {
       embed: false,
       url: "",
       calendar_src: null,
+      about_src: null,
       show_about: false,
       show_calendar: false,
       default_favorites: ['echoraeume','demoroom'],
@@ -284,6 +290,9 @@ footer a {color:var(--color-a) !important; text-decoration:underline}
   max-width: 100%;
   opacity: 0.9 !important;
 }
+.about a { text-decoration: underline; color:var(--color-a) !important}
+.about h1.title { margin-bottom: 3rem}
+.about { text-align: left; padding: 1rem}
 
 
 @media (max-width:1440px) {

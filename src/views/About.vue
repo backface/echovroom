@@ -62,7 +62,5 @@ export default {
 </script>
 
 <style>
-.about a { text-decoration: underline; color:var(--color-a) !important}
-.about h1.title { margin-bottom: 3rem}
-.about { text-align: left; padding: 1rem}
+
 </style>
