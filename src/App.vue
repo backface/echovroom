@@ -23,7 +23,10 @@
           <a @click="show_about=true" title="about">about</a>
         </div>
         <div class="navbar-item" v-if="calendar_src">
-          <a @click="show_calendar=true" title="about">calendar</a>
+          <a @click="show_calendar=true" title="calendar">calendar</a>
+        </div>
+        <div class="navbar-item" v-if="tipjar_src">
+          <a :href="tipjar_src" title="tip jar">tip jar</a>
         </div>
         <!--
         <router-link to="/about" v-slot="{ href, route, isActive }">
@@ -85,11 +88,9 @@
     <template>
       <v-dialog v-model="show_calendar" width="854px" >
         <v-card class="about">
-          <iframe :src="calendar_src"
-            style="border:none;"
-            allowfullscreen="true"
-            scrolling="no" width="100%" height="400px" frameborder="0" align="middle">
-          </iframe>
+          <div class="calendar" v-html="calendar_src">
+
+          </div>
         </v-card>
       </v-dialog>
     </template>

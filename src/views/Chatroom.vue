@@ -213,21 +213,37 @@ export default {
 
           if (json.server) this.server = json.server;
           if (json.iceServers) this.iceServers = json.iceServers;
+
+          if (json.title) this.title = json.title;
+          if (json.no_title == "true") this.title = "";
+          if (json.subtitle) this.subtitle = json.subtitle;
+
           if (json.calendar) {
             // this is a hack
-            self.$parent.$parent.$parent.calendar_src =  json.calendar;
+            //self.$parent.$parent.$parent.calendar_src =  json.calendar;
+            fetch(json.calendar).then(
+              r => r.text()
+            ).then((text) => {
+              self.$parent.$parent.$parent.calendar_src = "<h1 class=\"title\">calendar</h1>" + text;
+            })
           } else {
             self.$parent.$parent.$parent.calendar_src = null;
           }
+
           if (json.about) {
             // this is a hack
             self.$parent.$parent.$parent.about_src = json.about;
           } else {
             self.$parent.$parent.$parent.about_src = null;
           }
-          if (json.title) this.title = json.title;
-          if (json.no_title == "true") this.title = "";
-          if (json.subtitle) this.subtitle = json.subtitle;
+
+          if (json.tipjar) {
+            // this is a hack
+            self.$parent.$parent.$parent.tipjar_src = json.tipjar;
+          } else {
+            self.$parent.$parent.$parent.tipjar_src = null;
+          }
+
           if (json.theme) {
             if (json.theme == "dark")
               this.$vuetify.theme.dark = true;
@@ -239,7 +255,6 @@ export default {
               this.$vuetify.theme.dark = false;
             }
             let link = document.getElementById("themestyle")
-            console.log("style", link);
             if (link != null) {
               link.href =  "/vroom/themes/" + json.theme + ".css"
             }  else {
@@ -249,17 +264,16 @@ export default {
               link.type = "text/css";
               link.href =  "/vroom/themes/" + json.theme + ".css"
               document.head.append(link)
-              console.log(link);
             }
-
-
           }
+
           if (json.stage) {
             this.hasStreaming = false;
             this.stage = json.stage;
           } else {
             this.hasStreaming = this.withStreaming;
           }
+
           if ('autologin' in json && !this.login_name)
           {
             //this.chat_open = json.autologin;

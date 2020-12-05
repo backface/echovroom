@@ -15,27 +15,67 @@
 
 img {filter:invert(0.93)}
 
-a {
+/*
+a, .navbar .navbar-menu .navbar-item a {
   text-decoration: underline;
 	text-decoration-style: dotted;
 	text-decoration-thickness: 2px;
 	text-underline-position:from-font;
 }
+*/
 
-.navbar .navbar-brand a:hover,
+.navbar .navbar-brand a:hover {}
 .navbar .navbar-menu .navbar-item:hover,
 .navbar .navbar-menu .navbar-item:hover a,
 .navbar.is-transparent a.navbar-item:hover {
-  color:var(--color-bg) ;
+   color:var(--color-bg) ;
   background:var(--color-fg) !important;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-decoration-thickness: 2px;
+  text-underline-position:from-font;
 }
 .navbar, .navbar-menu, .dropdown-content {
   background-color:var(--color-bg);
-  color:var(--color-bg);
+  color:var(--color-fg);
 }
+.navbar .navbar-menu .navbar-item a {
+  text-transform: lowercase;
+}
+
+/*
+.navbar .navbar-menu .navbar-item:not(:nth-child(1)) a::before {
+  content: "| ";
+}
+*/
+
+.navbar .navbar-menu .navbar-item a {
+  margin-right: 10px; margin-left: 10px;
+}
+.navbar .navbar-menu .navbar-item:not(:nth-child(1)) a {
+
+}
+.navbar .navbar-menu .navbar-item:not(:nth-child(1))::before {
+  content: '';
+  height: 1em;
+  width:100px;
+  position: absolute;
+  left: 0px;
+  top: 20px;
+  border-left: 1px solid white;
+  background-color: none;
+}
+
 .dropdown-content .dropdown-item, .dropdown .dropdown-menu .has-link a {color:var(--color-a);}
 .dropdown-content .dropdown-item a .icons, .dropdown-item a { color:var(--color-a); background:var(--color-bg) !important;}
 
+.about h1.title {
+  background-color:var(--color-bg);
+  color:var(--color-fg);
+  padding-left: 0px;
+  font-size: 1.5em !important;
+  font-weight: bold;
+}
 
 .stage {
   background-image: url('/img/logo-echoraeume.svg');

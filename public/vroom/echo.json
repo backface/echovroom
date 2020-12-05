@@ -2,7 +2,7 @@
   "theme": "echoraeume",
   "stage": "/vroom/stages/echoraeume.html",
   "no_title": "true",
-  "calendar": "https://echoraeume.klingt.org/echoraeumeannounce.php",
+  "calendar": "https://turtlestitch.org:8080/https://echoraeume.klingt.org/echoraeumeannounce.php",
   "server": [
     "wss://janus.modular-t.org:8989/janus",
     "https://janus.modular-t.org:8089/janus"
@@ -11,5 +11,6 @@
     {"urls": "stun:turn.modular-t.org"},
     {"urls": "turn:turn.modular-t.org", "username": "turn", "credential": "hinterseer"}
   ],
+  "tipjar":"https://paypal.me/pools/c/8p5dnW2234",
   "about": "<h1 class=\"title\">about</h1></label><div class=\"tab-content text-content\"><p><b>echoraeume</b> is an open source initiative to empower ongoing cultural life during times of corona crisis. We are not a service provider, we are a community based project.</p><p>Contributers are responsible for the content of their own hosted event and for finding their own ways of providing content.</p><p>We aim to create an open-source, non-proprietary platform, where small and medium sized organizers can continue to host events, invite artists and therefore buffer the upcoming cultural drop out.</p><p>So, let&apos;s keep going and live solidarity!</p><p>Stay healthy and tuned!</p><p>Kontakt: <a href=\"mailto:echoraeume@klingt.org\" class=\"link\">echoraeume@klingt.org</a></p><p><b>Support your culture provider!<br/> Door money to:</b><a href=\"https://paypal.me/pools/c/8p5dnW2234\" target=\"_blank\" class=\"link\">tip jar</a></p>"
 }

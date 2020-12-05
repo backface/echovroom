@@ -72,14 +72,21 @@ a:hover {color:var(--color-a-hover)};
 .participant_counter {  margin-left: 1em;}
 .participant_counter .icons { vertical-align:text-top; margin:0px}
 
-.about {
+.about, .calendar {
   background: var(--color-bg);
   max-width: 100%;
   opacity: 0.9 !important;
 }
 .about a, .shortcuts a { color:var(--color-a) !important}
-.about h1.title { margin-bottom: 3rem}
+.about h1.title { margin-bottom: 2rem}
 .about { text-align: left; padding: 1rem}
+
+.calendar .calendar-date {
+  font-size: calc(var(--fontSize) * 0.8);
+  font-weight: bolder;
+  display: block;
+}
+.calendar .calendar-entry { display: block; margin-bottom: 1em}
 
 .home { text-align:center; z-index:20;  }
 .home input {
