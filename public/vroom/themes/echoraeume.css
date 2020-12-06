@@ -52,7 +52,7 @@ a {
 .navbar .navbar-menu .navbar-item:not(:nth-child(1))::before {
   content: '';
   height: 1em;
-  width:100px;
+  /*width:100px;*/
   position: absolute;
   left: 0px;
   top: 20px;
@@ -79,13 +79,20 @@ a {
 }
 
 .logo{
+  display: block;
   position: absolute;
-  top:60px; left: 0px; height:72px;
+  top:62px;
+  left: 17px;
+  height:100px;
   width:490px;
   background-image: url('/img/logo-echoraeume-plus-text.svg');
-  background-position: 20px;
-  background-size: contain;
   background-repeat: no-repeat;
+  background-size: contain;
+  /*
+  background-position: 0px 20px;
+  border-top: 1px solid white;
+  */
+
 }
 .home .logo {display: none}
 

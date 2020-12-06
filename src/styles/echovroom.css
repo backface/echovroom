@@ -80,7 +80,7 @@ a:hover {color:var(--color-a-hover)};
 }
 .about a, .shortcuts a { color:var(--color-a) !important}
 .about h1.title { margin-bottom: 2rem}
-.about { text-align: left; padding: 1rem}
+.about, .calendar  { text-align: left; padding: 1rem}
 
 .calendar .calendar-date {
   font-size: calc(var(--fontSize) * 0.8);
@@ -192,7 +192,7 @@ v-text-field:not(.v-input--has-state):hover > .v-input__control > .v-input__slot
 
 @media (max-width:461px) {
   .navbar {position: absolute !important; width:100%;z-index: 201 !important}
-  .navbar { margin-bottom:10px}
+  .navbar { margin-bottom:10px;}
   .stageroom { padding: 0 15px 0 10px;}
   .logo {z-index: 202}
   .home .logo { z-index:20;width:256px; height:256px; position: fixed; bottom:-80px; left: 50%; transform: translate(-50%,0); overflow:hidden}
