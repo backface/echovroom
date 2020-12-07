@@ -15,7 +15,6 @@ package-lock.json
 
 # local env files
 .npmrc
-.env*
 .env.local
 .env.*.local
 

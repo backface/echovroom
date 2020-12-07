@@ -1,7 +1,7 @@
 #!/bin/bash
 
-source .env
+source .env.local
 
 npm run build
 
-docker build --network=host -t $USERNAME/$IMAGE:latest .
+docker build --network=host -t $DOCKER_USERNAME/$DOCKER_IMAGE:latest .

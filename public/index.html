@@ -5,28 +5,32 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
 
-    <link rel="icon" href="<%= BASE_URL %>favicon.ico">
-
-    <title>echoVroom/s * experimental video chat spaces</title>
-    <meta name="description" content="Who needs Zoom? We Vroom!">
-
-    <meta property="og:title" content="echoVrooms * experimental video chat spaces" />
-    <meta property="og:description" content="Who needs Zoom? We Vroom!"/>
-    <meta property="og:image" content="<%= BASE_URL %>img/testbild.jpg"/>
+    <title><%= VUE_APP_TITLE %></title>
+    <meta name="description" content="<%= VUE_APP_DESCRIPTION %>">
+    <meta property="og:title" content="<%= VUE_APP_TITLE %>" />
+    <meta property="og:description" content="<%= VUE_APP_DESCRIPTION %>"/>
+    <meta property="og:image" content="<%= BASE_URL %><%= VUE_APP_IMAGE %>"/>
     <meta property="og:url" content="<%= BASE_URL %>">
     <meta property="og:type" content="website"/>
-    <meta property="og:site_name" content="echoVrooms * experimental video chat spaces" />
-
+    <meta property="og:site_name" content="<%= VUE_APP_TITLE %>" />
     <meta name="twitter:card" content="summary_large_image"/>
-    <meta name="twitter:title" content="echoVrooms * experimental video chat spaces" />
-    <meta name="twitter:description" content="Who needs Zoom? We Vroom!"/>
+    <meta name="twitter:title" content="<%= VUE_APP_TITLE %>" />
+    <meta name="twitter:description" content="<%= VUE_APP_DESCRIPTION %>"/>
     <meta name="twitter:domain" content="echovroom.live"/>
     <meta name="twitter:creator" content="@back_face">
-    <meta name="twitter:image" content="<%= BASE_URL %>img/testbild.jpg"/>
-
-
+    <meta name="twitter:image" content="<%= BASE_URL %><%= VUE_APP_IMAGE %>"/>
     <link rel="canonical" href="<%= BASE_URL %>" />
+
+    <link rel="icon" href="<%= BASE_URL %><%= VUE_APP_FAVICON %>">
+
     <link href="https://cdn.jsdelivr.net/npm/@mdi/font@5.x/css/materialdesignicons.min.css" rel="stylesheet">
+    <% if (process.env.NODE_ENV  == 'development' && typeof VUE_APP_REMOTE_DEBUG_HOST != undefined) { %>
+     <% if (VUE_APP_REMOTE_DEBUG_HOST) { %>
+       <script src="<%= VUE_APP_REMOTE_DEBUG_HOST %>/target/target-script-min.js#anonymous"></script>
+       <!--<script src="<%= VUE_APP_REMOTE_DEBUG_HOST %>/vorlon.js"></script>-->
+       <!--<script data-consolejs-channel="590a7fde-810d-51a9-00a1-cf4f1e56cced" src="https://remotejs.com/agent/agent.js"></script>-->
+     <% } %>
+   <% } %>
   </head>
   <body>
     <noscript>

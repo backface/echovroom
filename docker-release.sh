@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source .env
+source .env.local
 
 docker run --rm -v "$PWD":/app treeder/bump patch
 version=`cat VERSION`
@@ -15,8 +15,8 @@ version=`cat VERSION`
 #git push --tags
 
 
-docker tag $USERNAME/$IMAGE:latest $USERNAME/$IMAGE:$version
+docker tag $DOCKER_USERNAME/$DOCKER_IMAGE:latest $DOCKER_USERNAME/$IMAGE:$version
 
 # push it
-docker push $USERNAME/$IMAGE:latest
-docker push $USERNAME/$IMAGE:$version
+docker push $DOCKER_USERNAME/$DOCKER_IMAGE:latest
+docker push $DOCKER_USERNAME/$DOCKER_IMAGE:$version
