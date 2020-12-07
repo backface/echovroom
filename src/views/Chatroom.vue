@@ -88,6 +88,7 @@ import Streaming from '@/components/Streaming.vue'
 import LoginDialog from '@/components/dialogs/LoginDialog'
 import PreLoginDialog from '@/components/dialogs/PreLoginDialog'
 import Toast from '@/components/dialogs/Toast'
+import { event_bus } from '@/main'
 //import { PortalTarget } from 'portal-vue'
 //import { janusMixin } from "@/mixins/janusMixin";
 
@@ -245,26 +246,7 @@ export default {
           }
 
           if (json.theme) {
-            if (json.theme == "dark")
-              this.$vuetify.theme.dark = true;
-            else if(json.theme == "echoraeume") {
-              this.$vuetify.theme.themes.dark.primary = "#ac3f3f";
-              this.$vuetify.theme.dark = true;
-            }
-            else {
-              this.$vuetify.theme.dark = false;
-            }
-            let link = document.getElementById("themestyle")
-            if (link != null) {
-              link.href =  "/vroom/themes/" + json.theme + ".css"
-            }  else {
-              link = document.createElement('link');
-              //style.id ="themestyle";
-              link.rel = "stylesheet";
-              link.type = "text/css";
-              link.href =  "/vroom/themes/" + json.theme + ".css"
-              document.head.append(link)
-            }
+            event_bus.$emit('loadTheme', json.theme);            
           }
 
           if (json.stage) {
@@ -344,88 +326,4 @@ export default {
 }
 </script>
 
-<style>
-
-.main {}
-.main { margin-bottom:100px }
-.title { padding-bottom:0; margin-bottom:0.2rem; background: var(--color-fg); color:var(--color-bg); padding:1px 10px 3px 10px}
-.room_details {margin-bottom:0.9rem; font-size:0.8em}
-.room_details a { color:#999}
-.room_details a:hover { color:black}
-.room_details a:not(:last-child) { margin-right:12px}
-.room_subtitle { margin-right:12px}
-.stage { width: 1024px; margin: 0 auto; max-width: 100%; margin-bottom:30px}
-
-/* compoonent parts */
-
-.max-width { width: 1024px; margin: auto auto; max-width: 100%;}
-
-.echovrooms {
-	position: fixed;
-	width: 1280px; max-width: 100%;
-	bottom: 10px;
-	background: var(--color-bg-trans);
-  color: var(--color-fg);
-	left: 50%;
-	transform: translate(-50%,0);
-	border: 1px solid var(--color-fg);
-	box-shadow: 10px 6px 12px rgba(0,0,0,0.25);
-	border-radius: 3px;
-  padding: 5px 10px;
-  z-index:200;
-}
-
-.textroom  { max-height:600px}
-.textroom .chatroom { height:180px}
-
-.topcontrols {
-  position: fixed;
-  top:-2px; left:50%;
-  transform:translate(-50%,0);
-  border: 1px solid var(--color-fg);
-  background: var(--color-bg-trans);
-  box-shadow: 10px 6px 12px rgba(0,0,0,0.25);
-  border-radius: 3px;
-  z-index:200;
-  width:400px; max-width:75%;
-}
-
-.topcontrols .icons { vertical-align:text-top;}
-.topcontrols .vicon { vertical-align:middle;}
-.topcontrols .participant_counter { margin:0px 10px ;}
-.topcontrols .headers {border:0; padding-bottom: 0; padding-top:10px; font-size: 1em; }
-
-@media (max-width:1440px) {
-  .max-width { width:800px }
-  .echovrooms { width:1024px }
-}
-
-@media (max-width:1280px) {
-  .max-width { width:800px }
-  .echovrooms { width:1024px }
-}
-
-@media (max-width:1024px) {
-  .max-width { width:640px }
-  .echovrooms { width:800px;}
-  .topcontrols .headers { }
-}
-
-@media (max-width:768px) {
-  .echovrooms  { border-left:0px; border-right:0px;left: 0px; width:100%; transform: none}
-  .topcontrols .headers {}
-}
-
-@media (max-width:461px) {
-  .max-width { width:640px }
-  .topcontrols {
-    position: fixed; left:0px;
-    top:52px; width:100%; max-width: 100%;
-    transform:none;
-    border-left: 0px; border-right: 0px;
-  }
-
-}
-
-
-</style>
+<style></style>

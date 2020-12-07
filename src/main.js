@@ -1,10 +1,13 @@
+import devtools from '@vue/devtools'
 import Vue from 'vue'
 import App from './App.vue'
-import '@/styles/buefy.css'
 import router from './router'
 
-import Vuetify from 'vuetify/lib'
+if (process.env.NODE_ENV === 'development' && process.env.VUE_APP_REMOTE_VUEDEV_HOST ) {
+    devtools.connect(process.env.VUE_APP_REMOTE_VUEDEV_HOST, null )
+}
 
+import Vuetify from 'vuetify/lib'
 const vuetify = new Vuetify({
   theme: {
     themes: {
@@ -22,13 +25,14 @@ const vuetify = new Vuetify({
         background: '#333'
       }
     },
-    dark: false,
+    dark: false
     // use with: this.$vuetify.theme.dark
   },
 })
-
 Vue.use(Vuetify)
 Vue.config.productionTip = false
+
+export const event_bus = new Vue();
 
 new Vue({
   router,

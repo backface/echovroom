@@ -64,8 +64,8 @@ a {
 .dropdown-content .dropdown-item a .icons, .dropdown-item a { color:var(--color-a); background:var(--color-bg) !important;}
 
 .about h1.title {
-  background-color:var(--color-bg);
-  color:var(--color-fg);
+  background-color:var(--color-bg) !important;
+  color:var(--color-fg) !important;
   padding-left: 0px;
   font-size: 1.5em !important;
   font-weight: bold;
@@ -83,7 +83,7 @@ a {
   position: absolute;
   top:62px;
   left: 17px;
-  height:100px;
+  height:64px;
   width:490px;
   background-image: url('/img/logo-echoraeume-plus-text.svg');
   background-repeat: no-repeat;

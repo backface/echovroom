@@ -33,9 +33,12 @@ img {filter:invert(0.93)}
 .stage {
   background-image: url('/img/testbild2_inv.png');
   background-position: center;
-  background
 }
 
+.about h1.title {
+  background-color:var(--color-fg) !important;
+  color:var(--color-bg) !important;
+}
 .home .logo {display: none}
 
 /*-----------------------------*/

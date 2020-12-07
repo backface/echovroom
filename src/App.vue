@@ -89,7 +89,6 @@
       <v-dialog v-model="show_calendar" width="854px" >
         <v-card class="about">
           <div class="calendar" v-html="calendar_src">
-
           </div>
         </v-card>
       </v-dialog>
@@ -105,8 +104,9 @@ import TransitionPage from './components/TransitionPage.vue';
 import About from './views/About.vue';
 import { ArrowUpLeftIcon, Share2Icon, ClipboardIcon, GithubIcon } from 'vue-feather-icons'
 import { PortalTarget } from 'portal-vue'
+import { event_bus } from '@/main'
 import 'typeface-asap-condensed'
-import '@/styles/echovroom.css';
+import '@/styles/buefy.css'
 
 export default {
   name: 'App',
@@ -124,11 +124,21 @@ export default {
       url: "",
       calendar_src: null,
       about_src: null,
+      tipjar_src : null,
       show_about: false,
       show_calendar: false,
-      default_favorites: ['echoraeume','demoroom'],
       shortcuts: [],
     }
+  },
+
+
+  beforeMount() {
+    if (process.env.VUE_APP_THEME  && process.env.VUE_APP_THEME != 'default') {
+      this.loadTheme(process.env.VUE_APP_THEME);
+    }
+    event_bus.$on('loadTheme', (data) => {
+      this.loadTheme(data);
+    })
   },
 
   mounted () {
@@ -158,9 +168,31 @@ export default {
           console.log("no valid site config found");
         })
     },
+    loadTheme(theme) {
+      let link = document.getElementById("themestyle")
+      if (link != null) {
+        link.href =  "/vroom/themes/" + theme + ".css"
+      }  else {
+        link = document.createElement('link');
+        //style.id ="themestyle";
+        link.rel = "stylesheet";
+        link.type = "text/css";
+        link.href =  "/vroom/themes/" + theme + ".css"
+        document.head.append(link)
+      }
+      if (theme == 'dark') {
+        this.$vuetify.theme.dark = true;
+      } else if (theme == 'echoraeume') {
+        this.$vuetify.theme.themes.dark.primary = "#ac3f3f";
+        this.$vuetify.theme.dark = true;
+      } else {
+        //this.$vuetify.theme.dark = false;
+      }
+    }
   }
 }
 </script>
 
 <style lang="css">
+@import './styles/echovroom.css';
 </style>
