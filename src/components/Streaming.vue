@@ -9,7 +9,7 @@
         </a>
       </div>
 
-      <div class="overlay meta">
+      <div class="overlay meta" v-show="is_streaming">
         <a v-if="muted" @click="muteMe(false)"  title="unmute me">
           <volume-x-icon size="1x" class="icons linked" ></volume-x-icon>
         </a>

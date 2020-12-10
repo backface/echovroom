@@ -2,7 +2,7 @@
   "theme": "echoraeume",
   "stage": "/vroom/stages/echoraeume.html",
   "no_title": "true",
-  "calendar": "https://turtlestitch.org:8080/https://echoraeume.klingt.org/echoraeumeannounce.php",
+  "calendar": "https://echoraeume.klingt.org/echoraeumeannounce.php",
   "server": [
     "wss://janus.modular-t.org:8989/janus",
     "https://janus.modular-t.org:8089/janus"
