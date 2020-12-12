@@ -2,7 +2,6 @@
 <div class="videoroom" ref="videoroom">
 
   <portal to="topcontrols" class="topcontrols">
-
     <div class="columns is-mobile is-narrow headers is-gapless">
       <div class="column has-text-left is-10">
         <template v-if="allowUnpublish">
@@ -83,130 +82,167 @@
       </div>
 
     </div>
-
   </portal>
 
-  <!--<div class="screen has-text-center" ref="screen"></div>-->
+  <portal to="portalscreen">
+    <fullscreen ref="fullscreen" :fullscreen.sync="fullscreen"
+      @change="fullscreenChange"  background="white" v-if="is_open">
 
+      <div class="vrscreen" ref="screen" v-if="vr">
+        <a-scene embedded loading-screen="dotsColor: red; backgroundColor: black; enabled: false">
+          <a-assets>
+            <img id="grid" src="/img/grid_t.png" />
+            <video ref="videolocal" id="videolocal" autoplay loop crossorigin="anonymous" muted></video>
+            <video v-for="feed in feeds" :key="feed.id" :id="'v'+feed.id" :ref="'v' + feed.id" autoplay playsinline></video>
+          </a-assets>
 
-    <portal to="portalscreen">
+          <a-plane rotation="-90 0 0"
+            position="0 -0.7 0"
+            width="100" height="100"
+            material="src:#grid;repeat:200 200;transparent: true">
+          </a-plane>
 
-      <fullscreen ref="fullscreen" :fullscreen.sync="fullscreen"
-        @change="fullscreenChange"  background="white" v-if="is_open">
+          <a-plane
+            material="src: #videolocal"
+            :position="my_pos.cx + ' 1.4 ' + my_pos.cy"
+            :rotation="'0 ' + my_pos.rotation + ' 0'"
+            :width="my_pos.cw * 0.9" :height="my_pos.ch  * 0.9"
+            shadow
+          ></a-plane>
 
-        <div class="vrscreen" ref="screen" v-if="vr">
-          <a-scene embedded loading-screen="dotsColor: red; backgroundColor: black; enabled: false">
-            <a-assets>
-              <img id="grid" src="/img/grid_t.png" />
-              <video ref="videolocal" id="videolocal" autoplay loop crossorigin="anonymous" muted></video>
-              <video v-for="feed in feeds" :key="feed.id" :id="'v'+feed.id" :ref="'v' + feed.id" autoplay playsinline></video>
-            </a-assets>
-
-            <a-plane rotation="-90 0 0"
-              position="0 -0.7 0"
-              width="100" height="100"
-              material="src:#grid;repeat:200 200;transparent: true">
+          <template v-for="feed in feeds">
+            <a-plane v-if="!feed.loading" :key="'p'+feed.id"
+              :material="'src: #v'+feed.id"
+              :position="feed.cx + ' 1.4 ' + feed.cy"
+              :rotation="'0 ' + feed.rotation + ' 0'"
+              :width="feed.cw" :height="feed.ch"
+              shadow>
             </a-plane>
+          </template>
 
-            <a-plane
-              material="src: #videolocal"
-              :position="my_pos.cx + ' 1.4 ' + my_pos.cy"
-              :rotation="'0 ' + my_pos.rotation + ' 0'"
-              :width="my_pos.cw * 0.9" :height="my_pos.ch  * 0.9"
-              shadow
-            ></a-plane>
-
-            <template v-for="feed in feeds">
-              <a-plane v-if="!feed.loading" :key="'p'+feed.id"
-                :material="'src: #v'+feed.id"
-                :position="feed.cx + ' 1.4 ' + feed.cy"
-                :rotation="'0 ' + feed.rotation + ' 0'"
-                :width="feed.cw" :height="feed.ch"
-                shadow>
-              </a-plane>
-            </template>
-
-          </a-scene>
-        </div>
+        </a-scene>
+      </div>
 
 
-        <div class="screen has-text-center" ref="screen" v-if="!vr">
+      <div class="screen has-text-center" ref="screen" v-if="!vr">
+          <template v-if="isMobile">
+            <div v-show="is_streaming" class="video me" :class="username == onstage ? 'stage' : 'video'"
+              v-bind:style="username != onstage ?  { position: 'fixed', top: my_pos.y + 'px', left: my_pos.x + 'px', width: tile_width + 'px !important' , height: tile_width + 'px !important' } : {}"
+              v-hammer:pan="(event) => drag('drag', my_pos, event)"
+              v-hammer:panstart="(event) => drag('start', my_pos, event)"
+              v-hammer:panend="(event) => drag('stop', my_pos, event)"
+            >
+              <video  ref="videolocal" class="videolocal" id="videolocal" autoplay playsinline muted="muted"
+                :class="screenshare && is_streaming? '' : 'flip'" />
+              <div class="overlay name">ME</div>
+              <div class="muted">
+                <a v-if="muted && is_streaming" @click="muteMe(false)"  title="unmute me">
+                  <mic-off-icon size="5x" class="icons linked" ></mic-off-icon>
+                </a>
+              </div>
+              <div class="overlay meta">
+                <a v-if="muted" @click="muteMe(false)"  title="unmute me">
+                  <mic-off-icon size="1x" class="icons linked" ></mic-off-icon>
+                </a>
+                <a v-if="!muted" @click="muteMe(true)" title="mute me">
+                  <mic-icon size="1x" class="icons linked"></mic-icon>
+                </a>
+                <a @click="selectDevice"  title="show settings">
+                  <settings-icon size="1x" class="icons linked"></settings-icon>
+                </a>
+                <a @click="makeVideoFullscreen" title="fullscreen">
+                  <maximize-2-icon size="1x" class="icons linked" ></maximize-2-icon>
+                </a>
+              </div>
+            </div>
+          </template>
+
+          <template v-else>
+            <div v-show="is_streaming" class="video me" :class="username == onstage ? 'stage' : 'video'"
+              v-bind:style="username != onstage ?  { position: 'fixed', top: my_pos.y + 'px', left: my_pos.x + 'px', width: tile_width + 'px !important' , height: tile_width + 'px !important' } : {}"
+              @mousedown="drag('start', my_pos, $event)"
+              @mousemove="drag('drag', my_pos, $event)"
+              @mouseup="drag('stop',my_pos, $event)"
+              @mouseout="drag('stop',my_pos, $event)"
+            >
+              <video ref="videolocal" class="videolocal" id="videolocal" autoplay playsinline muted="muted"
+              :class="screenshare && is_streaming? '' : 'flip'" />/>
+
+              <div class="overlay name">ME</div>
+              <div class="muted">
+                <a v-if="muted && is_streaming" @click="muteMe(false)"  title="unmute me">
+                  <mic-off-icon size="5x" class="icons linked" ></mic-off-icon>
+                </a>
+              </div>
+              <div class="overlay meta">
+                <a v-if="muted" @click="muteMe(false)"  title="unmute me">
+                  <mic-off-icon size="1x" class="icons linked" ></mic-off-icon>
+                </a>
+                <a v-if="!muted" @click="muteMe(true)" title="mute me">
+                  <mic-icon size="1x" class="icons linked"></mic-icon>np
+                </a>
+                <a @click="selectDevice"  title="show settings">
+                  <settings-icon size="1x" class="icons linked"></settings-icon>
+                </a>
+                <a @click="makeVideoFullscreen" title="fullscreen">
+                  <maximize-2-icon size="1x" class="icons linked" ></maximize-2-icon>
+                </a>
+              </div>
+            </div>
+          </template>
+
+          <transition-group name="fade">
+
             <template v-if="isMobile">
-              <div v-show="is_streaming" class="video me" :class="username == onstage ? 'stage' : 'video'"
-                v-bind:style="username != onstage ?  { position: 'fixed', top: my_pos.y + 'px', left: my_pos.x + 'px', width: tile_width + 'px !important' , height: tile_width + 'px !important' } : {}"
-                v-hammer:pan="(event) => drag('drag', my_pos, event)"
-                v-hammer:panstart="(event) => drag('start', my_pos, event)"
-                v-hammer:panend="(event) => drag('stop', my_pos, event)"
-              >
-                <video  ref="videolocal" class="videolocal" id="videolocal" autoplay playsinline muted="muted"
-                  :class="screenshare && is_streaming? '' : 'flip'" />
-                <div class="overlay name">ME</div>
-                <div class="muted">
-                  <a v-if="muted && is_streaming" @click="muteMe(false)"  title="unmute me">
-                    <mic-off-icon size="5x" class="icons linked" ></mic-off-icon>
-                  </a>
+              <div v-for="feed in feeds" :key="feed.id" :class="feed.publisher == onstage ? 'stage' : 'video' "
+                  :style="feed.publisher != onstage ? { position: 'fixed', top: feed.y + 'px', left: feed.x + 'px', width: tile_width + 'px !important', height: tile_width + 'px !important' } : {}"
+                  v-hammer:pan="(event) => drag('drag', feed, event)"
+                  v-hammer:panstart="(event) => drag('start', feed, event)"
+                  v-hammer:panend="(event) => drag('stop', feed, event)"
+                  class="publisher"
+                >
+                <video :id="'v'+feed.id" :ref="'v' + feed.id" autoplay playsinline
+                 :class="{ talking: participants[feed.publisher].talking }"
+                />
+                <div class="overlay name">
+                  {{ participants[feed.publisher].display }}
+                  <message-circle-icon size="1x" class="icons" v-if="participants[feed.publisher].talking"></message-circle-icon>
                 </div>
                 <div class="overlay meta">
-                  <a v-if="muted" @click="muteMe(false)"  title="unmute me">
-                    <mic-off-icon size="1x" class="icons linked" ></mic-off-icon>
-                  </a>
-                  <a v-if="!muted" @click="muteMe(true)" title="mute me">
-                    <mic-icon size="1x" class="icons linked"></mic-icon>
-                  </a>
-                  <a @click="selectDevice"  title="show settings">
-                    <settings-icon size="1x" class="icons linked"></settings-icon>
+                  <loader-icon size="1x" class="icons loading centered" v-if="feed.loading == true"></loader-icon>
+                  <span class="bitrate" v-if="showBitrates && feed.bitrate">
+                    {{ feed.bitrate }}<br />
+                  </span>
+                  <a @click="feed.showOptions=!feed.showOptions" title="show settings">
+                    <settings-icon v-if="allowSettings" size="1x" class="icons linked"></settings-icon>
                   </a>
                   <a @click="makeVideoFullscreen" title="fullscreen">
-                    <maximize-2-icon size="1x" class="icons linked" ></maximize-2-icon>
+                    <maximize-2-icon size="1x" class="icons linked"></maximize-2-icon>
                   </a>
+                  <a @click="sendToStage(feed.publisher)" title="send to stage">
+                    <airplay-icon v-if="allowStageSends" size="1x" class="icons linked"></airplay-icon>
+                  </a>
+                  <a @click="kick(feed.publisher)" title="kick">
+                    <delete-icon size="1x" class="icons linked"></delete-icon>
+                  </a>
+                  <a v-if="emitCallEvents" @click="$emit('call', participants[feed.publisher].display)" title="call">
+                    <phone-call-icon size="1x" class="icons linked"></phone-call-icon>
+                  </a>
+                </div>
+                <div class="overlay options" v-show="feed.showOptions">
+                    <v-select dark label="Quality" dense v-model="feed.substream" :items="qualities" @change="changeFeedQuality(feed)"></v-select>
                 </div>
               </div>
             </template>
 
             <template v-else>
-              <div v-show="is_streaming" class="video me" :class="username == onstage ? 'stage' : 'video'"
-                v-bind:style="username != onstage ?  { position: 'fixed', top: my_pos.y + 'px', left: my_pos.x + 'px', width: tile_width + 'px !important' , height: tile_width + 'px !important' } : {}"
-                @mousedown="drag('start', my_pos, $event)"
-                @mousemove="drag('drag', my_pos, $event)"
-                @mouseup="drag('stop',my_pos, $event)"
-                @mouseout="drag('stop',my_pos, $event)"
-              >
-                <video ref="videolocal" class="videolocal" id="videolocal" autoplay playsinline muted="muted"
-                :class="screenshare && is_streaming? '' : 'flip'" />/>
-
-                <div class="overlay name">ME</div>
-                <div class="muted">
-                  <a v-if="muted && is_streaming" @click="muteMe(false)"  title="unmute me">
-                    <mic-off-icon size="5x" class="icons linked" ></mic-off-icon>
-                  </a>
-                </div>
-                <div class="overlay meta">
-                  <a v-if="muted" @click="muteMe(false)"  title="unmute me">
-                    <mic-off-icon size="1x" class="icons linked" ></mic-off-icon>
-                  </a>
-                  <a v-if="!muted" @click="muteMe(true)" title="mute me">
-                    <mic-icon size="1x" class="icons linked"></mic-icon>np
-                  </a>
-                  <a @click="selectDevice"  title="show settings">
-                    <settings-icon size="1x" class="icons linked"></settings-icon>
-                  </a>
-                  <a @click="makeVideoFullscreen" title="fullscreen">
-                    <maximize-2-icon size="1x" class="icons linked" ></maximize-2-icon>
-                  </a>
-                </div>
-              </div>
-            </template>
-
-            <transition-group name="fade">
-
-              <template v-if="isMobile">
-                <div v-for="feed in feeds" :key="feed.id" :class="feed.publisher == onstage ? 'stage' : 'video' "
-                    :style="feed.publisher != onstage ? { position: 'fixed', top: feed.y + 'px', left: feed.x + 'px', width: tile_width + 'px !important', height: tile_width + 'px !important' } : {}"
-                    v-hammer:pan="(event) => drag('drag', feed, event)"
-                    v-hammer:panstart="(event) => drag('start', feed, event)"
-                    v-hammer:panend="(event) => drag('stop', feed, event)"
-                    class="publisher"
-                  >
+              <div v-for="feed in feeds" :key="feed.id" :class="feed.publisher == onstage ? 'stage' : 'video' "
+                  :style="feed.publisher != onstage ? { position: 'fixed', top: feed.y + 'px', left: feed.x + 'px', width: tile_width + 'px !important', height: tile_width + 'px !important' } : {}"
+                  @mousedown="drag('start', feed, $event)"
+                  @mousemove="drag('drag', feed, $event)"
+                  @mouseup="drag('stop',feed, $event)"
+                  @mouseout="drag('stop',feed, $event)"
+                >
                   <video :id="'v'+feed.id" :ref="'v' + feed.id" autoplay playsinline
                    :class="{ talking: participants[feed.publisher].talking }"
                   />
@@ -231,7 +267,7 @@
                     <a @click="kick(feed.publisher)" title="kick">
                       <delete-icon size="1x" class="icons linked"></delete-icon>
                     </a>
-                    <a v-if="emitCallEvents" @click="$emit('call', participants[feed.publisher].display)" title="call">
+                    <a v-if="emitCallEvents" @click="$emit('call', user.display)" title="call">
                       <phone-call-icon size="1x" class="icons linked"></phone-call-icon>
                     </a>
                   </div>
@@ -239,67 +275,30 @@
                       <v-select dark label="Quality" dense v-model="feed.substream" :items="qualities" @change="changeFeedQuality(feed)"></v-select>
                   </div>
                 </div>
-              </template>
+            </template>
 
-              <template v-else>
-                <div v-for="feed in feeds" :key="feed.id" :class="feed.publisher == onstage ? 'stage' : 'video' "
-                    :style="feed.publisher != onstage ? { position: 'fixed', top: feed.y + 'px', left: feed.x + 'px', width: tile_width + 'px !important', height: tile_width + 'px !important' } : {}"
-                    @mousedown="drag('start', feed, $event)"
-                    @mousemove="drag('drag', feed, $event)"
-                    @mouseup="drag('stop',feed, $event)"
-                    @mouseout="drag('stop',feed, $event)"
-                  >
-                    <video :id="'v'+feed.id" :ref="'v' + feed.id" autoplay playsinline
-                     :class="{ talking: participants[feed.publisher].talking }"
-                    />
-                    <div class="overlay name">
-                      {{ participants[feed.publisher].display }}
-                      <message-circle-icon size="1x" class="icons" v-if="participants[feed.publisher].talking"></message-circle-icon>
-                    </div>
-                    <div class="overlay meta">
-                      <loader-icon size="1x" class="icons loading centered" v-if="feed.loading == true"></loader-icon>
-                      <span class="bitrate" v-if="showBitrates && feed.bitrate">
-                        {{ feed.bitrate }}<br />
-                      </span>
-                      <a @click="feed.showOptions=!feed.showOptions" title="show settings">
-                        <settings-icon v-if="allowSettings" size="1x" class="icons linked"></settings-icon>
-                      </a>
-                      <a @click="makeVideoFullscreen" title="fullscreen">
-                        <maximize-2-icon size="1x" class="icons linked"></maximize-2-icon>
-                      </a>
-                      <a @click="sendToStage(feed.publisher)" title="send to stage">
-                        <airplay-icon v-if="allowStageSends" size="1x" class="icons linked"></airplay-icon>
-                      </a>
-                      <a @click="kick(feed.publisher)" title="kick">
-                        <delete-icon size="1x" class="icons linked"></delete-icon>
-                      </a>
-                      <a v-if="emitCallEvents" @click="$emit('call', user.display)" title="call">
-                        <phone-call-icon size="1x" class="icons linked"></phone-call-icon>
-                      </a>
-                    </div>
-                    <div class="overlay options" v-show="feed.showOptions">
-                        <v-select dark label="Quality" dense v-model="feed.substream" :items="qualities" @change="changeFeedQuality(feed)"></v-select>
-                    </div>
-                  </div>
-              </template>
+          </transition-group>
 
-            </transition-group>
+      </div>
 
-        </div>
-      </fullscreen>
+      <canvas ref="canvas" v-show="facetime && is_tracking" class="facetrackdebug"></canvas>
+        <div class="trackingstats" v-if="facetime" v-show="facetime && is_tracking" > {{ fps }} FPS </div>
+    </fullscreen>
 
-    </portal>
+  </portal>
 
-    <toast ref="toast"></toast>
-    <login-dialog ref="login"></login-dialog>
-    <alert-dialog ref="alert"></alert-dialog>
-    <rtp-dialog ref="rtp_dialog"></rtp-dialog>
-    <device-dialog ref="device_dialog"></device-dialog>
+  <!--<div class="screen has-text-center" ref="screen"></div>-->
 
-    <video ref="videosrc" style="display:none"></video>
-    <canvas ref="canvas" v-show="facetime && is_tracking" class="facetrackdebug"></canvas>
-    <canvas ref="face" style="display:none" ></canvas>
-    <div class="trackingstats" v-if="facetime" v-show="facetime && is_tracking" > {{ fps }} FPS </div>
+  <toast ref="toast"></toast>
+  <login-dialog ref="login"></login-dialog>
+  <alert-dialog ref="alert"></alert-dialog>
+  <rtp-dialog ref="rtp_dialog"></rtp-dialog>
+  <device-dialog ref="device_dialog"></device-dialog>
+
+  <video ref="videosrc" style="display:none"></video>
+
+  <canvas ref="face" style="display:none" ></canvas>
+
 
   </div>
 </template>
@@ -1648,14 +1647,14 @@ export default {
 .video:hover .overlay { display:block }
 
 .vrscreen {
-  position: fixed;
+  position: absolute;
   width: 100%; height: 100%;
   top:-120px; left: 0;
   background:white;
 }
 
 .facetrackdebug {
-  position: fixed;
+  position: absolute;
   bottom:40px; left:5px;
   width:240px;
   border: 1px solid black;
@@ -1663,10 +1662,10 @@ export default {
 }
 
 .trackingstats {
-    position: fixed; bottom:5px; left:5px;
-    width:100px; background:rgba(0,0,0,0.5); color: white; padding: 2px 10px;
-    text-align:center;
-    z-index:201;
+  position: fixed; bottom:10px; left:5px;
+  width:100px; background:rgba(0,0,0,0.5); color: white; padding: 2px 10px;
+  text-align:center;
+  z-index:201;
 }
 
 .a-loader-title {
