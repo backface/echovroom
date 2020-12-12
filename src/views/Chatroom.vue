@@ -5,7 +5,7 @@
       <span v-if="subtitle" class="room_subtitle">{{ subtitle }}</span>
     </div>
 
-    <div class="stage" v-if="$route.name != 'embed'">
+    <div class="stage" v-if="!embed">
       <div class='embed-container'>
         <Streaming
           :roombyName="roombyName"
@@ -21,7 +21,7 @@
 
     <v-btn @click="preLogin" v-if="!chat_open" class="enter">Join the Conversation</v-btn>
 
-    <div class="echovrooms">
+    <div class="echovrooms" v-show="!present">
 
       <Videoroom
         :roombyName="roombyName"
@@ -43,7 +43,7 @@
 
       <Videocall
         :roombyName="roombyName"
-        v-if="login_name && janusReady"
+        v-if="login_name && janusReady && !present"
         :nick="login_name + '@' + roombyName"
         :is_muted="true"
         :host="server"
@@ -117,6 +117,10 @@ export default {
       type: Boolean,
       default: false
     },
+    present:  {
+      type: Boolean,
+      default: false
+    },
     withStreaming:  {
       type: Boolean,
       default: true,
@@ -159,8 +163,6 @@ export default {
       this.vr = this.enterVR;
 
     this.loadRoomConfig()
-
-
   },
 
   data() {
@@ -246,7 +248,7 @@ export default {
           }
 
           if (json.theme) {
-            event_bus.$emit('loadTheme', json.theme);            
+            event_bus.$emit('loadTheme', json.theme);
           }
 
           if (json.stage) {

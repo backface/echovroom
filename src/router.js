@@ -59,6 +59,24 @@ export default new Router({
           roombyName: route.params.roombyName,
       }),
     },
+    {
+      path: '/embed/:roombyName',
+      name: 'embed',
+      component: Chatroom,
+      props: (route) => ({
+          roombyName: route.params.roombyName,
+          embed:true,
+      }),
+    },
+    {
+      path: '/present/:roombyName',
+      name: 'present',
+      component: Chatroom,
+      props: (route) => ({
+          roombyName: route.params.roombyName,
+          present:true,
+      }),
+    },
 
     // main chat
     {
@@ -74,15 +92,7 @@ export default new Router({
 
     /*
     // various testing stuff
-    {
-      path: '/embed/:roombyName',
-      name: 'embed',
-      component: Chatroom,
-      props: (route) => ({
-          roombyName: route.params.roombyName,
-          embed:true,
-      }),
-    },
+
     {
       path: '/testing/:roombyName',
       name: 'vr',

@@ -1,7 +1,6 @@
 <template>
   <v-app id="app">
-    {{ $route.embed }}
-    <nav class="navbar is-transparent" role="navigation" aria-label="main navigation" v-if="!embed">
+    <nav class="navbar is-transparent" role="navigation" aria-label="main navigation" v-if="!embed && !present">
 
       <div class="navbar-brand">
         <router-link :to="{ path: '/' }" v-slot="{ href }">
@@ -64,7 +63,7 @@
       </transition-page>
     </div>
 
-    <footer>
+    <footer v-if="!present">
       <div class="has-text-centered">
         powered by ./<a href="https://www.echovroom.live">echoVroom</a> &nbsp;
         <a href="https://github.com/backface/echovroom"><github-icon size="0.9x" class="icons linked"></github-icon></a>
@@ -72,7 +71,7 @@
     </footer>
 
     <portal-target name="portalscreen"></portal-target>
-    <portal-target name="topcontrols" class="topcontrols"></portal-target>
+    <portal-target name="topcontrols" class="topcontrols"  v-if="!present"></portal-target>
 
     <template>
       <v-dialog v-model="show_about" width="854px" >
@@ -94,7 +93,7 @@
       </v-dialog>
     </template>
 
-    <div class="logo"></div>
+    <div class="logo" v-if="!present"></div>
 
   </v-app>
 </template>
@@ -121,6 +120,7 @@ export default {
     return {
       menuOpen: false,
       embed: false,
+      present: false,
       url: "",
       calendar_src: null,
       about_src: null,
@@ -145,6 +145,8 @@ export default {
     console.log('App mounted')
     if (this.$route.name == "embed")
       this.embed = true;
+    if (this.$route.name == "present")
+      this.present = true;
     this.url = document.location.href;
     this.loadSiteConfig();
   },
