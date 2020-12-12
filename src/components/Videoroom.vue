@@ -106,7 +106,7 @@
             material="src: #videolocal"
             :position="my_pos.cx + ' 1.4 ' + my_pos.cy"
             :rotation="'0 ' + my_pos.rotation + ' 0'"
-            :width="my_pos.cw * 0.9" :height="my_pos.ch  * 0.9"
+            :width="my_pos.cw" :height="my_pos.ch"
             shadow
           ></a-plane>
 
