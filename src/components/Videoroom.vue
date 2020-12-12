@@ -86,51 +86,51 @@
 
   </portal>
 
-
-    <div class="screen has-text-center" ref="screen">
-      <div class="vrscreen"
-        ref="screen" v-if="vr"
-        :style="'width:' + getWindowWidth() + 'px; height:' + top + 'px'">
-
-        <a-scene embedded background="color: #ffffff" loading-screen="dotsColor: black; backgroundColor: #ffffff"
-          >
-          <a-assets>
-            <img id="grid" src="/img/grid.png" />
-            <video ref="videolocal" id="videolocal" autoplay loop crossorigin="anonymous" muted></video>
-            <video v-for="feed in feeds" :key="feed.id" :id="'v'+feed.id" :ref="'v' + feed.id" autoplay playsinline></video>
-          </a-assets>
-          <a-plane rotation="-90 0 0" width="100" height="100" material="src:#grid;repeat:200 200"
-          ></a-plane>
-
-          <a-plane
-            material="src: #videolocal"
-            :position="my_pos.cx + ' 1.4 ' + my_pos.cy"
-            :rotation="'0 ' + my_pos.rotation + ' 0'"
-            :width="my_pos.cw" :height="my_pos.ch"
-            shadow
-          ></a-plane>
-
-          <template v-for="feed in feeds">
-            <a-plane v-if="!feed.loading" :key="'p'+feed.id"
-              :material="'src: #v'+feed.id"
-              :position="feed.cx + ' 1.4 ' + feed.cy"
-              :rotation="'0 ' + feed.rotation + ' 0'"
-              :width="feed.cw" :height="feed.ch"
-              shadow>
-            </a-plane>
-          </template>
-
-        </a-scene>
-      </div>
-    </div>
+  <!--<div class="screen has-text-center" ref="screen"></div>-->
 
 
     <portal to="portalscreen">
 
       <fullscreen ref="fullscreen" :fullscreen.sync="fullscreen"
         @change="fullscreenChange"  background="white" v-if="is_open">
-        <div class="screen has-text-center" ref="screen" v-if="!vr">
 
+        <div class="vrscreen" ref="screen" v-if="vr">
+          <a-scene embedded loading-screen="dotsColor: red; backgroundColor: black; enabled: false">
+            <a-assets>
+              <img id="grid" src="/img/grid_t.png" />
+              <video ref="videolocal" id="videolocal" autoplay loop crossorigin="anonymous" muted></video>
+              <video v-for="feed in feeds" :key="feed.id" :id="'v'+feed.id" :ref="'v' + feed.id" autoplay playsinline></video>
+            </a-assets>
+
+            <a-plane rotation="-90 0 0"
+              position="0 -0.7 0"
+              width="100" height="100"
+              material="src:#grid;repeat:200 200;transparent: true">
+            </a-plane>
+
+            <a-plane
+              material="src: #videolocal"
+              :position="my_pos.cx + ' 1.4 ' + my_pos.cy"
+              :rotation="'0 ' + my_pos.rotation + ' 0'"
+              :width="my_pos.cw * 0.9" :height="my_pos.ch  * 0.9"
+              shadow
+            ></a-plane>
+
+            <template v-for="feed in feeds">
+              <a-plane v-if="!feed.loading" :key="'p'+feed.id"
+                :material="'src: #v'+feed.id"
+                :position="feed.cx + ' 1.4 ' + feed.cy"
+                :rotation="'0 ' + feed.rotation + ' 0'"
+                :width="feed.cw" :height="feed.ch"
+                shadow>
+              </a-plane>
+            </template>
+
+          </a-scene>
+        </div>
+
+
+        <div class="screen has-text-center" ref="screen" v-if="!vr">
             <template v-if="isMobile">
               <div v-show="is_streaming" class="video me" :class="username == onstage ? 'stage' : 'video'"
                 v-bind:style="username != onstage ?  { position: 'fixed', top: my_pos.y + 'px', left: my_pos.x + 'px', width: tile_width + 'px !important' , height: tile_width + 'px !important' } : {}"
@@ -480,7 +480,7 @@ export default {
       this.janus = this.myJanus
       this.attachPlugin()
     }
-    this.top = this.$refs['videoroom'].getBoundingClientRect().top - 70;
+    this.top = this.$refs['videoroom'].getBoundingClientRect().top;
     this.force = forceSimulation()
       .force('charge', forceManyBody().strength(10))
       .force('collision', forceCollide().radius(this.tile_width/2+ 5))
@@ -1642,21 +1642,21 @@ export default {
 .stage video {
   object-fit: contain;
   width:100%;
-
   border-radius: 0%;
 }
 
 .video:hover .overlay { display:block }
 
 .vrscreen {
-  position: relative;
-  top:-70px; left: 50%;
-  transform:translate(-50%,-100%);
+  position: fixed;
+  width: 100%; height: 100%;
+  top:-120px; left: 0;
   background:white;
 }
 
 .facetrackdebug {
-  position: fixed; bottom:30px; left:5px;
+  position: fixed;
+  bottom:40px; left:5px;
   width:240px;
   border: 1px solid black;
   z-index:200;
@@ -1670,11 +1670,21 @@ export default {
 }
 
 .a-loader-title {
-  background: #ddcccc;
-  color:black;
+  background: var(--color-bg);
+  color: var(--color-fg);
 }
 
+a-scene {
+  background: var(--color-bg);
+}
 
+.vrscreen {
+  position: absolute;
+  top:0px; left: 0px;
+  width: 100%;
+  height: calc(100% - 60px);
+  z-index: 100;
+}
 
 @media (max-width:461px) {
   .overlay { display:none}
