@@ -7,15 +7,6 @@ import About from './views/About.vue'
 import Monitor from './views/Monitor.vue'
 import NotFound from './views/NotFound.vue'
 import Echoroom from './views/Echoroom.vue'
-import Demoroom from './views/Demoroom.vue'
-/*
-import Testroom from './views/Testroom.vue'
-import Eventroom from './views/Eventroom.vue'
-import VideoTest from './components/VideoTest.vue'
-import VideoTest2 from './components/VideoTest2.vue'
-import VideoTest3 from './components/VideoTest3.vue'
-import D3test from './components/D3test.vue'
-*/
 
 Vue.use(Router)
 
@@ -42,13 +33,6 @@ export default new Router({
       component: Echoroom,
       props: { roombyNamed: "echoraeume" } //2577359740
     },
-    {
-      path: '/demoroom',
-      name: 'demoroom',
-      component: Demoroom,
-      props: { roombyId: 1234}
-    },
-
     {
       path: '/facetime/:roombyName',
       name: 'facetime',
