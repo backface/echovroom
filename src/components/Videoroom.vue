@@ -68,7 +68,6 @@
         <a v-if="!vr" @click="toggleForce" title="toggle force-directed layout">
           <compass-icon size="1x" class="icons linked"  :style="{ color: use_force ? 'var(--color-alert)' : '' }"></compass-icon>
         </a>
-
       </div>
 
       <div class="column has-text-right">
@@ -125,7 +124,7 @@
 
 
       <div class="screen has-text-center" ref="screen" v-if="!vr">
-          <template v-if="isMobile">
+          <template v-if="isMobile()">
             <div v-show="is_streaming" class="video me" :class="username == onstage ? 'stage' : 'video'"
               v-bind:style="username != onstage ?  { position: 'fixed', top: my_pos.y + 'px', left: my_pos.x + 'px', width: tile_width + 'px !important' , height: tile_width + 'px !important' } : {}"
               v-hammer:pan="(event) => drag('drag', my_pos, event)"
@@ -166,7 +165,7 @@
               @mouseout="drag('stop',my_pos, $event)"
             >
               <video ref="videolocal" class="videolocal" id="videolocal" autoplay playsinline muted="muted"
-              :class="screenshare && is_streaming? '' : 'flip'" />/>
+              :class="screenshare && is_streaming? '' : 'flip'" />
 
               <div class="overlay name">ME</div>
               <div class="muted">
@@ -179,7 +178,7 @@
                   <mic-off-icon size="1x" class="icons linked" ></mic-off-icon>
                 </a>
                 <a v-if="!muted" @click="muteMe(true)" title="mute me">
-                  <mic-icon size="1x" class="icons linked"></mic-icon>np
+                  <mic-icon size="1x" class="icons linked"></mic-icon>
                 </a>
                 <a @click="selectDevice"  title="show settings">
                   <settings-icon size="1x" class="icons linked"></settings-icon>
@@ -188,12 +187,13 @@
                   <maximize-2-icon size="1x" class="icons linked" ></maximize-2-icon>
                 </a>
               </div>
+
             </div>
           </template>
 
           <transition-group name="fade">
 
-            <template v-if="isMobile">
+            <template v-if="isMobile()">
               <div v-for="feed in feeds" :key="feed.id" :class="feed.publisher == onstage ? 'stage' : 'video' "
                   :style="feed.publisher != onstage ? { position: 'fixed', top: feed.y + 'px', left: feed.x + 'px', width: tile_width + 'px !important', height: tile_width + 'px !important' } : {}"
                   v-hammer:pan="(event) => drag('drag', feed, event)"
@@ -276,7 +276,32 @@
                   </div>
                 </div>
             </template>
+          </transition-group>
 
+          <transition-group name="bounce-message">
+            <div class="message_bubble" v-if="my_msg" key="my_msg.id"
+              :style="{
+                  position: 'fixed',
+                  top: my_pos.y +  (tile_width) + 'px',
+                  left: my_pos.x +  (tile_width/2) + 'px',
+                  maxWidth: tile_width + (tile_width/10) + 'px !important'
+                }">
+              <span v-html="my_msg.slice(0,55)"></span>
+              <span v-if="my_msg.length > 55">...</span>
+            </div>
+          </transition-group>
+
+          <transition-group name="bounce-message" v-for="feed in feeds" :key="feed.id" >
+            <div class="message_bubble" v-if="feed.msg" key="feed.msg"
+              :style="{
+                  position: 'fixed',
+                  top: feed.y +  (tile_width) + 'px',
+                  left: feed.x +  (tile_width/2) + 'px',
+                  maxWidth: tile_width + (tile_width/10) + 'px !important'
+                }">
+              <span v-html="feed.msg.slice(0,55)"></span>
+              <span v-if="feed.msg.length > 55">...</span>
+            </div>
           </transition-group>
 
       </div>
@@ -332,6 +357,7 @@ import { forceManyBody }  from 'd3-force';
 import { forceCollide }  from 'd3-force';
 import { forceRadial }  from 'd3-force';
 import { Portal  } from 'portal-vue'
+import { event_bus } from '@/main'
 import "aframe"
 
 Vue.use(fullscreen)
@@ -410,6 +436,10 @@ export default {
       type: Boolean,
       default: true
     },
+    showMessages: {
+      type: Boolean,
+      default: true
+    },
   },
 
   data() {
@@ -465,10 +495,13 @@ export default {
       is_recording: false,
       current_video_device: "",
       current_audio_device: "",
+      my_msg: "",
+      bubble_duration: 3000,
     }
   },
 
   mounted () {
+    let self = this;
     console.log(this.$options._componentTag + " mounted");
     console.log("client sceen is ", this.getWindowWidth(), "x", this.getWindowHeight());
     this.rtp_dialog = this.$refs.rtp_dialog;
@@ -489,6 +522,12 @@ export default {
         .y(this.getWindowHeight()/ 2 - this.tile_width/2)
       )
       .on('tick', this.force_tick);
+
+      event_bus.$on('message', (data) => {
+        if (self.showMessages) {
+          self.showBubble(data);
+        }
+      })
   },
 
   destroyed () {
@@ -511,6 +550,24 @@ export default {
   },
 
   methods: {
+
+    showBubble(msg) {
+      let self = this;
+      console.log("got message", msg, this.display);
+      if (msg.from == this.display) {
+        this.my_msg = msg.msg;
+        setTimeout( () => self.my_msg = "", self.bubble_duration)
+      } else {
+        for (let k of Object.keys(self.feeds)) {
+          if (self.participants[self.feeds[k].publisher].display == msg.from) {
+            console.log(msg);
+            self.$set(self.feeds[k], "msg", msg.msg)
+            setTimeout( () => self.$set(self.feeds[k], "msg", ""), self.bubble_duration)
+          }
+        }
+      }
+
+    },
 
     restartForces() {
       console.log("reseting forces");
@@ -1677,6 +1734,25 @@ a-scene {
   background: var(--color-bg);
 }
 
+.bubble {
+  background-color: var(--color-bg);
+  color: var(--color-fg);
+  min-width: 256px;
+}
+
+.message_bubble {
+  background-color: var(--color-bg);
+  color: var(--color-fg);
+  padding: 5px 15px;
+  border-radius: 2px;
+  opacity: 0.9;
+  transform:translate(-50%, -50%);
+  box-shadow: 10px 6px 12px rgba(0,0,0,0.55);
+  z-index: 202;
+  height: auto;
+}
+
+
 .vrscreen {
   position: absolute;
   top:0px; left: 0px;
@@ -1702,6 +1778,29 @@ a-scene {
   transform: translateX(10px);
   width: 0;
   height:0
+}
+
+
+.bounce-message-enter-active {
+  animation: bounce-in .3s;
+}
+.bounce-message-leave-active {
+  animation: bounce-in .3s reverse;
+}
+@keyframes bounce-in {
+  0% {
+
+    transform:translate(-50%, -50%)  scale(0) ;
+    opacity: 0
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.3) ;
+    opacity: 0.7
+  }
+  100% {
+    transform: translate(-50%, -50%%) scale(1) ;
+    opacity: 0.9
+  }
 }
 
 </style>

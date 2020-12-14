@@ -152,6 +152,7 @@ import { LoaderIcon } from 'vue-feather-icons'
 import { VMenu, VList } from 'vuetify/lib'
 import { replaceEmoticons } from "../libs/emoticon"
 import EmojiPicker from 'vue-emoji-picker'
+import { event_bus } from '@/main'
 
 export default {
   name: 'Textroom',
@@ -329,7 +330,6 @@ export default {
             } else {
               // Public message
               self.messages.push( {
-                id: transaction,
                 from: self.participants[from].display,
                 color: self.participants[from].color,
                 msg: Autolinker.link(strip_tags(msg)),
@@ -337,6 +337,12 @@ export default {
               })
               if (!self.is_active)
                 self.new_messages++;
+
+              event_bus.$emit('message', {
+                from: self.participants[from].display,
+                color: self.participants[from].color,
+                msg: Autolinker.link(strip_tags(msg)),
+              });
 
               window.setTimeout( function() {
                 self.$refs.chatbar.$el.scrollTop = self.$refs.chatbar.$el.scrollHeight;
