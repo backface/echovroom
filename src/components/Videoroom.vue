@@ -460,6 +460,8 @@ export default {
       fullscreen: false,
       tile_width: 256,
       tile_height: 256,
+      wanted_tile_width: 256,
+      wanted_tile_height: 256,
       dragging: null,
       my_pos: { x:0, y:0, cx:0, cy:0, cw:0, ch:0 },
       bitrates:  [
@@ -528,6 +530,11 @@ export default {
           self.showBubble(data);
         }
       })
+      window.addEventListener('resize', this.onResize);
+  },
+
+  beforeDestroy() {
+    window.removeEventListener('resize', this.onResize);
   },
 
   destroyed () {
@@ -551,28 +558,29 @@ export default {
 
   methods: {
 
+    onResize() {
+      this.restartForces();
+    },
+
     showBubble(msg) {
       let self = this;
-      console.log("got message", msg, this.display);
       if (msg.from == this.display) {
         this.my_msg = msg.msg;
         setTimeout( () => self.my_msg = "", self.bubble_duration)
       } else {
         for (let k of Object.keys(self.feeds)) {
           if (self.participants[self.feeds[k].publisher].display == msg.from) {
-            console.log(msg);
             self.$set(self.feeds[k], "msg", msg.msg)
             setTimeout( () => self.$set(self.feeds[k], "msg", ""), self.bubble_duration)
           }
         }
       }
-
     },
 
     restartForces() {
       console.log("reseting forces");
       let self = this;
-
+      self.tile_width = self.wanted_tile_width;
       self.force_used_area_perc =
           (self.tile_width/2 * self.tile_width/2 * Math.PI * self.force_positions.length) / // kugel area
           (self.getWindowWidth() * self.getWindowHeight()) // window already
