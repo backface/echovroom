@@ -1,84 +1,98 @@
 // post: token; returns status: verified|needslogin|invalid or error: message
 function postEvent(req, res) {
   //console.log(req.body);
-  let body = req.body[0]
-  let type = body.type
-  let timestamp = body.timestamp
-  let when = new Date(timestamp/1000);
 
-  console.log(when, "---------------------------------- got event, type", type);
+  console.log(req.body.length, "events");
 
+  for(var i=0; i < req.body.length; i++) {
 
-  // Session related event
-  if (type === 1) {
-    let event = body.event
-    let session_id =  body.session_id
+    let body = req.body[i]
+    let type = body.type
+    let timestamp = body.timestamp
+    let when = new Date(timestamp/1000);
 
-    if(event.name == "created") {
-      console.log(when, "session", event.name, "#" + session_id );
-    } else if (event.name == "destroyed") {
-      console.log(when, "session", event.name, "#" + session_id );
-    }
-    else
-      console.log(when, body);
+    console.log(when, "---------------------------------- got event, type", type);
 
-  // Handle related event
-  } else if (type === 2) {
+    // Session related event
+    if (type === 1) {
+      let event = body.event
+      let session_id =  body.session_id
 
-    let event = body.event
-    let session_id =  body.session_id
-    let handle_id =  body.handle_id
-    //let opaque_id =  body.opaque_id
-    let plugin = event.plugin
+      if(event.name == "created") {
+        console.log(when, "session", event.name, "#" + session_id );
+      } else if (event.name == "destroyed") {
+        console.log(when, "session", event.name, "#" + session_id );
+      }
+      else
+        console.log(when, body);
 
-    if(event.name == "attached") {
-      console.log(when, plugin, event.name, "handle #" + handle_id , "session #" + session_id );
-    } else if (event.name == "leaving") {
-      console.log(when, plugin, event.name, "handle #" + handle_id , "session #" + session_id );
-    }
+    // Handle related event
+    } else if (type === 2) {
 
-  // External event (injected via Admin API)
-  } else if (type === 4) {
+      let event = body.event
+      let session_id =  body.session_id
+      let handle_id =  body.handle_id
+      //let opaque_id =  body.opaque_id
+      let plugin = event.plugin
 
-  // JSEP event (SDP offer/answer)
-  } else if (type === 8) {
+      if(event.name == "attached") {
+        console.log(when, plugin, event.name, "handle #" + handle_id , "session #" + session_id );
+      } else if (event.name == "leaving") {
+        console.log(when, plugin, event.name, "handle #" + handle_id , "session #" + session_id );
+      }
 
-  // WebRTC state event (ICE/DTLS states, candidates, etc.)
-  } else if (type === 16) {
+    // External event (injected via Admin API)
+    } else if (type === 4) {
 
-  // Media event (media state, reports, etc.)
-  } else if (type === 32) {
-    let subtype = body.subtype
-    if (subtype === 1) {
-      // Medium state
-    } else if (subtype === 2) {
-      // Slow link
-    } else if (subtype === 3) {
-      // Report/stats
-    }
+    // JSEP event (SDP offer/answer)
+    } else if (type === 8) {
 
-  // Plugin-originated event (e.g., event coming from VideoRoom)
-  } else if (type === 64) {
-    //let session_id =  body.session_id
-    //let handle_id =  body.handle_id
-    //let opaque_id =  body.opaque_id
-    let event = body.event
-    let plugin = event.plugin
-    console.log(when, plugin, event.data.event, "room #" + event.data.room);
+    // WebRTC state event (ICE/DTLS states, candidates, etc.)
+    } else if (type === 16) {
 
-  // Transport-originated event (e.g., WebSocket connection state)
-  } else if (type === 128) {
+    // Media event (media state, reports, etc.)
+    } else if (type === 32) {
+      let subtype = body.subtype
+      if (subtype === 1) {
+        // Medium state
+      } else if (subtype === 2) {
+        // Slow link
+      } else if (subtype === 3) {
+        // Report/stats
+      }
 
-  // Core event (server startup/shutdown)
-  } else if (type === 128) {
-    let subtype = body.subtype
-    if (subtype === 1) {
-      // Server startup
-    } else if (subtype === 2) {
-      // Server shutdown
+    // Plugin-originated event (e.g., event coming from VideoRoom)
+    } else if (type === 64) {
+      //let session_id =  body.session_id
+      //let handle_id =  body.handle_id
+      //let opaque_id =  body.opaque_id
+      let event = body.event
+      let plugin = event.plugin
+      let room = ""
+      if (event.data.room)
+        room = "room #" + event.data.room
+
+      if (plugin === "janus.plugin.streaming")
+        if (event.data.status)
+            console.log(when, plugin, event.data.status, "id #" + event.data.id);
+        else
+          console.log(when, plugin, event.data.event, "id #" + event.data.id);
+      else if  (plugin === "janus.plugin.streaming")
+        console.log(when, plugin, event.data.event, room);
+
+    // Transport-originated event (e.g., WebSocket connection state)
+    } else if (type === 128) {
+
+    // Core event (server startup/shutdown)
+    } else if (type === 128) {
+      let subtype = body.subtype
+      if (subtype === 1) {
+        // Server startup
+      } else if (subtype === 2) {
+        // Server shutdown
+      }
     }
   }
-
 
 	return res.json({
 		success: true,
