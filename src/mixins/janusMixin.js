@@ -54,13 +54,20 @@ export const janusMixin = {
   },
 
   data () {
-    return {
-      server: [
+    let servers = [
         //"wss://" +  window.location.hostname + "/ws/janus",
         // window.location.protocol + "//" +  window.location.hostname + "/janus",
          "wss://" +  window.location.hostname + ":8989/janus",
           window.location.protocol + "//" +  window.location.hostname + ":8089/janus",
-       ],
+       ]
+     if (window.location.protocol === "http:")
+       servers =  [
+          "ws://" +  window.location.hostname + ":8089/janus",
+           window.location.protocol + "//" +  window.location.hostname + ":8088/janus",
+        ]
+
+    return {
+      server: servers,
       iceServer: [
         {"urls": "stun:" + window.location.hostname },
         {"urls": "turn:" + window.location.hostname, "username": "turn", "credential": "hinterseer"}
