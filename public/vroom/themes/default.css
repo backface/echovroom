@@ -16,6 +16,10 @@ img {filter:invert(0.93)}
   background:var(--color-fg);
 }
 
+.navbar .navbar-menu .navbar-item a {
+  font-weight: normal;
+}
+
 .stage {
   background-image: url('/img/testbild2_inv.png');
   background-position: center;

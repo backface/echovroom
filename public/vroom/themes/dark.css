@@ -10,6 +10,9 @@
 }
 img {filter:invert(0.93)}
 
+.navbar .navbar-menu .navbar-item a {
+  font-weight: normal;
+}
 
 .navbar,
 .navbar, .navbar-menu, .dropdown-content {

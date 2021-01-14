@@ -51,6 +51,7 @@ a {
 }
 */
 .navbar .navbar-menu .navbar-item a {
+  font-weight: normal;
   margin-right: 10px; margin-left: 10px;
 }
 .navbar .navbar-menu .navbar-item:not(:nth-child(1)) a {}

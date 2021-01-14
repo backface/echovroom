@@ -1,10 +1,10 @@
 @font-face {font-family: "Arial Rounded MT";
-  src: url("https://porgy.at/static/fonts/Arial Rounded MT.eot");
-  src: url("https://porgy.at/static/fonts/Arial Rounded MT.eot?#iefix") format("embedded-opentype"),
-  url("https://porgy.at/static/fonts/Arial Rounded MT.woff2") format("woff2"),
-  url("https://porgy.at/static/fonts/Arial Rounded MT.woff") format("woff"),
-  url("https://porgy.at/static/fonts/Arial Rounded MT.ttf") format("truetype"),
-  url("https://porgy.at/static/fonts/Arial Rounded MT.svg#Arial Rounded MT") format("svg");
+  src: url("/fonts/Arial Rounded MT.eot");
+  src: url("/fonts/Arial Rounded MT.eot?#iefix") format("embedded-opentype"),
+  url("fonts/Arial Rounded MT.woff2") format("woff2"),
+  url("/fonts/Arial Rounded MT.woff") format("woff"),
+  url("/fonts/Arial Rounded MT.ttf") format("truetype"),
+  url("/fonts/Arial Rounded MT.svg#Arial Rounded MT") format("svg");
 }
 
 .theme--dark.v-application {
@@ -35,7 +35,7 @@ html {
 .title {
   background: none !important;
   font-size:1.2em !important;
-  color: #FFCC00 !important;
+  color: #ffffff !important;
 }
 
 .navbar .navbar-brand a:hover {}
@@ -54,6 +54,8 @@ html {
 .navbar .navbar-menu .navbar-item a {
   margin-right: 5px; margin-left: 5px;
   font-size: 0.9em;
+  font-weight: bold;
+  text-transform: uppercase;
 }
 
 .dropdown-content .dropdown-item, .dropdown .dropdown-menu .has-link a {color:var(--color-a);}

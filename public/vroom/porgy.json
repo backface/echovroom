@@ -1,10 +1,10 @@
 {
   "autologin": false,
-  "title": "Live @ Porgy & Bess",
+  "title": "Live aus dem Porgy & Bess",
   "theme": "porgy",
   "nav": [
       {
-        "name":"Live @ Porgy & Bess",
+        "name":"Porgy & Bess",
         "link":"https://www.porgy.at"
       },
       {

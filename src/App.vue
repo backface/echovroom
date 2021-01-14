@@ -83,19 +83,7 @@
     <template>
       <v-dialog v-model="show_about" width="854px" >
         <v-card class="about">
-          <template v-if="!about_src">
-            <About />
-          </template>
-          <div v-else class="about" v-html="about_src"></div>
-        </v-card>
-      </v-dialog>
-    </template>
-
-    <template>
-      <v-dialog v-model="show_calendar" width="854px" >
-        <v-card class="about">
-          <div class="calendar" v-html="calendar_src">
-          </div>
+          <About />
         </v-card>
       </v-dialog>
     </template>
