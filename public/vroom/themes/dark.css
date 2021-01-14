@@ -38,8 +38,12 @@ img {filter:invert(0.93)}
 .about h1.title {
   background-color:var(--color-fg) !important;
   color:var(--color-bg) !important;
+  padding: 0px 10px;
 }
 .home .logo {display: none}
+.logo{
+  display: none;
+}
 
 /*-----------------------------*/
 /*  vuetify overrides */

@@ -17,8 +17,8 @@
         </a>
       </div>
 
-      <div class="navbar-menu" :class="{'is-active':menuOpen}">
-        <div class="navbar-item">
+      <div class="navbar-menu" :class="{'is-active':menuOpen}" >
+        <div class="navbar-item" v-if="!no_about">
           <a @click="show_about=true" title="about">about</a>
         </div>
 
@@ -137,11 +137,8 @@ export default {
       embed: false,
       present: false,
       url: "",
-      calendar_src: null,
-      about_src: null,
-      tipjar_src : null,
+      no_about: false,
       show_about: false,
-      show_calendar: false,
       shortcuts: [],
       nav: [],
     }

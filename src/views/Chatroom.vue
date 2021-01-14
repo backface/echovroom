@@ -213,12 +213,14 @@ export default {
         .then(r => r.json())
         .then(json => {
           console.log("loading vroom configs: vroom/" + this.roombyName + ".json");
-
+          let no_about = false;
           if (json.server) this.server = json.server;
           if (json.iceServers) this.iceServers = json.iceServers;
 
           if (json.title) this.title = json.title;
           if (json.no_title == "true") this.title = "";
+          if (json.no_about == "true") no_about = true;
+
           if (json.subtitle) this.subtitle = json.subtitle;
 
           if (json.nav) {
@@ -231,11 +233,15 @@ export default {
                   d.content = "<h1 class=\"title\">" + d.name + "</h1>" + text;
                 })
               }
+              if(d.name == "about")
+                no_about = true;
             })
-            console.log(json.nav);
-            self.$parent.$parent.$parent.nav = json.nav;
-            self.$parent.$parent.$parent.$forceUpdate();
+          } else {
+            json.nav = []
           }
+          self.$parent.$parent.$parent.nav = json.nav;
+          self.$parent.$parent.$parent.no_about = no_about;
+          self.$parent.$parent.$parent.$forceUpdate();
 
 
           /*

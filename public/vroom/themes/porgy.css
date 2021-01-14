@@ -24,10 +24,6 @@
 	--font-hdg: "Arial Rounded MT", Arial, Helvetica, sans-serif;
 }
 
-a {
-  text-decoration: none;
-}
-
 html {
   background-color:var(--color-bg);
 }
@@ -37,7 +33,7 @@ html {
 }
 
 .title {
-  background: none;
+  background: none !important;
   font-size:1.2em !important;
   color: #FFCC00 !important;
 }

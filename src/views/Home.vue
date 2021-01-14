@@ -41,8 +41,11 @@ export default {
     return {
       room_name: "",
       shortcuts: [
-        "echoraeume", "echo",
-         "grundltv", "stwst48x6"
+        "echoraeume",
+        "echo",
+        "grundltv",
+        "stwst48x6", 
+        "dark"
          //{ title: "Porgy & Bess", hash:"porgy"}, "infolab",
       ]
     }
