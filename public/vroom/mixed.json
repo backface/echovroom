@@ -1,0 +1,10 @@
+{
+  "server": [
+    "wss://chat.echovroom.live:8989/janus",
+    "https://chat.echovroom.live:8089/janus"
+  ],
+  "iceServers": [
+    {"urls": "stun:chat.echovroom.live"},
+    {"urls": "turn:chat.echovroom.live", "username": "turn", "credential": "hinterseer"}
+  ]
+}

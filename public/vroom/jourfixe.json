@@ -2,15 +2,7 @@
   "theme": "echoraeume",
   "stage": "/vroom/stages/echoraeume.html",
   "no_title": "true",
-  "calendar": "https://echoraeume.klingt.org/echoraeumeannounce.php",
-  "server": [
-    "wss://janus.modular-t.org:8989/janus",
-    "https://janus.modular-t.org:8089/janus"
-  ],
-  "iceServers": [
-    {"urls": "stun:turn.modular-t.org"},
-    {"urls": "turn:turn.modular-t.org", "username": "turn", "credential": "hinterseer"}
-  ],
+
   "nav": [
       {
         "name":"about echoraeume",

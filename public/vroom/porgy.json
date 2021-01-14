@@ -1,0 +1,20 @@
+{
+  "autologin": false,
+  "title": "Live @ Porgy & Bess",
+  "theme": "porgy",
+  "nav": [
+      {
+        "name":"Live from Porgy & Bess",
+        "link":"https://www.porgy.at"
+      },
+      {
+        "name":"pay as you wish",
+        "link":"https://www.porgy.at/events/payasyouwish"
+      },
+      {
+        "name":"calendar",
+        "src":"https://echoraeume.klingt.org/echoraeumeannounce.php"
+      }
+  ]
+
+}

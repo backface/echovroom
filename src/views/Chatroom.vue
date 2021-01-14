@@ -221,6 +221,24 @@ export default {
           if (json.no_title == "true") this.title = "";
           if (json.subtitle) this.subtitle = json.subtitle;
 
+          if (json.nav) {
+            json.nav.forEach( (d) => {
+              d.show = false;
+              if (d.src) {
+                fetch(d.src).then(
+                  r => r.text()
+                ).then((text) => {
+                  d.content = "<h1 class=\"title\">" + d.name + "</h1>" + text;
+                })
+              }
+            })
+            console.log(json.nav);
+            self.$parent.$parent.$parent.nav = json.nav;
+            self.$parent.$parent.$parent.$forceUpdate();
+          }
+
+
+          /*
           if (json.calendar) {
             // this is a hack
             //self.$parent.$parent.$parent.calendar_src =  json.calendar;
@@ -246,6 +264,7 @@ export default {
           } else {
             self.$parent.$parent.$parent.tipjar_src = null;
           }
+          */
 
           if (json.theme) {
             event_bus.$emit('loadTheme', json.theme);

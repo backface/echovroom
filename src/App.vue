@@ -21,9 +21,16 @@
         <div class="navbar-item">
           <a @click="show_about=true" title="about">about</a>
         </div>
-        <div class="navbar-item" v-if="calendar_src">
-          <a @click="show_calendar=true" title="calendar">calendar</a>
-        </div>
+
+        <template v-if="nav">
+          <div class="navbar-item" v-for="item in nav" :key="item.name">
+            <a v-if="item.link" :href="item.link" :title="item.name" target="_blank">{{ item.name }}</a>
+            <a v-else @click="item.show=true" :title="item.name" :class="{ active: item.show }">{{ item.name }}</a>
+            &nbsp;
+          </div>
+        </template>
+
+
         <div class="navbar-item" v-if="tipjar_src">
           <a :href="tipjar_src" title="tip jar">tip jar</a>
         </div>
@@ -93,6 +100,14 @@
       </v-dialog>
     </template>
 
+    <template v-for="item in nav">
+      <v-dialog v-model="item.show" :key="item.name" width="854px" v-if="item.content" >
+        <v-card class="about">
+          <div class="about" v-html="item.content"></div>
+        </v-card>
+      </v-dialog>
+    </template>
+
     <div class="logo" v-if="!present"></div>
 
   </v-app>
@@ -128,6 +143,7 @@ export default {
       show_about: false,
       show_calendar: false,
       shortcuts: [],
+      nav: [],
     }
   },
 
@@ -187,6 +203,11 @@ export default {
       } else if (theme == 'echoraeume') {
         this.$vuetify.theme.themes.dark.primary = "#ac3f3f";
         this.$vuetify.theme.dark = true;
+
+      } else if (theme == 'porgy') {
+        this.$vuetify.theme.themes.dark.primary = "#FFCC00";
+        this.$vuetify.theme.dark = true;
+
       } else {
         //this.$vuetify.theme.dark = false;
       }
