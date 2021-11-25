@@ -36,7 +36,7 @@
   <video class="video-js vjs-default-skin" controls="" height="360" id="my-video" poster="" width="640" muted autoplay>&nbsp;</video>
 
   <div class="resizer ugly">
-    <iframe class="resized" src="http://localhost:8080/#/text/wienmodern" allowtransparency="true"></iframe>
+    <iframe class="resized" src="https://echovroom.live/#/text/wienmodern" allowtransparency="true"></iframe>
   </div>
 
 
@@ -69,18 +69,25 @@
 
     function change(toggle) {
       let obj = document.querySelector(".resizer")
-      if (toggle) {
+      if (toggle === 0) {
+        obj.style.left = "50%";
         obj.style.height = "100%";
-         obj.style.width = "100%";
-         obj.style.opacity = "0.7";
-      }  else {
+        obj.style.width = "100%";
+        obj.style.opacity = "0.7";
+      }  else if (toggle === 1) {
         obj.style.height = "30%";
-        obj.style.width = "16%";
+        obj.style.width = "66%";
         obj.style.opacity = "1";
-      }
-      setTimeout( () => { change(!toggle)}, 3000)
+      } else if (toggle === 2) {
+        obj.style.left = "90%";
+        obj.style.height = "100%";
+        obj.style.width = "20%";
+        obj.style.opacity = "0.5";
+        toggle = -1;
+      } 
+      setTimeout( () => { change(toggle + 1)}, 3000)
     }
-    setTimeout( () => { change(true)}, 3000)
+    setTimeout( () => { change(1)}, 3000)
 
   </script>
 

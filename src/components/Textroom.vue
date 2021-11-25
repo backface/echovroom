@@ -26,8 +26,8 @@ l
       </div>
     </div>
 
-    <div class="chatroom_container" v-show="is_active && is_open" :style="{ height:  'calc(' + height + ' - 28px)' }">
-      <div class="chatroom" :style="{ height:  'calc(' + height + ' - 118px)' }">
+    <div class="chatroom_container" v-show="is_active && is_open" :style="{ height:  'calc(' + height + ')' }">
+      <div class="chatroom" :style="{ height:  'calc(' + height + ' - 88px)' }">
         <vue-custom-scrollbar class="participants">
           <div class="has-text-left" ref="participants">
             <ul>

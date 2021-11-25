@@ -357,5 +357,5 @@ export default {
 <style scoped>
 .main {}
 .main { height: calc(100% - 124px); }
-.textroom { max-height: 400px }
+.textroom { max-height: 600px }
 </style>
