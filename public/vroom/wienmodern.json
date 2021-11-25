@@ -1,11 +1,9 @@
 {
-  "autologin": "true",
   "theme": "wienmodern",
   "stage": "http://wienmodern.at",
-  "random_login": true,
   "server": [
-    "wss://janus.modular-t.org:8989/janus",
-    "https://janus.modular-t.org:8089/janus"
+    "wss://wienmodern.modular-t.org:8989/janus",
+    "https://wienmodern.modular-t.org:8089/janus"
   ],
   "iceServers": [
     {"urls": "stun:turn.modular-t.org"},

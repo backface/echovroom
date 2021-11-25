@@ -139,7 +139,6 @@ export const janusMixin = {
     },
 
     loadConfig() {
-      console.log(this.opaqueId, ":", this.isMobile ? "is mobile" : "is desktop");
       console.log(this.opaqueId, ":", "loading chat config");
       fetch('vroom/config.json')
         .then(r => {
@@ -178,7 +177,7 @@ export const janusMixin = {
       console.log(this.opaqueId, ":", ":", 'calling Janus init')
 
       Janus.init({
-        debug: 'all',
+        debug: 'false',
         callback: () => {
           self.janus = new Janus(
             {
@@ -212,7 +211,7 @@ export const janusMixin = {
 
     askForUsername() {
       let self=this;
-      console.log(self.opaqueId, ":", "Ask for username");
+      //console.log(self.opaqueId, ":", "Ask for username");
       //if(/[^a-zA-Z0-9]/.test(username)) {
       self.$refs.login.open("Your name?", {
         participants: self.initial_participants,
@@ -230,7 +229,7 @@ export const janusMixin = {
 
     registerUser() {
       let self = this;
-      console.log(self.opaqueId, ":", "register user");
+      //console.log(self.opaqueId, ":", "register user");
       var transaction = Janus.randomString(12);
       var request = {
         //id: Janus.randomString(12),
@@ -252,7 +251,7 @@ export const janusMixin = {
 
     leaveRoom() {
       let self = this;
-      console.log(self.opaqueId, ":", "leave room");
+      //console.log(self.opaqueId, ":", "leave room");
       var transaction = Janus.randomString(12);
       var request = {
         request: "leave",
@@ -282,8 +281,8 @@ export const janusMixin = {
       if (!self.is_open)
         self.is_open = true;
 
-      console.log(self.opaqueId, ":", "login");
-      console.log(self.opaqueId, ":", "ask for existing participants");
+      //console.log(self.opaqueId, ":", "login");
+      //console.log(self.opaqueId, ":", "ask for existing participants");
       var transaction = Janus.randomString(12);
       var request = {
         transaction: transaction,
@@ -295,16 +294,16 @@ export const janusMixin = {
       self.pluginHandle.send({
         "message": request,
         success: function(response) {
-          console.log(self.opaqueId, ":", response);
+          //console.log(self.opaqueId, ":", response);
           self.initial_participants = response.participants;
           self.count = response.participants.length
           self.$emit('participantNumberChanged', self.count)
 
           if (!self.nick) {
-            console.log(self.opaqueId, ":", "no name provided");
+            //console.log(self.opaqueId, ":", "no name provided");
             self.askForUsername();
           } else if (self.initial_participants.find(d => d.display == self.nick)) {
-            console.log(self.opaqueId, ":", "username already taken");
+            // console.log(self.opaqueId, ":", "username already taken");
             self.askForUsername(true);
           } else {
             self.display = self.nick
@@ -319,7 +318,7 @@ export const janusMixin = {
 
     getParticipantList() {
       let self = this;
-      console.log(self.opaqueId, ":", "ask for participants", self.room);
+      //console.log(self.opaqueId, ":", "ask for participants", self.room);
       var transaction = Janus.randomString(12);
       var request = {
         transaction: transaction,
@@ -342,7 +341,7 @@ export const janusMixin = {
     getRoomsInfo() {
       return new Promise((resolve, reject) => {
         let self = this;
-        console.log(self.opaqueId, ":", "ask for rooms info", self.room );
+        //console.log(self.opaqueId, ":", "ask for rooms info", self.room );
 
         var transaction = Janus.randomString(12);
         var request = {
@@ -355,7 +354,7 @@ export const janusMixin = {
         self.pluginHandle.send({
           "message": request,
           success: function(response) {
-            console.log(self.opaqueId, ":", response);
+            //console.log(self.opaqueId, ":", response);
             self.rooms = response.list;
             if (response.list.find(d => d.room == self.room)) {
               self.room_name = response.list.find(d => d.room == self.room).description
@@ -379,7 +378,7 @@ export const janusMixin = {
     initRoom() {
       let self = this
       self.getRoomsInfo().then(()=> {
-        console.log(self.opaqueId, ":", "init room");
+        //console.log(self.opaqueId, ":", "init room");
         self.getParticipantList();
         setTimeout(self.updateParticipantsInfo, 10000)
         if (self.is_open)
@@ -397,7 +396,7 @@ export const janusMixin = {
     createRoom() {
       return new Promise((resolve, reject) => {
         let self = this;
-        console.log(self.opaqueId, ":", "create room ", self.room, self.room_name);
+        //console.log(self.opaqueId, ":", "create room ", self.room, self.room_name);
         var transaction = Janus.randomString(12);
         var request = self.room_options
         request.transaction = transaction

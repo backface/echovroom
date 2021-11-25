@@ -7,7 +7,7 @@
       <v-card-title class="headline">{{ options.title }}</v-card-title>
       <v-card-text>
         {{ text }}
-        <v-form ref="messageForm" v-model="valid" :lazy-validation="lazy" @submit.prevent="submit">
+        <v-form ref="messageForm" v-model="valid" :lazy-validation="lazy" @submit.prevent="">
           <v-text-field
             :placeholder="options.placeholder"
             v-model="message"

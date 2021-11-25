@@ -26,8 +26,8 @@ l
       </div>
     </div>
 
-    <div class="chatroom_container" v-show="is_active && is_open" :style="{ height:  'calc(' + height + ')' }">
-      <div class="chatroom" :style="{ height:  'calc(' + height + ' - 88px)' }">
+    <div class="chatroom_container" v-show="is_active && is_open" :style="{ height:  'calc(' + height + ' - 24px)' }">
+      <div class="chatroom" :style="{ height:  'calc(' + height + ' - 128px)' }">
         <vue-custom-scrollbar class="participants">
           <div class="has-text-left" ref="participants">
             <ul>
@@ -43,7 +43,7 @@ l
                     <v-list-item v-if="emitCallEvents" @click="$emit('call', user.display)">
                       <v-list-item-title>Videocall</v-list-item-title>
                     </v-list-item>
-                    <v-list-item @click="kick(user.username)">
+                    <v-list-item v-if="allowKick" @click="kick(user.username)">
                       <v-list-item-title>Kick</v-list-item-title>
                     </v-list-item>
                   </v-list>
@@ -192,6 +192,10 @@ export default {
     height: {
       type: String,
       default: "100%"
+    },
+    allowKick: {
+      type: Boolean,
+      default: true
     }
   },
 

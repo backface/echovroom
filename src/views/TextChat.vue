@@ -1,5 +1,6 @@
 <template>
   <div class="main">
+    <v-btn @click="login" v-if="!chat_open" class="enter">Join the Conversation</v-btn>
 
     <transition name="fade">
         <Textroom
@@ -11,13 +12,13 @@
           :roombyName="roombyName"
           :host="server"
           :nick="login_name"
-          :emitCallEvents="true"
           :login_password="password"
           @hasNick="login_name = $event;"
           @hasPassword="password = $event;"
           @hasRoomInfo="foyer_info = $event"
           @hasJanus="janus = $event"
           :allowMinimize="false"
+          :allowKick="false"
         />
       </transition>
     <toast ref="toast"></toast>
@@ -64,12 +65,6 @@ export default {
   },
 
   mounted() {
-
-    console.log("screen size is ", window.screen.width, window.screen.height);
-    console.log("device ratio is ",  window.devicePixelRatio);
-    console.log("screen size with ratio is", window.screen.width * window.devicePixelRatio, window.screen.height * window.devicePixelRatio);
-
-
     if (typeof this.$route.query.login !=  undefined) {
       this.login_name = this.$route.query.login;
     }
@@ -198,6 +193,11 @@ export default {
           this.hasStreaming = this.withStreaming;
           this.attach()
         })
+    },
+
+    login() {
+      this.chat_open = true;
+      this.janusReady = true;
     },
 
     loginFromParam() {

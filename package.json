@@ -12,7 +12,7 @@
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "deploy": "npm run build && npm run transfer",
-    "transfer": "rsync -avz --delete dist/ $npm_config_deploy_path",
+    "transfer": "rsync -avz dist/ $npm_config_deploy_path",
     "wc-build": "vue-cli-service build --target wc --inline-vue --name echo-rooms src/components/EchoraumChat.vue",
     "wc-build-old": "vue-cli-service build --target wc --inline-vue --name echo-rooms src/componentWrapper.js",
     "wc-test": "cp -r public/vroom dist; cd dist && live-server --port=8080 --entry-file=./demo.html"

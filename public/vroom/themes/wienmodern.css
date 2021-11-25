@@ -15,7 +15,7 @@ url(/fonts/praxis-net-w01-regular.woff) format("woff")}
 
 :root {
   --color-bg: white;
-  --color-bg-trans: transparent;
+  --color-bg-trans: white;
   --color-fg: #333;
   --color-alert: red;
   --color-bg-footer: #fff;
@@ -25,7 +25,7 @@ url(/fonts/praxis-net-w01-regular.woff) format("woff")}
   --font-body: "Praxis Next W01 Regular";
 	--font-hdg: "Praxis Next W01 Bold";
 }
-img {filter:invert(0.93)}
+
 .navbar .navbar-brand a:hover {
   color:var(--color-bg);
   background:var(--color-fg);
