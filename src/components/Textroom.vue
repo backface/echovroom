@@ -233,7 +233,7 @@ export default {
   },
 
   mounted () {
-    console.log(this.$options._componentTag + " mounted");
+    // console.log(this.$options._componentTag + " mounted");
     if (this.myJanus == null) {
       this.loadConfig()
     } else {
@@ -264,7 +264,7 @@ export default {
           self.pluginHandle = pluginHandle;
           console.log(self.opaqueId, ":", "Plugin attached! (" + self.pluginHandle.getPlugin() + ", id=" + self.pluginHandle.getId() + ")");
           var body = { "request": "setup" };
-          console.log(self.opaqueId, ":", "Sending message (" + JSON.stringify(body) + ")");
+          // console.log(self.opaqueId, ":", "Sending message (" + JSON.stringify(body) + ")");
           self.pluginHandle.send({"message": body});
           self.getRoomsInfo();
         },
@@ -279,7 +279,7 @@ export default {
         },
 
         onmessage: function(msg, jsep) {
-          console.log(self.opaqueId, ":", "Got a message", msg);
+          // console.log(self.opaqueId, ":", "Got a message", msg);
           if(jsep !== undefined && jsep !== null) {
             // Answer
             self.pluginHandle.createAnswer({
@@ -304,7 +304,7 @@ export default {
         },
 
         ondata: function(data) {
-          console.log(self.opaqueId, ":", "We got data from the DataChannel! ")
+          // console.log(self.opaqueId, ":", "We got data from the DataChannel! ")
 
           var json = JSON.parse(data);
           var transaction = json["transaction"];
@@ -404,7 +404,7 @@ export default {
 
     registerUser() {
       let self = this;
-      console.log(self.opaqueId, ":", "register user");
+      //console.log(self.opaqueId, ":", "register user");
       self.username = Janus.randomString(12);
       var transaction = Janus.randomString(12);
       var register = {
@@ -435,7 +435,7 @@ export default {
           return;
         }
         // We're in
-        console.log(self.opaqueId, "a", self.is_open, self.is_active);
+        //console.log(self.opaqueId, "a", self.is_open, self.is_active);
         console.log(self.opaqueId, ":", "we are in");
         self.loading = false;
         self.webRTCUp = true;
