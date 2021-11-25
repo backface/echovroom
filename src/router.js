@@ -7,6 +7,7 @@ import About from './views/About.vue'
 import Monitor from './views/Monitor.vue'
 import NotFound from './views/NotFound.vue'
 import Echoroom from './views/Echoroom.vue'
+import TextChat from './views/TextChat.vue'
 
 Vue.use(Router)
 
@@ -26,6 +27,15 @@ export default new Router({
       path: '/monitor',
       name: 'monitor',
       component: Monitor
+    },
+    {
+      path: '/text/:roombyName',
+      name: 'text',
+      component: TextChat,
+      props: (route) => ({
+          roombyName: route.params.roombyName,
+          embed:true,
+      }),
     },
     {
       path: '/echoraeume',

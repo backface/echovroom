@@ -1,0 +1,53 @@
+@font-face{
+  font-family:'Praxis Next W01 Bold';
+  src:url(/fonts/praxis-net-w01-bold.woff2) format("woff2"),
+  url(/fonts/praxis-net-w01-bold.woff) format("woff")
+}
+@font-face{font-family:'Praxis Next W01 Regular';
+src:url(/fonts/praxis-net-w01-regular.woff2) format("woff2"),
+url(/fonts/praxis-net-w01-regular.woff) format("woff")}
+
+@font-face{
+  font-family:'WIEN MODERN';
+  src:url(fonts/WIENMODERN-MONO.woff2) format("woff2"),
+  url(/fonts/WIENMODERN-MONO.woff) format("woff")
+}
+
+:root {
+  --color-bg: white;
+  --color-bg-trans: transparent;
+  --color-fg: #333;
+  --color-alert: red;
+  --color-bg-footer: #fff;
+  --color-bg-nav: #fff;
+  --color-a: #000;
+  --color-a-hover:#222;
+  --font-body: "Praxis Next W01 Regular";
+	--font-hdg: "Praxis Next W01 Bold";
+}
+img {filter:invert(0.93)}
+.navbar .navbar-brand a:hover {
+  color:var(--color-bg);
+  background:var(--color-fg);
+}
+
+html {
+  background-color: transparent;
+}
+
+.textroom { background: white }
+
+.navbar .navbar-menu .navbar-item a {
+  font-weight: normal;
+}
+
+.stage {
+  background-image: none;
+  background-position: center;
+}
+
+.theme--light.v-sheet,
+.theme--light.v-card {
+  background-color:var(--color-bg);
+  color: var(--color-fg)
+}

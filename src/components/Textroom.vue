@@ -1,3 +1,4 @@
+l
 <template>
   <div ref="textroom" class="textroom">
 
@@ -12,19 +13,20 @@
            <div v-if="new_messages > 0" class="new_message_counter"> {{ new_messages }}</div>
         </div>
 
-        <div class="column  has-text-right">
-          <a v-if="is_active" @click="is_active=false" title="hide room">
-            <minus-icon size="1x" class="icons linked"></minus-icon>
-          </a>
-          <a v-if="!is_active" @click="openChat" title="enter room">
-            <plus-icon size="1x" class="icons linked"></plus-icon>
-          </a>
+        <div class="column has-text-right">
+          <template v-if="allowMinimize">
+            <a v-if="is_active" @click="is_active=false" title="hide room">
+              <minus-icon size="1x" class="icons linked"></minus-icon>
+            </a>
+            <a v-if="!is_active" @click="openChat" title="enter room">
+              <plus-icon size="1x" class="icons linked"></plus-icon>
+            </a>
+          </template>
         </div>
       </div>
     </div>
 
-    <div class="" v-show="is_active && is_open">
-
+    <div class="chatroom_container" v-show="is_active && is_open">
       <div class="chatroom">
         <vue-custom-scrollbar class="participants">
           <div class="has-text-left" ref="participants">
@@ -78,7 +80,7 @@
 
       <div class="talk">
         <div class="columns is-mobile">
-          <div class="column is-one-quarter-desktop is-narrow-mobile has-text-right me">
+          <div class="column is-one-quarter is-narrow-mobile has-text-right me">
             talk:
           </div>
           <div class="column">
@@ -182,6 +184,10 @@ export default {
     autologin: {
       type: Boolean,
       default: false
+    },
+    allowMinimize: {
+      type: Boolean,
+      default: true
     },
   },
 
@@ -637,12 +643,12 @@ export default {
 
 .textroom {
   position: relative;
-  max-height:100%;
-  width:100%;
+  max-height: 100%;
+  height:100%;
+  width: 100%;
   display: flex;
   flex-direction: column;
 }
-.textroom { max-height:300px !important}
 
 .textroom .new_message_counter {
   display: inline-block;
@@ -657,11 +663,29 @@ export default {
   margin-left: 1.5em;
 }
 
-.textroom .chatroom { flex: 1 1 auto;display:flex; max-height:70%; }
+.textroom .chatroom {
+  display: flex;
+  flex-direction: row;
+  overflow: scroll-y;
+  min-height: 140px;
+  height: calc(100% - 118px);
+  flex-grow: 1
+ }
+
+
+ .textroom .chatbar {
+   overflow: scroll
+  }
+
+.chatroom_container {
+  margin: 0; padding:0;
+  height: calc(100% - 28px);
+}
+
 .textroom .participants {
   font-size: 90%;
+  width: 25%;
   overflow-y: auto;
-  flex: 0 0 25%;
   margin-right: 10px;
   word-wrap: break-word;
 }
@@ -670,7 +694,7 @@ export default {
 
 .textroom .chat {
   overflow-y: auto;
-  flex: 1 1 auto;
+  flex-grow: 1
 }
 .textroom .chat {  padding-left: 0.7rem }
 .textroom .chat .item { padding:0px 20px 0px 0px; margin-bottom:0px}
@@ -678,19 +702,21 @@ export default {
 .textroom .chat .item .username { padding: 0 0.2rem 0 1rem; }
 .textroom .chat .item .msg { padding:0.2rem 0 0.5rem 0.4rem; word-break: break-word}
 
-.textroom .me { line-height:2.5em; margin-right: 10px;}
+.textroom .me { line-height:2.5em; margin-right: 10px; width: 25%; }
 .textroom .msg_editor {
     text-align:left;
     padding-top:0px;
     line-height:2.5em;
     margin-right:0rem;
+    flex-grow: 1
 }
 .textroom .emojicol {
   line-height:2.5em;
-  padding-left:0px
+  padding-left:0px;
+  padding-right: 10px;
 }
 
-.textroom .talk { flex:  0 0 auto; padding:0.7rem 0; margin-top: 1rem; border-top: 1px solid var(--color-fg); }
+.textroom .talk { width: 100%; padding:0.7rem 0; margin-top: 1rem; border-top: 1px solid var(--color-fg); min-height: 50px}
 .textroom .loadingComponent {position: absolute;top:40px;width:100%;height:100%;background:rgba(255, 255, 255, 0.7)}
 .textroom .loadingComponent div {position: absolute; top:50%; left: 50%; transform:translate(-50%,-50%)}
 .textroom .loading { }

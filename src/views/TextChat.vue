@@ -1,63 +1,13 @@
 <template>
   <div class="main">
-    <div class="room_details">
-      <span v-if="title" class="title">{{ title }}</span>
-      <span v-if="subtitle" class="room_subtitle">{{ subtitle }}</span>
-    </div>
 
-    <div class="stage" v-if="!embed">
-      <div class='embed-container'>
-        <Streaming
-          :roombyName="roombyName"
-          v-if="hasStreaming && !enterVR"
-        />
-        <Stage
-          v-else
-          :roombyName="roombyName"
-          :src="stage"
-        />
-      </div>
-    </div>
-
-    <v-btn @click="preLogin" v-if="!chat_open" class="enter">Join the Conversation</v-btn>
-
-    <div class="echovrooms" v-show="!present">
-
-      <Videoroom
-        :roombyName="roombyName"
-        v-if="login_name  && showVroom && janusReady"
-        :nick="login_name"
-        :is_muted="video_chat_muted"
-        :login_password="password"
-        :open="video_chat_open"
-        :host="server"
-        :facetime="facetime"
-        :betaOptions="beta"
-        :advancedOptions="advanced"
-        @leavingRoom="recreateVRoom"
-        :emitCallEvents="true"
-        @call="handleCall"
-        :vr="vr"
-        :publish="publish"
-      />
-
-      <Videocall
-        :roombyName="roombyName"
-        v-if="login_name && janusReady && !present"
-        :nick="login_name + '@' + roombyName"
-        :is_muted="true"
-        :host="server"
-        :callee="callee"
-        @takingCall="recreateVRoom"
-      />
-
-      <transition name="fade">
+    <transition name="fade">
         <Textroom
           v-if="janusReady"
           v-show="chat_open"
           :open="chat_open"
           :autologin="chat_open && login_name!=''"
-          :active="false"
+          :active="true"
           :roombyName="roombyName"
           :host="server"
           :nick="login_name"
@@ -67,26 +17,17 @@
           @hasPassword="password = $event;"
           @hasRoomInfo="foyer_info = $event"
           @hasJanus="janus = $event"
-          @call="handleCall"
+          :allowMinimize="false"
         />
       </transition>
-
-    </div>
-
     <toast ref="toast"></toast>
     <login-dialog ref="login"></login-dialog>
-    <pre-login-dialog ref="prelogin"></pre-login-dialog>
   </div>
 </template>
 
 <script>
-import Stage from '@/components/Stage.vue'
 import Textroom from '@/components/Textroom.vue'
-import Videoroom from '@/components/Videoroom.vue'
-import Videocall from '@/components/Videocall.vue'
-import Streaming from '@/components/Streaming.vue'
 import LoginDialog from '@/components/dialogs/LoginDialog'
-import PreLoginDialog from '@/components/dialogs/PreLoginDialog'
 import Toast from '@/components/dialogs/Toast'
 import { event_bus } from '@/main'
 //import { PortalTarget } from 'portal-vue'
@@ -98,21 +39,12 @@ export default {
   //mixins: [janusMixin],
 
   components: {
-    Stage,
-    Textroom, Videoroom, Videocall,Streaming,
-    LoginDialog, PreLoginDialog, Toast,
+    Textroom,
+    LoginDialog, Toast,
     //PortalTarget,
   },
 
   props: {
-    facetime:  {
-      type: Boolean,
-      default: false
-    },
-    enterVR:  {
-      type: Boolean,
-      default: false
-    },
     embed:  {
       type: Boolean,
       default: false
@@ -155,21 +87,12 @@ export default {
       this.publish = this.$route.query.publish != "false";
     }
 
-    // vr stuff - is it still needed
-    if (typeof this.$route.query.vr !=  undefined) {
-      this.vr = this.$route.query.vr === 'true';
-    }
-    if (this.enterVR)
-      this.vr = this.enterVR;
-
     this.loadRoomConfig()
   },
 
   data() {
     return {
-      chat_open: false,
-      video_chat_open: true,
-      video_chat_muted: false,
+      chat_open: true,
       janusReady: false,
       login_name: null,
       password: null,
@@ -202,7 +125,6 @@ export default {
   methods: {
 
     loadRoomConfig() {
-      let self = this
       if (window.location.protocol === "http:") {
         console.log("protocol ist http - assume local dev",);
         this.server = [
@@ -213,35 +135,11 @@ export default {
         .then(r => r.json())
         .then(json => {
           console.log("loading vroom configs: vroom/" + this.roombyName + ".json");
-          let no_about = false;
           if (json.server) this.server = json.server;
           if (json.iceServers) this.iceServers = json.iceServers;
 
           if (json.title) this.title = json.title;
           if (json.no_title == "true") this.title = "";
-          if (json.no_about == "true") no_about = true;
-
-          if (json.subtitle) this.subtitle = json.subtitle;
-
-          if (json.nav) {
-            json.nav.forEach( (d) => {
-              d.show = false;
-              if (d.src) {
-                fetch(d.src).then(
-                  r => r.text()
-                ).then((text) => {
-                  d.content = "<h1 class=\"title\">" + d.name + "</h1>" + text;
-                })
-              }
-              if(d.name == "about")
-                no_about = true;
-            })
-          } else {
-            json.nav = []
-          }
-          self.$parent.$parent.$parent.nav = json.nav;
-          self.$parent.$parent.$parent.no_about = no_about;
-          self.$parent.$parent.$parent.$forceUpdate();
 
 
           /*
@@ -283,11 +181,16 @@ export default {
             this.hasStreaming = this.withStreaming;
           }
 
+          //this.login_name = "adsf"
+
+          if ('random_login' in json) {
+            console.log(json.random_login);
+            this.login_name  = Math.random().toString(36).substr(2, 9);
+          }
+
           if ('autologin' in json && !this.login_name)
           {
-            //this.chat_open = json.autologin;
-            //this.video_chat_open = json.autologin;
-            this.preLogin()
+            this.chat_open = true // json.autologin;
           }
           this.attach()
         }).catch( () => {
@@ -299,7 +202,6 @@ export default {
 
     loginFromParam() {
       this.chat_open = true;
-      this.video_chat_open = true;
       this.janusReady = true;
     },
 
@@ -309,52 +211,19 @@ export default {
     },
 
     attach() {
-      let self = this;
+      //let self = this;
       if (this.login_name) {
         this.chat_open = true;
-        this.video_chat_open = true;
       }
       this.janusReady = true;
-      setTimeout( () => {self.delayed_login = true})
+      //setTimeout( () => {self.delayed_login = true})
     },
-
-    recreateVRoom() {
-      // this is a hack but we completely remove the component to fore recreating a new janus sesssion
-      let self = this
-      this.showVroom = false;
-      this.video_chat_open = false;
-      setTimeout( () => {self.showVroom = true}, 700)
-    },
-
-    handleCall(callee) {
-      this.callee = callee + "@" + this.roombyName;
-      setTimeout( () => {this.callee = ""}, 700)
-    },
-
-    preLogin() {
-      let self =this;
-      if (this.publish) {
-        self.$refs.prelogin.open("Join the chat system!", {
-        } ).then((r) => {
-          if (r) {
-            self.video_chat_open = r.login_videochat;
-            self.video_chat_muted = r.login_muted;
-            self.chat_open= true;
-            self.janusReady = true;
-          }
-        })
-      } else {
-        this.chat_open = true;
-        this.video_chat_open = true;
-        self.janusReady = true;
-      }
-    }
   }
 }
 </script>
 
 <style scoped>
-.main {}
-.main { height: calc(100% - 124px); }
-.textroom { max-height: calc(100vh - 124px); }
+  .main { padding: 0px 10px; bottom:20px; position: absolute; width: 100%; height: calc(100% - 24px)}
+  .topcontrols { display: none }
+
 </style>

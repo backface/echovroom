@@ -95,9 +95,6 @@ a:hover {color:var(--color-a-hover)};
 .shortcuts a { margin:10px;  padding:1px 5px}
 .shortcuts .title { opacity:0.2}
 
-.main {}
-.main { margin-bottom:100px }
-
 .title {
   padding-bottom:0;
   margin-bottom:0.2rem;
@@ -138,12 +135,9 @@ a:hover {color:var(--color-a-hover)};
   z-index:200;
 }
 
-.textroom  { max-height:600px}
-.textroom .chatroom { height:180px}
-
 .topcontrols {
   position: fixed;
-  top:-2px; left:50%;
+  top:-9px; left:50%;
   transform:translate(-50%,0);
   border: 1px solid var(--color-fg);
   background: var(--color-bg-trans);
@@ -279,3 +273,5 @@ v-text-field:not(.v-input--has-state):hover > .v-input__control > .v-input__slot
   .home .logo { z-index:20;width:256px; height:256px; position: fixed; bottom:-80px; left: 50%; transform: translate(-50%,0); overflow:hidden}
   footer { font-size: 0.5em}
 }
+
+.max-width { width: 100%; }

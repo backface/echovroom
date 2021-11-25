@@ -129,6 +129,7 @@ export default {
       show_about: false,
       shortcuts: [],
       nav: [],
+      tipjar_src: null,
     }
   },
 
@@ -144,7 +145,7 @@ export default {
 
   mounted () {
     console.log('App mounted')
-    if (this.$route.name == "embed")
+    if (this.$route.name == "embed" || this.$route.name == "text")
       this.embed = true;
     if (this.$route.name == "present")
       this.present = true;

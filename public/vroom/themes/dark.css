@@ -17,7 +17,7 @@ img {filter:invert(0.93)}
 .navbar,
 .navbar, .navbar-menu, .dropdown-content {
   background-color:var(--color-bg);
-    color:var(--color-fg);
+  color:var(--color-fg);
 }
 .navbar .navbar-brand a:hover,
   .navbar .navbar-menu .navbar-item:hover,
