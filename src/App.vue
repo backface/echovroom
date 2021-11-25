@@ -1,6 +1,6 @@
 <template>
   <v-app id="app">
-    <nav class="navbar is-transparent" role="navigation" aria-label="main navigation" v-if="!embed && !present">
+    <nav class="navbar is-transparent" role="navigation" aria-label="main navigation" v-if="!embed">
 
       <div class="navbar-brand">
         <router-link :to="{ path: '/' }" v-slot="{ href }">
@@ -78,7 +78,7 @@
     </footer>
 
     <portal-target name="portalscreen"></portal-target>
-    <portal-target name="topcontrols" class="topcontrols"  v-if="!present"></portal-target>
+    <portal-target name="topcontrols" class="topcontrols" v-if="!present && !textonly"></portal-target>
 
     <template>
       <v-dialog v-model="show_about" width="854px" >
@@ -124,6 +124,7 @@ export default {
       menuOpen: false,
       embed: false,
       present: false,
+      textonly: false,
       url: "",
       no_about: false,
       show_about: false,
@@ -147,6 +148,8 @@ export default {
     console.log('App mounted')
     if (this.$route.name == "embed" || this.$route.name == "text")
       this.embed = true;
+    if (this.$route.name == "text")
+      this.textonly = true;
     if (this.$route.name == "present")
       this.present = true;
     this.url = document.location.href;

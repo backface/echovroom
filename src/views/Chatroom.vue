@@ -68,6 +68,7 @@
           @hasRoomInfo="foyer_info = $event"
           @hasJanus="janus = $event"
           @call="handleCall"
+          height="400px"
         />
       </transition>
 
@@ -356,5 +357,5 @@ export default {
 <style scoped>
 .main {}
 .main { height: calc(100% - 124px); }
-.textroom { max-height: calc(100vh - 124px); }
+.textroom { max-height: 400px }
 </style>

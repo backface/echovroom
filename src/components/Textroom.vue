@@ -26,8 +26,8 @@ l
       </div>
     </div>
 
-    <div class="chatroom_container" v-show="is_active && is_open">
-      <div class="chatroom">
+    <div class="chatroom_container" v-show="is_active && is_open" :style="{ height:  'calc(' + height + ' - 28px)' }">
+      <div class="chatroom" :style="{ height:  'calc(' + height + ' - 118px)' }">
         <vue-custom-scrollbar class="participants">
           <div class="has-text-left" ref="participants">
             <ul>
@@ -189,6 +189,10 @@ export default {
       type: Boolean,
       default: true
     },
+    height: {
+      type: String,
+      default: "100%"
+    }
   },
 
   data() {
@@ -668,7 +672,6 @@ export default {
   flex-direction: row;
   overflow: scroll-y;
   min-height: 140px;
-  height: calc(100% - 118px);
   flex-grow: 1
  }
 
@@ -679,7 +682,6 @@ export default {
 
 .chatroom_container {
   margin: 0; padding:0;
-  height: calc(100% - 28px);
 }
 
 .textroom .participants {
