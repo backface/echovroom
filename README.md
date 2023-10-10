@@ -1,6 +1,6 @@
 # echoVrooms
 
-https://echovroom.live
+https://echovrooms.live
 
 Who needs Zoom? We vroom!
 
